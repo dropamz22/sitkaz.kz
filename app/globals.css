@@ -192,3 +192,52 @@ body { overscroll-behavior-y: none; }
 }
 .video-placeholder small { font-size: 12px; opacity: .8; }
 .video-placeholder code { background: #1b2937; padding: 1px 6px; border-radius: 5px; color: var(--accent); }
+
+/* Стрик, цель, повторения */
+.chips-row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.chip {
+  background: rgba(255,255,255,.06); border: 1px solid #2a3d50;
+  border-radius: 999px; padding: 6px 12px; font-size: 13px; color: var(--text);
+  white-space: nowrap;
+}
+.chip b { color: var(--accent-2); }
+.due-btn {
+  display: block; width: 100%; margin-top: 14px;
+  background: var(--accent); color: #04222a; border: none; border-radius: 14px;
+  padding: 13px; font-weight: 700; font-size: 15px; cursor: pointer;
+  transition: transform .1s ease;
+}
+.due-btn:active { transform: scale(0.98); }
+
+/* Тип вопроса в квизе */
+.q-type {
+  text-align: center; color: var(--muted); font-size: 13px;
+  text-transform: uppercase; letter-spacing: 1px; margin-top: 14px;
+}
+
+/* Аудирование */
+.listen-btn {
+  display: grid; place-items: center; margin: 22px auto 10px;
+  width: 88px; height: 88px; border-radius: 50%;
+  background: var(--card-2); border: 1px solid #2a3d50;
+  font-size: 36px; cursor: pointer; transition: transform .1s ease;
+}
+.listen-btn:active { transform: scale(0.94); }
+
+/* «Собери фразу» */
+.assemble-line {
+  min-height: 56px; background: var(--card); border: 1px dashed #2a3d50;
+  border-radius: 14px; padding: 10px; display: flex; flex-wrap: wrap; gap: 8px;
+  margin: 16px 0 14px; justify-content: center;
+}
+.assemble-line.assemble-ok { border-color: var(--good); border-style: solid; }
+.assemble-line.assemble-bad { border-color: var(--bad); border-style: solid; }
+.word-chip {
+  background: var(--card-2); border: 1px solid #2a3d50; color: var(--text);
+  border-radius: 10px; padding: 9px 13px; font-size: 16px; cursor: pointer;
+}
+.word-chip:disabled { opacity: .3; cursor: default; }
+.word-bank { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; }
+
+/* Завершение практики */
+.practice-done { text-align: center; padding: 46px 10px; }

@@ -2,25 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { modules, lessons, lessonsByModule, allPhrases } from "../data/course";
+import {
+  phraseId, shuffle, gradeSrs, dueCount, learnedCount,
+  buildDeck, registerActivity, displayStreak, doneToday,
+} from "../lib/srs";
 
-const STORE_KEY = "sitkaz_progress_v2";
+const STORE_KEY = "sitkaz_progress_v3";
+const EMPTY = {
+  done: {}, quizzes: 0, bestScore: 0,
+  srs: {}, streak: { count: 0, last: null, todayCount: 0 }, goal: 10,
+};
 
 function loadProgress() {
-  if (typeof window === "undefined") return { done: {}, learned: {}, quizzes: 0, bestScore: 0 };
+  if (typeof window === "undefined") return EMPTY;
   try {
-    return JSON.parse(localStorage.getItem(STORE_KEY)) || { done: {}, learned: {}, quizzes: 0, bestScore: 0 };
-  } catch {
-    return { done: {}, learned: {}, quizzes: 0, bestScore: 0 };
-  }
-}
-
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
+    const v3 = JSON.parse(localStorage.getItem(STORE_KEY));
+    if (v3) return { ...EMPTY, ...v3, streak: { ...EMPTY.streak, ...(v3.streak || {}) } };
+    const v2 = JSON.parse(localStorage.getItem("sitkaz_progress_v2"));
+    if (v2) return { ...EMPTY, ...v2 }; // миграция со старой версии
+  } catch {}
+  return EMPTY;
 }
 
 function speak(text) {
@@ -32,10 +33,17 @@ function speak(text) {
   window.speechSynthesis.speak(u);
 }
 
+function plural(n, one, few, many) {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+  return many;
+}
+
 export default function App() {
   const [tab, setTab] = useState("course");
   const [activeLesson, setActiveLesson] = useState(null);
-  const [progress, setProgress] = useState({ done: {}, learned: {}, quizzes: 0, bestScore: 0 });
+  const [progress, setProgress] = useState(EMPTY);
 
   useEffect(() => {
     setProgress(loadProgress());
@@ -45,19 +53,29 @@ export default function App() {
     }
   }, []);
 
-  const save = (next) => {
-    setProgress(next);
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(next)); } catch {}
+  const update = (fn) => {
+    setProgress((prev) => {
+      const next = fn(prev);
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
+  // Одна оценка фразы: обновляет SRS + стрик/цель
+  const review = (phrase, known) => {
+    update((prev) => ({
+      ...prev,
+      srs: gradeSrs(prev.srs, phraseId(phrase), known),
+      streak: registerActivity(prev.streak),
+    }));
   };
 
   const markDone = (lessonId) => {
-    if (progress.done[lessonId]) return;
-    save({ ...progress, done: { ...progress.done, [lessonId]: true } });
+    update((prev) => (prev.done[lessonId] ? prev : { ...prev, done: { ...prev.done, [lessonId]: true } }));
   };
 
   const openLesson = (l) => { setActiveLesson(l); setTab("lesson"); };
-
-  const doneCount = Object.keys(progress.done).length;
+  const doneCountN = Object.keys(progress.done).length;
 
   return (
     <div className="app">
@@ -69,7 +87,9 @@ export default function App() {
         </div>
       </div>
 
-      {tab === "course" && <Course progress={progress} doneCount={doneCount} onOpen={openLesson} />}
+      {tab === "course" && (
+        <Course progress={progress} doneCount={doneCountN} onOpen={openLesson} goPractice={() => setTab("practice")} />
+      )}
       {tab === "lesson" && activeLesson && (
         <LessonView
           lesson={activeLesson}
@@ -79,9 +99,9 @@ export default function App() {
           onBack={() => setTab("course")}
         />
       )}
-      {tab === "practice" && <Practice />}
-      {tab === "quiz" && <Quiz progress={progress} onSave={save} />}
-      {tab === "stats" && <Stats progress={progress} doneCount={doneCount} />}
+      {tab === "practice" && <Practice srs={progress.srs} review={review} />}
+      {tab === "quiz" && <Quiz update={update} review={review} />}
+      {tab === "stats" && <Stats progress={progress} doneCount={doneCountN} />}
 
       <nav className="nav">
         {[
@@ -104,16 +124,38 @@ export default function App() {
   );
 }
 
-function Course({ progress, doneCount, onOpen }) {
+// ────────────────────────── Курс ──────────────────────────
+
+function Course({ progress, doneCount, onOpen, goPractice }) {
   const total = lessons.length;
   const pct = Math.round((doneCount / total) * 100);
+  const due = dueCount(progress.srs);
+  const streak = displayStreak(progress.streak);
+  const today = doneToday(progress.streak);
+  const goal = progress.goal || 10;
+
   return (
     <>
       <div className="hero">
         <h2>Сәлеметсіз бе! 👋</h2>
         <p>Курс разговорного казахского по методике «Ситуативный казахский»: 3 модуля, 20 уроков. Учим готовые фразы для реальных ситуаций.</p>
-        <div className="progress-bar"><div style={{ width: `${pct}%` }} /></div>
-        <p style={{ marginTop: 8 }}>Пройдено {doneCount} из {total} уроков ({pct}%)</p>
+        <div className="chips-row">
+          <div className="chip">🔥 <b>{streak}</b> {plural(streak, "день", "дня", "дней")}</div>
+          <div className="chip">🎯 сегодня <b>{today}</b>/{goal}</div>
+          <div className="chip">🔁 повторить <b>{due}</b></div>
+        </div>
+        {today < goal ? (
+          <div className="progress-bar" style={{ marginTop: 12 }}>
+            <div style={{ width: `${Math.min(100, Math.round((today / goal) * 100))}%` }} />
+          </div>
+        ) : (
+          <p style={{ marginTop: 10 }}>🎉 Цель на сегодня выполнена!</p>
+        )}
+        {due > 0 && (
+          <button className="due-btn" onClick={goPractice}>
+            Повторить сегодня: {due} {plural(due, "фразу", "фразы", "фраз")} →
+          </button>
+        )}
       </div>
 
       {modules.map((m) => {
@@ -146,9 +188,15 @@ function Course({ progress, doneCount, onOpen }) {
           </div>
         );
       })}
+
+      <p style={{ color: "var(--muted)", fontSize: 13, textAlign: "center", marginTop: 8 }}>
+        Пройдено {doneCount} из {total} уроков ({pct}%)
+      </p>
     </>
   );
 }
+
+// ────────────────────────── Урок ──────────────────────────
 
 function LessonView({ lesson, done, onDone, onPractice, onBack }) {
   const mod = modules.find((m) => m.id === lesson.module);
@@ -161,7 +209,6 @@ function LessonView({ lesson, done, onDone, onPractice, onBack }) {
       <h2 style={{ marginBottom: 4 }}>{lesson.title}</h2>
       <p style={{ color: "var(--muted)", marginBottom: 16 }}>{lesson.ru}</p>
 
-      {/* Видео-лекция */}
       <div className="video-box">
         {lesson.video ? (
           <iframe src={lesson.video} title={lesson.title} allowFullScreen />
@@ -193,18 +240,61 @@ function LessonView({ lesson, done, onDone, onPractice, onBack }) {
   );
 }
 
-function Practice() {
-  const [deck, setDeck] = useState(() => shuffle(allPhrases));
+// ─────────────────── Практика (карточки + SRS) ───────────────────
+
+function Practice({ srs, review }) {
+  const [deck, setDeck] = useState(() => buildDeck(srs, allPhrases));
   const [i, setI] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const card = deck[i];
+  const [session, setSession] = useState({ known: 0, unknown: 0 });
 
-  const next = () => { setFlipped(false); setI((v) => (v + 1) % deck.length); };
-  const reshuffle = () => { setDeck(shuffle(allPhrases)); setI(0); setFlipped(false); };
+  const restart = () => {
+    setDeck(buildDeck(srs, allPhrases));
+    setI(0);
+    setFlipped(false);
+    setSession({ known: 0, unknown: 0 });
+  };
+
+  if (!deck.cards.length) {
+    return (
+      <div className="practice-done">
+        <div style={{ fontSize: 40 }}>🎉</div>
+        <h2 style={{ margin: "10px 0 6px" }}>На сегодня всё!</h2>
+        <p style={{ color: "var(--muted)" }}>Все фразы повторены. Возвращайся завтра.</p>
+      </div>
+    );
+  }
+
+  if (i >= deck.cards.length) {
+    const total = session.known + session.unknown;
+    return (
+      <div className="practice-done">
+        <div style={{ fontSize: 40 }}>✅</div>
+        <h2 style={{ margin: "10px 0 6px" }}>Сессия завершена</h2>
+        <p style={{ color: "var(--muted)", marginBottom: 20 }}>
+          {total} {plural(total, "фраза", "фразы", "фраз")}: знал {session.known}, повторим ещё {session.unknown}
+        </p>
+        <button className="btn primary" style={{ maxWidth: 260 }} onClick={restart}>Продолжить практику</button>
+      </div>
+    );
+  }
+
+  const card = deck.cards[i];
+  const grade = (known) => {
+    review(card, known);
+    setSession((s) => (known ? { ...s, known: s.known + 1 } : { ...s, unknown: s.unknown + 1 }));
+    setFlipped(false);
+    setI((v) => v + 1);
+  };
 
   return (
     <>
-      <div className="section-title">Карточки · {i + 1} / {deck.length}</div>
+      <div className="section-title">
+        Карточка {i + 1} / {deck.cards.length}
+        {deck.free
+          ? " · свободная практика"
+          : ` · повторение: ${deck.due} · новых: ${deck.fresh}`}
+      </div>
       <div className="flash-wrap">
         <div className="flash" onClick={() => { setFlipped((f) => !f); if (!flipped) speak(card.kk); }}>
           {!flipped ? (
@@ -221,53 +311,63 @@ function Practice() {
           )}
         </div>
         <div className="flash-controls">
-          <button className="btn ghost" onClick={next}>Следующая →</button>
-          <button className="btn good" onClick={next}>Знаю ✓</button>
+          <button className="btn bad" onClick={() => grade(false)}>Не знаю</button>
+          <button className="btn good" onClick={() => grade(true)}>Знаю ✓</button>
         </div>
-        <button className="btn ghost" onClick={reshuffle} style={{ marginTop: 4 }}>🔀 Перемешать заново</button>
+        <p style={{ color: "var(--muted)", fontSize: 12, textAlign: "center" }}>
+          «Знаю» — фраза вернётся позже (1 → 3 → 7 → 21 день). «Не знаю» — повторим сегодня.
+        </p>
       </div>
     </>
   );
 }
 
+// ────────────────────────── Квиз ──────────────────────────
+
+const Q_LABEL = {
+  kk2ru: "Переведи на русский",
+  ru2kk: "Как это по-казахски?",
+  listen: "Аудирование: послушай и выбери",
+  assemble: "Собери фразу из слов",
+};
+
 function makeQuestions() {
   const pool = shuffle(allPhrases).slice(0, 10);
   return pool.map((w) => {
+    const words = w.kk.split(/\s+/).filter(Boolean);
+    const types = ["kk2ru", "ru2kk", "listen"];
+    if (words.length >= 3 && words.length <= 8) types.push("assemble", "assemble");
+    const type = types[Math.floor(Math.random() * types.length)];
+    if (type === "assemble") return { type, word: w, words: shuffle(words) };
     const wrong = shuffle(allPhrases.filter((x) => x.ru !== w.ru)).slice(0, 3);
-    return { word: w, options: shuffle([w, ...wrong]) };
+    return { type, word: w, options: shuffle([w, ...wrong]) };
   });
 }
 
-function Quiz({ progress, onSave }) {
+function Quiz({ update, review }) {
   const [questions, setQuestions] = useState(makeQuestions);
   const [i, setI] = useState(0);
-  const [picked, setPicked] = useState(null);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
   const q = questions[i];
 
-  const pick = (opt) => {
-    if (picked) return;
-    setPicked(opt);
-    const correct = opt.ru === q.word.ru;
-    if (correct) setScore((s) => s + 1);
-    setTimeout(() => {
-      if (i + 1 >= questions.length) {
-        const finalScore = correct ? score + 1 : score;
-        onSave({
-          ...progress,
-          quizzes: (progress.quizzes || 0) + 1,
-          bestScore: Math.max(progress.bestScore || 0, finalScore),
-        });
-        setDone(true);
-      } else {
-        setI((v) => v + 1);
-        setPicked(null);
-      }
-    }, 900);
+  const answered = (ok) => {
+    review(q.word, ok);
+    const s = ok ? score + 1 : score;
+    setScore(s);
+    if (i + 1 >= questions.length) {
+      update((prev) => ({
+        ...prev,
+        quizzes: (prev.quizzes || 0) + 1,
+        bestScore: Math.max(prev.bestScore || 0, s),
+      }));
+      setDone(true);
+    } else {
+      setI(i + 1);
+    }
   };
 
-  const restart = () => { setQuestions(makeQuestions()); setI(0); setPicked(null); setScore(0); setDone(false); };
+  const restart = () => { setQuestions(makeQuestions()); setI(0); setScore(0); setDone(false); };
 
   if (done) {
     return (
@@ -283,31 +383,143 @@ function Quiz({ progress, onSave }) {
   return (
     <>
       <div className="quiz-progress">Вопрос {i + 1} из {questions.length} · очки: {score}</div>
-      <div className="quiz-q" onClick={() => speak(q.word.kk)}>{q.word.kk} 🔊</div>
-      <div className="quiz-sub">[{q.word.tr}]</div>
-      {q.options.map((opt) => {
-        let cls = "quiz-opt";
-        if (picked) {
-          if (opt.ru === q.word.ru) cls += " correct";
-          else if (opt.ru === picked.ru) cls += " wrong";
-        }
-        return (
-          <button key={opt.kk + opt.ru} className={cls} onClick={() => pick(opt)}>{opt.ru}</button>
-        );
-      })}
-      <p style={{ color: "var(--muted)", fontSize: 13, textAlign: "center", marginTop: 10 }}>
-        Выбери правильный перевод казахской фразы.
-      </p>
+      <div className="q-type">{Q_LABEL[q.type]}</div>
+      {q.type === "assemble"
+        ? <AssembleQ key={i} q={q} onAnswer={answered} />
+        : <ChoiceQ key={i} q={q} onAnswer={answered} />}
     </>
   );
 }
 
+// Вопрос с вариантами: kk→ru, ru→kk, аудирование
+function ChoiceQ({ q, onAnswer }) {
+  const [picked, setPicked] = useState(null);
+
+  useEffect(() => {
+    if (q.type === "listen") speak(q.word.kk);
+  }, [q]);
+
+  const isCorrect = (o) => o.kk === q.word.kk && o.ru === q.word.ru;
+
+  const pick = (opt) => {
+    if (picked) return;
+    setPicked(opt);
+    const ok = isCorrect(opt);
+    if (q.type === "ru2kk" && ok) speak(q.word.kk);
+    setTimeout(() => onAnswer(ok), 900);
+  };
+
+  return (
+    <>
+      {q.type === "kk2ru" && (
+        <>
+          <div className="quiz-q" onClick={() => speak(q.word.kk)}>{q.word.kk} 🔊</div>
+          <div className="quiz-sub">[{q.word.tr}]</div>
+        </>
+      )}
+      {q.type === "ru2kk" && <div className="quiz-q" style={{ fontSize: 22 }}>{q.word.ru}</div>}
+      {q.type === "listen" && (
+        <>
+          <button className="listen-btn" onClick={() => speak(q.word.kk)}>🔊</button>
+          <div className="quiz-sub">нажми, чтобы прослушать ещё раз</div>
+        </>
+      )}
+
+      {q.options.map((opt) => {
+        let cls = "quiz-opt";
+        if (picked) {
+          if (isCorrect(opt)) cls += " correct";
+          else if (opt === picked) cls += " wrong";
+        }
+        return (
+          <button key={opt.kk + opt.ru} className={cls} onClick={() => pick(opt)}>
+            {q.type === "ru2kk" ? opt.kk : opt.ru}
+          </button>
+        );
+      })}
+      {picked && q.type === "listen" && (
+        <p style={{ textAlign: "center", color: "var(--accent)", fontStyle: "italic" }}>
+          {q.word.kk} · [{q.word.tr}]
+        </p>
+      )}
+    </>
+  );
+}
+
+// «Собери фразу из слов»
+function AssembleQ({ q, onAnswer }) {
+  const [picked, setPicked] = useState([]); // индексы в q.words
+  const [state, setState] = useState(null); // null | "ok" | "bad"
+  const target = q.word.kk.split(/\s+/).filter(Boolean).join(" ");
+
+  const pickWord = (idx) => {
+    if (state || picked.includes(idx)) return;
+    const next = [...picked, idx];
+    setPicked(next);
+    if (next.length === q.words.length) {
+      const answer = next.map((j) => q.words[j]).join(" ");
+      const ok = answer === target;
+      setState(ok ? "ok" : "bad");
+      if (ok) speak(q.word.kk);
+      setTimeout(() => onAnswer(ok), ok ? 1200 : 2000);
+    }
+  };
+
+  const unpick = (pos) => {
+    if (state) return;
+    setPicked(picked.filter((_, j) => j !== pos));
+  };
+
+  return (
+    <>
+      <div className="quiz-q" style={{ fontSize: 20 }}>{q.word.ru}</div>
+      <div className={"assemble-line" + (state === "ok" ? " assemble-ok" : state === "bad" ? " assemble-bad" : "")}>
+        {picked.map((idx, pos) => (
+          <button key={idx} className="word-chip" onClick={() => unpick(pos)}>{q.words[idx]}</button>
+        ))}
+        {!picked.length && <span style={{ color: "var(--muted)", fontSize: 14, alignSelf: "center" }}>Нажимай на слова по порядку</span>}
+      </div>
+      <div className="word-bank">
+        {q.words.map((w, idx) => (
+          <button key={idx} className="word-chip" disabled={picked.includes(idx)} onClick={() => pickWord(idx)}>
+            {w}
+          </button>
+        ))}
+      </div>
+      {state === "bad" && (
+        <p style={{ textAlign: "center", color: "var(--bad)" }}>
+          Правильно: <span style={{ color: "var(--text)" }}>{q.word.kk}</span>
+        </p>
+      )}
+      {state === "ok" && <p style={{ textAlign: "center", color: "var(--good)" }}>Дұрыс! Верно ✓</p>}
+    </>
+  );
+}
+
+// ────────────────────────── Прогресс ──────────────────────────
+
 function Stats({ progress, doneCount }) {
   const total = lessons.length;
   const pct = Math.round((doneCount / total) * 100);
+  const streak = displayStreak(progress.streak);
+  const today = doneToday(progress.streak);
+  const goal = progress.goal || 10;
+  const due = dueCount(progress.srs);
+  const learned = learnedCount(progress.srs);
+  const inWork = Object.keys(progress.srs).length;
+
   return (
     <>
       <div className="section-title">Твой прогресс</div>
+      <div className="stat-row" style={{ marginBottom: 12 }}>
+        <div className="stat"><div className="num">🔥 {streak}</div><div className="lbl">{plural(streak, "день", "дня", "дней")} подряд</div></div>
+        <div className="stat"><div className="num">{today}/{goal}</div><div className="lbl">фраз сегодня</div></div>
+      </div>
+      <div className="stat-row" style={{ marginBottom: 12 }}>
+        <div className="stat"><div className="num">{learned}</div><div className="lbl">фраз выучено</div></div>
+        <div className="stat"><div className="num">{inWork}</div><div className="lbl">фраз в работе</div></div>
+        <div className="stat"><div className="num">{due}</div><div className="lbl">к повторению</div></div>
+      </div>
       <div className="stat-row" style={{ marginBottom: 12 }}>
         <div className="stat"><div className="num">{doneCount}</div><div className="lbl">уроков пройдено</div></div>
         <div className="stat"><div className="num">{pct}%</div><div className="lbl">курса</div></div>
@@ -318,7 +530,7 @@ function Stats({ progress, doneCount }) {
       </div>
       <div className="hero" style={{ marginTop: 16 }}>
         <h2>Так держать! 🚀</h2>
-        <p>Проходи по одному уроку в день и закрепляй фразы в практике. Регулярность важнее объёма.</p>
+        <p>Проходи по одному уроку в день и закрепляй фразы в практике. Регулярность важнее объёма — фразы возвращаются ровно тогда, когда мозг готов их забыть.</p>
         <div className="progress-bar"><div style={{ width: `${pct}%` }} /></div>
       </div>
     </>
