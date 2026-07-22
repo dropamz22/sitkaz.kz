@@ -241,3 +241,30 @@ body { overscroll-behavior-y: none; }
 
 /* Завершение практики */
 .practice-done { text-align: center; padding: 46px 10px; }
+
+/* Заблокированные уроки */
+.card.locked { opacity: .45; cursor: default; }
+.card.locked:hover { border-color: #223243; }
+.card.locked:active { transform: none; }
+
+/* Диалог-чат */
+.dialog-intro {
+  color: var(--muted); font-size: 14px; line-height: 1.5;
+  background: var(--card); border: 1px solid #223243; border-radius: 12px;
+  padding: 12px 14px; margin-bottom: 14px;
+}
+.chat { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.bubble {
+  max-width: 86%; padding: 12px 14px; border-radius: 16px;
+  font-size: 15px; line-height: 1.45; cursor: pointer;
+}
+.bubble .ru-sub { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.bubble.bot {
+  background: var(--card); border: 1px solid #223243;
+  align-self: flex-start; border-bottom-left-radius: 6px;
+}
+.bubble.me {
+  background: rgba(0,194,184,.14); border: 1px solid rgba(0,194,184,.5);
+  align-self: flex-end; border-bottom-right-radius: 6px;
+}
+.bubble.me .ru-sub { color: rgba(234,242,245,.55); }

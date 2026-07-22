@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { modules, lessons, lessonsByModule, allPhrases } from "../data/course";
+import { dialogForLesson } from "../data/dialogs";
 import {
   phraseId, shuffle, gradeSrs, dueCount, learnedCount,
   buildDeck, registerActivity, displayStreak, doneToday,
@@ -9,7 +10,7 @@ import {
 
 const STORE_KEY = "sitkaz_progress_v3";
 const EMPTY = {
-  done: {}, quizzes: 0, bestScore: 0,
+  done: {}, quizzes: 0, bestScore: 0, dialogs: {},
   srs: {}, streak: { count: 0, last: null, todayCount: 0 }, goal: 10,
 };
 
@@ -74,6 +75,14 @@ export default function App() {
     update((prev) => (prev.done[lessonId] ? prev : { ...prev, done: { ...prev.done, [lessonId]: true } }));
   };
 
+  const markDialogDone = (lessonId) => {
+    update((prev) =>
+      prev.dialogs && prev.dialogs[lessonId]
+        ? prev
+        : { ...prev, dialogs: { ...(prev.dialogs || {}), [lessonId]: true }, streak: registerActivity(prev.streak) }
+    );
+  };
+
   const openLesson = (l) => { setActiveLesson(l); setTab("lesson"); };
   const doneCountN = Object.keys(progress.done).length;
 
@@ -92,10 +101,14 @@ export default function App() {
       )}
       {tab === "lesson" && activeLesson && (
         <LessonView
+          key={activeLesson.id}
           lesson={activeLesson}
           done={!!progress.done[activeLesson.id]}
-          onDone={() => markDone(activeLesson.id)}
-          onPractice={() => setTab("practice")}
+          dialogDone={!!(progress.dialogs && progress.dialogs[activeLesson.id])}
+          review={review}
+          onPassed={() => markDone(activeLesson.id)}
+          onDialogComplete={() => markDialogDone(activeLesson.id)}
+          onOpen={openLesson}
           onBack={() => setTab("course")}
         />
       )}
@@ -172,18 +185,25 @@ function Course({ progress, doneCount, onOpen, goPractice }) {
               <div className="module-count">{mDone}/{items.length}</div>
             </div>
             <div className="grid" style={{ marginTop: 10 }}>
-              {items.map((l) => (
-                <div key={l.id} className="card" onClick={() => onOpen(l)}>
-                  <div className="lesson-row">
-                    <div className="lesson-icon" style={{ color: m.color }}>{progress.done[l.id] ? "✓" : l.id}</div>
-                    <div className="lesson-meta">
-                      <h3>{l.title}</h3>
-                      <p>{l.ru}</p>
+              {items.map((l) => {
+                const unlocked = l.id === 1 || progress.done[l.id] || progress.done[l.id - 1];
+                return (
+                  <div key={l.id} className={"card" + (unlocked ? "" : " locked")} onClick={() => unlocked && onOpen(l)}>
+                    <div className="lesson-row">
+                      <div className="lesson-icon" style={{ color: m.color }}>
+                        {progress.done[l.id] ? "✓" : unlocked ? l.id : "🔒"}
+                      </div>
+                      <div className="lesson-meta">
+                        <h3>{l.title}</h3>
+                        <p>{l.ru}</p>
+                      </div>
+                      <div className="lesson-count">
+                        {unlocked ? `${l.phrases.length} фраз →` : "сдай предыдущий"}
+                      </div>
                     </div>
-                    <div className="lesson-count">{l.phrases.length} фраз →</div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         );
@@ -198,13 +218,40 @@ function Course({ progress, doneCount, onOpen, goPractice }) {
 
 // ────────────────────────── Урок ──────────────────────────
 
-function LessonView({ lesson, done, onDone, onPractice, onBack }) {
+function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComplete, onOpen, onBack }) {
   const mod = modules.find((m) => m.id === lesson.module);
+  const dialog = dialogForLesson(lesson.id);
+  const nextLesson = lessons.find((l) => l.id === lesson.id + 1) || null;
+  const [stage, setStage] = useState("learn"); // learn | dialog | quiz
+
+  if (stage === "dialog" && dialog) {
+    return (
+      <DialogView
+        dialog={dialog}
+        onBack={() => setStage("learn")}
+        onComplete={onDialogComplete}
+      />
+    );
+  }
+
+  if (stage === "quiz") {
+    return (
+      <LessonQuiz
+        lesson={lesson}
+        review={review}
+        onPassed={onPassed}
+        onBack={() => setStage("learn")}
+        nextLesson={nextLesson}
+        onOpen={onOpen}
+      />
+    );
+  }
+
   return (
     <>
       <button className="back" onClick={onBack}>← К списку уроков</button>
       <div className="section-title" style={{ color: mod?.color }}>
-        Урок {lesson.id} · {mod?.title}
+        Урок {lesson.id} · {mod?.title} {done && "· пройден ✓"}
       </div>
       <h2 style={{ marginBottom: 4 }}>{lesson.title}</h2>
       <p style={{ color: "var(--muted)", marginBottom: 16 }}>{lesson.ru}</p>
@@ -231,11 +278,188 @@ function LessonView({ lesson, done, onDone, onPractice, onBack }) {
       ))}
 
       <div className="flash-controls" style={{ marginTop: 16 }}>
-        <button className="btn ghost" onClick={onPractice}>🃏 Практика</button>
-        <button className={done ? "btn ghost" : "btn good"} onClick={onDone}>
-          {done ? "Урок пройден ✓" : "Отметить пройденным"}
+        {dialog && (
+          <button className="btn ghost" onClick={() => setStage("dialog")}>
+            💬 Диалог {dialogDone ? "✓" : ""}
+          </button>
+        )}
+        <button className={done ? "btn ghost" : "btn primary"} onClick={() => setStage("quiz")}>
+          {done ? "Пересдать урок" : "✍️ Сдать урок"}
         </button>
       </div>
+      {!done && (
+        <p style={{ color: "var(--muted)", fontSize: 12, textAlign: "center", marginTop: 10 }}>
+          Изучи фразы{dialog ? ", пройди диалог" : ""} и сдай мини-экзамен, чтобы открыть следующий урок.
+        </p>
+      )}
+    </>
+  );
+}
+
+// ─────────── Мини-экзамен урока (открывает следующий) ───────────
+
+function makeLessonQuestions(lesson) {
+  const pool = shuffle(lesson.phrases).slice(0, 5);
+  return pool.map((p) => {
+    const w = { ...p, lesson: lesson.title, lessonId: lesson.id };
+    const words = w.kk.split(/\s+/).filter(Boolean);
+    const types = ["kk2ru", "ru2kk"];
+    if (words.length >= 3 && words.length <= 8) types.push("assemble");
+    const type = types[Math.floor(Math.random() * types.length)];
+    if (type === "assemble") return { type, word: w, words: shuffle(words) };
+    const wrong = shuffle(allPhrases.filter((x) => x.ru !== w.ru)).slice(0, 3);
+    return { type, word: w, options: shuffle([w, ...wrong]) };
+  });
+}
+
+function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen }) {
+  const [questions, setQuestions] = useState(() => makeLessonQuestions(lesson));
+  const [i, setI] = useState(0);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+  const need = Math.max(1, Math.ceil(questions.length * 0.8));
+  const q = questions[i];
+
+  const answered = (ok) => {
+    review(q.word, ok);
+    const s = ok ? score + 1 : score;
+    setScore(s);
+    if (i + 1 >= questions.length) {
+      if (s >= need) onPassed();
+      setDone(true);
+    } else {
+      setI(i + 1);
+    }
+  };
+
+  const restart = () => {
+    setQuestions(makeLessonQuestions(lesson));
+    setI(0); setScore(0); setDone(false);
+  };
+
+  if (done) {
+    const passed = score >= need;
+    return (
+      <div className="result">
+        <div style={{ fontSize: 44 }}>{passed ? "🎉" : "💪"}</div>
+        <div className="score">{score} / {questions.length}</div>
+        {passed ? (
+          <>
+            <p>Урок «{lesson.title}» сдан!{nextLesson ? " Следующий урок открыт." : " Это был последний урок курса!"}</p>
+            {nextLesson ? (
+              <button className="btn primary" onClick={() => onOpen(nextLesson)}>
+                Урок {nextLesson.id}: {nextLesson.title} →
+              </button>
+            ) : (
+              <button className="btn primary" onClick={onBack}>К списку уроков</button>
+            )}
+          </>
+        ) : (
+          <>
+            <p>Нужно {need} из {questions.length}. Повтори фразы и попробуй ещё раз.</p>
+            <div className="flash-controls">
+              <button className="btn ghost" onClick={onBack}>К фразам</button>
+              <button className="btn primary" onClick={restart}>Ещё раз</button>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <button className="back" onClick={onBack}>← К уроку</button>
+      <div className="quiz-progress">Экзамен · вопрос {i + 1} из {questions.length} · верно: {score}</div>
+      <div className="q-type">{Q_LABEL[q.type]}</div>
+      {q.type === "assemble"
+        ? <AssembleQ key={i} q={q} onAnswer={answered} />
+        : <ChoiceQ key={i} q={q} onAnswer={answered} />}
+    </>
+  );
+}
+
+// ─────────────── Диалог-сценка (экран-чат) ───────────────
+
+function DialogView({ dialog, onBack, onComplete }) {
+  const [step, setStep] = useState(0);
+  const [history, setHistory] = useState([]);
+  const [wrongIdx, setWrongIdx] = useState(null);
+  const finished = step >= dialog.steps.length;
+
+  useEffect(() => {
+    if (finished) onComplete();
+  }, [finished]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const pick = (opt, idx) => {
+    if (opt.ok) {
+      speak(opt.kk);
+      setHistory((h) => [...h, opt]);
+      setWrongIdx(null);
+      setStep((s) => s + 1);
+    } else {
+      setWrongIdx(idx);
+    }
+  };
+
+  const current = finished ? null : dialog.steps[step];
+
+  return (
+    <>
+      <button className="back" onClick={onBack}>← К уроку</button>
+      <div className="section-title">💬 Диалог · {dialog.title}</div>
+      {step === 0 && !finished && <p className="dialog-intro">{dialog.intro}</p>}
+
+      <div className="chat">
+        {dialog.steps.slice(0, step).map((s, si) => (
+          <div key={si} style={{ display: "contents" }}>
+            <div className="bubble bot" onClick={() => speak(s.bot.kk)}>
+              {s.bot.kk}
+              <div className="ru-sub">{s.bot.ru}</div>
+            </div>
+            {history[si] && (
+              <div className="bubble me" onClick={() => speak(history[si].kk)}>
+                {history[si].kk}
+                <div className="ru-sub">{history[si].ru}</div>
+              </div>
+            )}
+          </div>
+        ))}
+        {current && (
+          <div className="bubble bot" onClick={() => speak(current.bot.kk)}>
+            {current.bot.kk}
+            <div className="ru-sub">{current.bot.ru}</div>
+          </div>
+        )}
+      </div>
+
+      {finished ? (
+        <div className="practice-done" style={{ padding: "20px 10px" }}>
+          <div style={{ fontSize: 40 }}>🎉</div>
+          <h2 style={{ margin: "10px 0 6px" }}>Диалог пройден!</h2>
+          <p style={{ color: "var(--muted)", marginBottom: 18 }}>Ты справился со сценкой «{dialog.title}».</p>
+          <button className="btn primary" style={{ maxWidth: 260 }} onClick={onBack}>Вернуться к уроку</button>
+        </div>
+      ) : (
+        <>
+          <div className="section-title" style={{ marginTop: 6 }}>Твой ответ:</div>
+          {current.options.map((opt, idx) => (
+            <button
+              key={idx}
+              className={"quiz-opt" + (wrongIdx === idx ? " wrong" : "")}
+              onClick={() => pick(opt, idx)}
+            >
+              {opt.kk}
+              <div style={{ color: "var(--muted)", fontSize: 13, marginTop: 3 }}>{opt.ru}</div>
+            </button>
+          ))}
+          {wrongIdx !== null && (
+            <p style={{ textAlign: "center", color: "var(--bad)", fontSize: 13 }}>
+              Не то — собеседник тебя не понял. Попробуй другой вариант.
+            </p>
+          )}
+        </>
+      )}
     </>
   );
 }
