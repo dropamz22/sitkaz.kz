@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { modules, lessons, lessonsByModule, allPhrases } from "../data/course";
 import { dialogForLesson } from "../data/dialogs";
 import {
   phraseId, shuffle, gradeSrs, dueCount, learnedCount,
   buildDeck, registerActivity, displayStreak, doneToday,
 } from "../lib/srs";
+import { XP, levelInfo, ACHIEVEMENTS } from "../lib/game";
 
 const STORE_KEY = "sitkaz_progress_v3";
 const EMPTY = {
-  done: {}, quizzes: 0, bestScore: 0, dialogs: {},
+  done: {}, quizzes: 0, bestScore: 0, dialogs: {}, xp: 0, achv: {},
   srs: {}, streak: { count: 0, last: null, todayCount: 0 }, goal: 10,
 };
 
@@ -62,38 +63,101 @@ export default function App() {
     });
   };
 
-  // Одна оценка фразы: обновляет SRS + стрик/цель
+  // Одна оценка фразы: обновляет SRS + стрик/цель + XP
   const review = (phrase, known) => {
     update((prev) => ({
       ...prev,
+      xp: (prev.xp || 0) + (known ? XP.correct : XP.wrong),
       srs: gradeSrs(prev.srs, phraseId(phrase), known),
       streak: registerActivity(prev.streak),
     }));
   };
 
   const markDone = (lessonId) => {
-    update((prev) => (prev.done[lessonId] ? prev : { ...prev, done: { ...prev.done, [lessonId]: true } }));
+    update((prev) =>
+      prev.done[lessonId]
+        ? prev
+        : { ...prev, done: { ...prev.done, [lessonId]: true }, xp: (prev.xp || 0) + XP.lesson }
+    );
   };
 
   const markDialogDone = (lessonId) => {
     update((prev) =>
       prev.dialogs && prev.dialogs[lessonId]
         ? prev
-        : { ...prev, dialogs: { ...(prev.dialogs || {}), [lessonId]: true }, streak: registerActivity(prev.streak) }
+        : {
+            ...prev,
+            dialogs: { ...(prev.dialogs || {}), [lessonId]: true },
+            xp: (prev.xp || 0) + XP.dialog,
+            streak: registerActivity(prev.streak),
+          }
     );
   };
+
+  // ── Праздники: тосты + конфетти ──
+  const [toasts, setToasts] = useState([]);
+  const [confetti, setConfetti] = useState(false);
+  const confettiTimer = useRef(null);
+  const celebrate = (msg) => {
+    const id = Math.random();
+    setToasts((t) => [...t, { id, msg }]);
+    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3500);
+    setConfetti(true);
+    if (confettiTimer.current) clearTimeout(confettiTimer.current);
+    confettiTimer.current = setTimeout(() => setConfetti(false), 2600);
+  };
+
+  // Следим за прогрессом: новые ачивки и выполнение цели дня
+  const prevRef = useRef(EMPTY);
+  const hydratedRef = useRef(false);
+  useEffect(() => {
+    const prev = prevRef.current;
+    prevRef.current = progress;
+    const earned = ACHIEVEMENTS.filter((a) => !(progress.achv || {})[a.id] && a.test(progress));
+    if (!hydratedRef.current) {
+      // первая загрузка: засчитать уже выполненные ачивки без фанфар
+      hydratedRef.current = true;
+      if (earned.length) {
+        update((p) => ({
+          ...p,
+          achv: { ...(p.achv || {}), ...Object.fromEntries(earned.map((a) => [a.id, true])) },
+        }));
+      }
+      return;
+    }
+    const goal = progress.goal || 10;
+    if (doneToday(prev.streak) < goal && doneToday(progress.streak) >= goal) {
+      celebrate("🎯 Цель дня выполнена!");
+    }
+    const prevLvl = levelInfo(prev.xp || 0).num;
+    const curLvl = levelInfo(progress.xp || 0).num;
+    if (curLvl > prevLvl) celebrate(`⭐ Новый уровень: ${levelInfo(progress.xp).title}!`);
+    if (earned.length) {
+      update((p) => ({
+        ...p,
+        achv: { ...(p.achv || {}), ...Object.fromEntries(earned.map((a) => [a.id, true])) },
+      }));
+      earned.forEach((a) => celebrate("🏆 " + a.title));
+    }
+  }, [progress]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openLesson = (l) => { setActiveLesson(l); setTab("lesson"); };
   const doneCountN = Object.keys(progress.done).length;
 
   return (
     <div className="app">
+      {confetti && <Confetti />}
+      <div className="toasts">
+        {toasts.map((t) => <div key={t.id} className="toast">{t.msg}</div>)}
+      </div>
+
       <div className="brand">
         <div className="logo">Қ</div>
         <div>
           <h1>sitkaz.kz</h1>
           <span>Ситуативный казахский</span>
         </div>
+        <div className="brand-xp">⭐ {levelInfo(progress.xp || 0).title}</div>
       </div>
 
       {tab === "course" && (
@@ -156,6 +220,7 @@ function Course({ progress, doneCount, onOpen, goPractice }) {
           <div className="chip">🔥 <b>{streak}</b> {plural(streak, "день", "дня", "дней")}</div>
           <div className="chip">🎯 сегодня <b>{today}</b>/{goal}</div>
           <div className="chip">🔁 повторить <b>{due}</b></div>
+          <div className="chip">⭐ <b>{progress.xp || 0}</b> XP</div>
         </div>
         {today < goal ? (
           <div className="progress-bar" style={{ marginTop: 12 }}>
@@ -732,9 +797,18 @@ function Stats({ progress, doneCount }) {
   const learned = learnedCount(progress.srs);
   const inWork = Object.keys(progress.srs).length;
 
+  const lv = levelInfo(progress.xp || 0);
+
   return (
     <>
       <div className="section-title">Твой прогресс</div>
+
+      <div className="hero" style={{ marginBottom: 12 }}>
+        <h2>⭐ {lv.title} <span style={{ color: "var(--muted)", fontWeight: 400, fontSize: 15 }}>· {lv.ru} · уровень {lv.num}</span></h2>
+        <p>{progress.xp || 0} XP{lv.next ? ` — до звания «${lv.next.title}» ещё ${lv.toNext} XP` : " — максимальный уровень!"}</p>
+        <div className="progress-bar"><div style={{ width: `${lv.pct}%` }} /></div>
+      </div>
+
       <div className="stat-row" style={{ marginBottom: 12 }}>
         <div className="stat"><div className="num">🔥 {streak}</div><div className="lbl">{plural(streak, "день", "дня", "дней")} подряд</div></div>
         <div className="stat"><div className="num">{today}/{goal}</div><div className="lbl">фраз сегодня</div></div>
@@ -752,11 +826,46 @@ function Stats({ progress, doneCount }) {
         <div className="stat"><div className="num">{progress.quizzes || 0}</div><div className="lbl">квизов пройдено</div></div>
         <div className="stat"><div className="num">{progress.bestScore || 0}/10</div><div className="lbl">лучший результат</div></div>
       </div>
+      <div className="section-title" style={{ marginTop: 18 }}>Достижения · {Object.keys(progress.achv || {}).length}/{ACHIEVEMENTS.length}</div>
+      <div className="achv-grid">
+        {ACHIEVEMENTS.map((a) => {
+          const got = !!(progress.achv && progress.achv[a.id]);
+          return (
+            <div key={a.id} className={"achv" + (got ? " got" : "")}>
+              <div className="achv-ic">{got ? "🏆" : "🔒"}</div>
+              <div className="achv-t">{a.title}</div>
+            </div>
+          );
+        })}
+      </div>
+
       <div className="hero" style={{ marginTop: 16 }}>
         <h2>Так держать! 🚀</h2>
         <p>Проходи по одному уроку в день и закрепляй фразы в практике. Регулярность важнее объёма — фразы возвращаются ровно тогда, когда мозг готов их забыть.</p>
         <div className="progress-bar"><div style={{ width: `${pct}%` }} /></div>
       </div>
     </>
+  );
+}
+
+// ────────────────────────── Конфетти ──────────────────────────
+
+const CONFETTI_COLORS = ["#00c2b8", "#ffd45e", "#f0a848", "#c084fc", "#34d399", "#f87171"];
+
+function Confetti() {
+  return (
+    <div className="confetti">
+      {Array.from({ length: 44 }, (_, i) => (
+        <span
+          key={i}
+          style={{
+            left: `${Math.random() * 100}%`,
+            background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+            animationDelay: `${Math.random() * 0.6}s`,
+            animationDuration: `${1.7 + Math.random() * 1.3}s`,
+          }}
+        />
+      ))}
+    </div>
   );
 }
