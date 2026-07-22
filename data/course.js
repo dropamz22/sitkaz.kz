@@ -14,7 +14,7 @@ export const modules = [
     num: "I",
     title: "АДАМ",
     subtitle: "Человек",
-    color: "#00c2b8",
+    color: "#43ded4",
     desc: "Семья, родственники, род и жуз, характер и облик человека.",
   },
   {
@@ -22,7 +22,7 @@ export const modules = [
     num: "II",
     title: "ХАЛЫҚ",
     subtitle: "Народ",
-    color: "#f0a848",
+    color: "#ebc24e",
     desc: "Национальный характер, взгляды и ценности, страна, история, общество.",
   },
   {
@@ -30,7 +30,7 @@ export const modules = [
     num: "III",
     title: "МӘДЕНИЕТ",
     subtitle: "Культура",
-    color: "#c084fc",
+    color: "#c1c9da",
     desc: "Этикет, обычаи и традиции, праздники, гостеприимство, искусство.",
   },
 ];

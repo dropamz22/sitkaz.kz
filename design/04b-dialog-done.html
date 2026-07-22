@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="dark" lang="kk"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>sitkaz.kz - Диалог пройден</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Injection of the provided Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-tertiary-fixed-variant": "#3f4754",
+                "on-primary": "#003734",
+                "surface-container": "#1e2024",
+                "on-tertiary-fixed": "#141c28",
+                "surface-variant": "#333539",
+                "on-primary-container": "#004a46",
+                "error-container": "#93000a",
+                "outline-variant": "#3c4948",
+                "surface-container-highest": "#333539",
+                "on-surface": "#e2e2e8",
+                "on-primary-fixed": "#00201e",
+                "on-secondary": "#3d2e00",
+                "secondary": "#ebc24e",
+                "primary-container": "#00c2b8",
+                "secondary-fixed": "#ffdf91",
+                "error": "#ffb4ab",
+                "secondary-fixed-dim": "#ebc24e",
+                "primary-fixed-dim": "#40dcd1",
+                "surface": "#111317",
+                "on-tertiary-container": "#3a424f",
+                "tertiary-container": "#a6aebe",
+                "surface-container-low": "#1a1c20",
+                "outline": "#859491",
+                "surface-container-lowest": "#0c0e12",
+                "background": "#111317",
+                "on-secondary-container": "#352800",
+                "inverse-primary": "#006a64",
+                "on-error": "#690005",
+                "tertiary-fixed-dim": "#bfc7d7",
+                "surface-container-high": "#282a2e",
+                "on-secondary-fixed": "#241a00",
+                "on-error-container": "#ffdad6",
+                "surface-tint": "#40dcd1",
+                "on-surface-variant": "#bbcac7",
+                "inverse-on-surface": "#2f3035",
+                "surface-dim": "#111317",
+                "secondary-container": "#b08c19",
+                "surface-bright": "#37393e",
+                "primary": "#43ded4",
+                "on-background": "#e2e2e8",
+                "tertiary": "#c1c9da",
+                "on-tertiary": "#29313d",
+                "on-primary-fixed-variant": "#00504b",
+                "tertiary-fixed": "#dbe3f3",
+                "primary-fixed": "#65f8ed",
+                "on-secondary-fixed-variant": "#594400",
+                "inverse-surface": "#e2e2e8"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "stack-lg": "32px",
+                "margin-desktop": "40px",
+                "stack-md": "16px",
+                "gutter": "24px",
+                "stack-sm": "8px",
+                "container-max": "1200px",
+                "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                "display-lg-mobile": ["Plus Jakarta Sans"],
+                "display-lg": ["Plus Jakarta Sans"],
+                "label-mono": ["JetBrains Mono"],
+                "translation-sub": ["Plus Jakarta Sans"],
+                "body-md": ["Plus Jakarta Sans"],
+                "kazakh-prompt": ["Plus Jakarta Sans"],
+                "headline-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                "translation-sub": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                "kazakh-prompt": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #111317;
+            color: #e2e2e8;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
+        }
+        .ornament-border {
+            mask-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0C20 11.0457 11.0457 20 0 20C11.0457 20 20 28.9543 20 40C20 28.9543 28.9543 20 40 20C28.9543 20 20 11.0457 20 0Z' fill='white'/%3E%3C/svg%3E");
+            mask-size: 20px;
+            mask-repeat: repeat-x;
+        }
+        .gold-star-glow {
+            filter: drop-shadow(0 0 15px rgba(235, 194, 78, 0.4));
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        @keyframes confetti-fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            z-index: 10;
+        }
+        .glass-panel {
+            background: rgba(30, 32, 36, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(60, 73, 72, 0.3);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="flex flex-col h-[844px] w-[390px] mx-auto overflow-hidden relative shadow-2xl">
+<!-- Top Navigation Bar (The Anchor) -->
+<header class="fixed top-0 z-50 flex justify-between items-center px-4 h-16 w-full bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-[0_0_20px_rgba(64,220,209,0.1)]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 0;">qr_code_2</span>
+<span class="font-display-lg-mobile text-[20px] bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">sitkaz.kz</span>
+</div>
+<div class="bg-surface-container-high px-3 py-1 rounded-full flex items-center gap-2 border border-outline-variant/50">
+<span class="text-secondary text-[14px]">⭐ Білгір</span>
+</div>
+</header>
+<!-- Confetti Canvas -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden z-10" id="confetti-container"></div>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center px-6 relative z-20 pt-16 pb-20">
+<!-- Atmospheric Background Element -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-20 pointer-events-none">
+</div>
+<div class="flex flex-col items-center text-center space-y-stack-md w-full">
+<!-- Celebratory Icon -->
+<div class="relative mb-4">
+<div class="text-[80px] animate-float relative z-20">🎉</div>
+<div class="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150"></div>
+</div>
+<!-- Headline Section -->
+<div class="space-y-2">
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-on-surface">Диалог пройден!</h1>
+<p class="font-body-md text-on-surface-variant max-w-[280px]">Ты справился со сценкой «Знакомство»</p>
+</div>
+<!-- Kazakh Ornament Divider -->
+<div class="flex items-center w-full max-w-[200px] py-4">
+<div class="flex-grow h-[1px] bg-outline-variant"></div>
+<div class="mx-3 opacity-40">
+<svg class="text-secondary" fill="none" height="24" viewbox="0 0 24 24" width="24">
+<path d="M12 2C12 7.52285 7.52285 12 2 12C7.52285 12 12 16.4772 12 22C12 16.4772 16.4772 12 22 12C16.4772 12 12 7.52285 12 2Z" fill="currentColor"></path>
+</svg>
+</div>
+<div class="flex-grow h-[1px] bg-outline-variant"></div>
+</div>
+<!-- Reward Bento Card -->
+<div class="glass-panel w-full rounded-2xl p-6 relative overflow-hidden group">
+<!-- Ornament Accent Corners -->
+<div class="absolute top-0 left-0 w-8 h-8 opacity-20 group-hover:opacity-40 transition-opacity">
+<svg class="fill-secondary" viewbox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 2c0 5.52-4.48 10-10 10 5.52 0 10 4.48 10 10 0-5.52 4.48-10 10-10-5.52 0-10-4.48-10-10z"></path></svg>
+</div>
+<div class="absolute bottom-0 right-0 w-8 h-8 opacity-20 rotate-180">
+<svg class="fill-secondary" viewbox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"></path><path d="M12 2c0 5.52-4.48 10-10 10 5.52 0 10 4.48 10 10 0-5.52 4.48-10 10-10-5.52 0-10-4.48-10-10z"></path></svg>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[40px] text-secondary gold-star-glow" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="font-label-mono text-[32px] font-bold text-primary">+340 XP</span>
+</div>
+<div class="w-full bg-surface-variant h-1.5 rounded-full mt-4 overflow-hidden">
+<div class="h-full bg-primary shadow-[0_0_8px_#43ded4] w-3/4 transition-all duration-1000 ease-out"></div>
+</div>
+<span class="font-label-mono text-label-mono text-on-surface-variant uppercase mt-1">Новый уровень: 12</span>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full mt-8 h-14 bg-primary text-on-primary font-kazakh-prompt text-kazakh-prompt rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-[0_0_32px_rgba(67,222,212,0.15)] group">
+                Вернуться к уроку
+                <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+</main>
+<!-- Bottom Navigation Bar (The Anchor) -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20 bg-surface-container-high/90 backdrop-blur-lg border-t border-outline-variant/20 shadow-[0_-4px_24px_rgba(0,0,0,0.4)] rounded-t-xl">
+<div class="flex flex-col items-center justify-center text-primary bg-primary-container/20 rounded-xl px-3 py-1 active:scale-90 transition-all duration-200">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-mono text-label-mono">Курс</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all active:scale-90">
+<span class="material-symbols-outlined">style</span>
+<span class="font-label-mono text-label-mono">Практика</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all active:scale-90">
+<span class="material-symbols-outlined">check_circle</span>
+<span class="font-label-mono text-label-mono">Квиз</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all active:scale-90">
+<span class="material-symbols-outlined">bar_chart</span>
+<span class="font-label-mono text-label-mono">Прогресс</span>
+</div>
+</nav>
+<script>
+        // Micro-interaction: Confetti generation
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#43ded4', '#ebc24e', '#ffffff', '#00c2b8'];
+
+            for (let i = 0; i < 40; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+
+                // Random position and delay
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-5vh';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animation = `confetti-fall ${2 + Math.random() * 3}s linear forwards`;
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+
+                container.appendChild(confetti);
+
+                // Cleanup
+                setTimeout(() => {
+                    confetti.remove();
+                }, 6000);
+            }
+        }
+        // Trigger confetti on load
+        window.addEventListener('DOMContentLoaded', () => {
+            createConfetti();
+            // Repeat every few seconds for a continuous celebration effect
+            setInterval(createConfetti, 4000);
+        });
+        // Micro-interaction for feedback
+        document.querySelector('button').addEventListener('click', () => {
+            console.log('Returning to lesson...');
+        });
+    </script>
+</body></html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="dark" lang="kk"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>sitkaz.kz - Диалог</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..900&amp;family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#3f4754",
+                    "on-primary": "#003734",
+                    "surface-container": "#1e2024",
+                    "on-tertiary-fixed": "#141c28",
+                    "surface-variant": "#333539",
+                    "on-primary-container": "#004a46",
+                    "error-container": "#93000a",
+                    "outline-variant": "#3c4948",
+                    "surface-container-highest": "#333539",
+                    "on-surface": "#e2e2e8",
+                    "on-primary-fixed": "#00201e",
+                    "on-secondary": "#3d2e00",
+                    "secondary": "#ebc24e",
+                    "primary-container": "#00c2b8",
+                    "secondary-fixed": "#ffdf91",
+                    "error": "#ffb4ab",
+                    "secondary-fixed-dim": "#ebc24e",
+                    "primary-fixed-dim": "#40dcd1",
+                    "surface": "#111317",
+                    "on-tertiary-container": "#3a424f",
+                    "tertiary-container": "#a6aebe",
+                    "surface-container-low": "#1a1c20",
+                    "outline": "#859491",
+                    "surface-container-lowest": "#0c0e12",
+                    "background": "#111317",
+                    "on-secondary-container": "#352800",
+                    "inverse-primary": "#006a64",
+                    "on-error": "#690005",
+                    "tertiary-fixed-dim": "#bfc7d7",
+                    "surface-container-high": "#282a2e",
+                    "on-secondary-fixed": "#241a00",
+                    "on-error-container": "#ffdad6",
+                    "surface-tint": "#40dcd1",
+                    "on-surface-variant": "#bbcac7",
+                    "inverse-on-surface": "#2f3035",
+                    "surface-dim": "#111317",
+                    "secondary-container": "#b08c19",
+                    "surface-bright": "#37393e",
+                    "primary": "#43ded4",
+                    "on-background": "#e2e2e8",
+                    "tertiary": "#c1c9da",
+                    "on-tertiary": "#29313d",
+                    "on-primary-fixed-variant": "#00504b",
+                    "tertiary-fixed": "#dbe3f3",
+                    "primary-fixed": "#65f8ed",
+                    "on-secondary-fixed-variant": "#594400",
+                    "inverse-surface": "#e2e2e8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "32px",
+                    "margin-desktop": "40px",
+                    "stack-md": "16px",
+                    "gutter": "24px",
+                    "stack-sm": "8px",
+                    "container-max": "1200px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "display-lg-mobile": ["Plus Jakarta Sans"],
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "label-mono": ["JetBrains Mono"],
+                    "translation-sub": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "kazakh-prompt": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "translation-sub": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "kazakh-prompt": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ornament-border {
+            position: relative;
+        }
+        .ornament-border::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 16px;
+            height: 16px;
+            background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0H16V2H4V16H0V0Z' fill='%2343ded4' fill-opacity='0.2'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+        .glass-card {
+            background: rgba(30, 32, 36, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(133, 148, 145, 0.2);
+        }
+        .glass-primary {
+            background: rgba(0, 194, 184, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(67, 222, 212, 0.3);
+        }
+        body {
+            background-color: #111317;
+            color: #e2e2e8;
+            overflow-x: hidden;
+        }
+        .chat-container {
+            height: calc(100vh - 144px - 80px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary-container/30">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center px-4 h-16 w-full fixed top-0 z-50 bg-surface/80 dark:bg-surface/80 backdrop-blur-xl shadow-[0_0_20px_rgba(64,220,209,0.1)] border-b border-outline-variant/30">
+<div class="flex items-center gap-2">
+<button class="active:scale-95 transition-transform text-primary flex items-center">
+<span class="material-symbols-outlined">chevron_left</span>
+<span class="font-label-mono text-label-mono ml-1">← К уроку</span>
+</button>
+</div>
+<div class="absolute left-1/2 -translate-x-1/2">
+<span class="font-display-lg-mobile text-[20px] bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">sitkaz.kz</span>
+</div>
+<div class="flex items-center">
+<div class="bg-secondary-container/20 text-secondary px-3 py-1 rounded-full flex items-center gap-1 border border-secondary/20">
+<span class="text-[14px]">⭐</span>
+<span class="font-label-mono text-label-mono">Білгір</span>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="pt-20 pb-32 px-4 max-w-[390px] mx-auto min-h-screen">
+<!-- Header Info -->
+<div class="mb-6">
+<h1 class="font-headline-md text-headline-md flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary">forum</span>
+                Диалог · Знакомство
+            </h1>
+<!-- Scenario Intro Card -->
+<div class="glass-card ornament-border p-6 rounded-xl border-l-4 border-l-secondary">
+<p class="text-on-surface-variant font-body-md italic">
+                    Ты на встрече. К тебе подходит Айгүль — познакомься с ней.
+                </p>
+</div>
+</div>
+<!-- Chat Bubble Section -->
+<div class="chat-container flex flex-col gap-4 overflow-y-auto pb-4">
+<!-- Incoming Message -->
+<div class="flex flex-col items-start max-w-[85%] group">
+<div class="bg-surface-container-high p-4 rounded-2xl rounded-tl-none border border-outline-variant/30 shadow-sm relative transition-all hover:border-primary/40">
+<p class="font-kazakh-prompt text-kazakh-prompt mb-1">Сәлеметсіз бе! Танысып қоялық, менің атым Айгүль.</p>
+<p class="font-translation-sub text-translation-sub text-on-surface-variant/80">Здравствуйте! Давайте познакомимся, меня зовут Айгуль.</p>
+<!-- Small Ornament -->
+<div class="absolute -top-1 -left-1 opacity-20">
+<span class="material-symbols-outlined text-[12px] text-primary">flare</span>
+</div>
+</div>
+<span class="font-label-mono text-[10px] text-outline mt-1 ml-1">Айгүль • 10:42</span>
+</div>
+<!-- User Message -->
+<div class="flex flex-col items-end max-w-[85%] ml-auto">
+<div class="glass-primary p-4 rounded-2xl rounded-tr-none shadow-[0_0_15px_rgba(64,220,209,0.1)] border-primary/20">
+<p class="font-kazakh-prompt text-kazakh-prompt text-primary">Сәлеметсіз бе, Айгүль! Менің атым [Твоё имя].</p>
+</div>
+<span class="font-label-mono text-[10px] text-outline mt-1 mr-1">Вы • Сейчас</span>
+</div>
+</div>
+<!-- User Answer Section -->
+<div class="fixed bottom-20 left-0 w-full px-4 pt-4 bg-gradient-to-t from-background via-background to-transparent pb-6 z-40 max-w-[390px] left-1/2 -translate-x-1/2">
+<h2 class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest mb-3 px-1">Твой ответ:</h2>
+<div class="flex flex-col gap-3">
+<!-- Option 1 -->
+<button class="w-full glass-card p-4 rounded-xl flex justify-between items-center active:scale-[0.98] transition-all hover:bg-surface-variant/50 group">
+<div class="text-left">
+<p class="font-kazakh-prompt text-kazakh-prompt group-hover:text-primary transition-colors">Өте қуаныштымын!</p>
+<p class="font-translation-sub text-translation-sub text-on-surface-variant">Очень рад!</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary">radio_button_unchecked</span>
+</button>
+<!-- Option 2 (Selected) -->
+<button class="w-full bg-primary-container/10 border-2 border-primary p-4 rounded-xl flex justify-between items-center shadow-[0_0_20px_rgba(64,220,209,0.15)]">
+<div class="text-left">
+<p class="font-kazakh-prompt text-kazakh-prompt text-primary">Сен қайдан боласың?</p>
+<p class="font-translation-sub text-translation-sub text-on-surface-variant">Ты откуда?</p>
+</div>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</button>
+<!-- Option 3 (Error State) -->
+<div class="space-y-1">
+<button class="w-full bg-error-container/10 border border-error/30 p-4 rounded-xl flex justify-between items-center opacity-80 cursor-not-allowed">
+<div class="text-left">
+<p class="font-kazakh-prompt text-kazakh-prompt text-error">Сау болыңыз</p>
+<p class="font-translation-sub text-translation-sub text-on-surface-variant">До свидания</p>
+</div>
+<span class="material-symbols-outlined text-error">cancel</span>
+</button>
+<p class="text-[11px] font-label-mono text-error/80 px-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                        Не то — собеседник тебя не понял
+                    </p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20 bg-surface-container-high/90 backdrop-blur-lg border-t border-outline-variant/20 shadow-[0_-4px_24px_rgba(0,0,0,0.4)] rounded-t-xl max-w-[390px] left-1/2 -translate-x-1/2">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl px-3 py-1 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-label-mono text-[10px] mt-1">Курс</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary bg-primary-container/20 rounded-xl px-3 py-1 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="style" style="font-variation-settings: 'FILL' 1;">style</span>
+<span class="font-label-mono text-[10px] mt-1">Практика</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl px-3 py-1 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+<span class="font-label-mono text-[10px] mt-1">Квиз</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all rounded-xl px-3 py-1 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="font-label-mono text-[10px] mt-1">Прогресс</span>
+</a>
+</nav>
+<!-- Visual Atmosphere: Background Shader Placeholder -->
+<script>
+        // Simple Interaction logic for tapping non-active options
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!this.classList.contains('cursor-not-allowed')) {
+                    // Feedback micro-interaction
+                    this.classList.add('scale-95');
+                    setTimeout(() => this.classList.remove('scale-95'), 100);
+                }
+            });
+        });
+    </script>
+</body></html>

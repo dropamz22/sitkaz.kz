@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html class="dark" lang="kk"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>sitkaz.kz - Урок 1: Танысу</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #111317;
+            color: #e2e2e8;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass-card {
+            background: rgba(30, 32, 36, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(60, 73, 72, 0.3);
+        }
+        .ornament-border {
+            position: relative;
+        }
+
+        /* Simulating the "қошқар мүйіз" (ram's horn) motif via SVG masking or pseudo-elements */
+        .ornament-border::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 1px solid #43ded4;
+            border-radius: 18px;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        .ram-horn-corner {
+            width: 24px;
+            height: 24px;
+            background-color: #43ded4;
+            mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z'/%3E%3C/svg%3E");
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 12c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10S2 17.52 2 12zm2 0c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8-8 3.58-8 8zm4-3c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2z'/%3E%3C/svg%3E"); /* Placeholder for ram horn */
+            mask-repeat: no-repeat;
+            -webkit-mask-repeat: no-repeat;
+        }
+        .custom-glow {
+            box-shadow: 0 0 32px rgba(67, 222, 212, 0.15);
+        }
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-subtle {
+            animation: pulse-subtle 3s infinite ease-in-out;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#bbcac7",
+                        "outline": "#859491",
+                        "outline-variant": "#3c4948",
+                        "background": "#111317",
+                        "primary": "#43ded4",
+                        "on-background": "#e2e2e8",
+                        "on-surface": "#e2e2e8",
+                        "surface-container": "#1e2024",
+                        "secondary": "#ebc24e",
+                        "primary-container": "#00c2b8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "16px",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "kazakh-prompt": ["Plus Jakarta Sans"],
+                        "label-mono": ["JetBrains Mono"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "kazakh-prompt": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-32">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 px-4 h-16 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<button class="text-primary hover:opacity-80 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined">arrow_back</span>
+<span class="font-body-md text-sm md:block hidden">К списку уроков</span>
+</button>
+<div class="h-4 w-px bg-outline-variant/50 md:block hidden"></div>
+<span class="text-primary font-label-mono text-label-mono">УРОК 1 · АДАМ</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-secondary font-bold text-sm">⭐ Білгір</span>
+</div>
+</header>
+<main class="container mx-auto max-w-4xl px-4 pt-24 space-y-8">
+<!-- Headline Section -->
+<section class="space-y-1">
+<h1 class="font-display-lg-mobile text-display-lg-mobile md:font-display-lg md:text-display-lg text-on-surface">Танысу</h1>
+<p class="text-on-surface-variant font-body-md text-lg">Знакомство</p>
+</section>
+<!-- Video Player Card -->
+<section class="relative ornament-border overflow-hidden rounded-xl bg-surface-container shadow-2xl custom-glow">
+<div class="aspect-video w-full relative flex items-center justify-center group cursor-pointer">
+<!-- Video Placeholder Background -->
+<div class="absolute inset-0 bg-cover bg-center opacity-40 transition-transform duration-700 group-hover:scale-105" data-alt="A cinematic, high-definition shot of a modern educational studio with professional lighting and acoustic panels. A blurred silhouette of a teacher is visible in the background against a deep turquoise and charcoal color scheme. The atmosphere is sophisticated, scholarly, and futuristic, following a minimalist glassmorphism aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDr94q2MjsfZadTw5wFvkT1mqc67kddB6Z2w65MLb8MJm5svE7RN0BMgzoVm1RyvhJVdlEtR2Eo0oZKg8gkkg_5ScPLt8TdUttnh95QMK15zAe1NF1fPWhsOonk3V-KSwdR5Ktxh_41WYvsD0ftkLg7BSgP66w_9ujKSawR4xCcU802coMz_3ixAXk4cWLFxm7EiC5QoXNFSGzXAUZYl1qCnIeiwC8ld4lPiu35LHyMfedgG92YIwZTYPrZlWCIv_4MQdX02MtAN68')">
+</div>
+<!-- Play Button -->
+<div class="relative z-10 w-20 h-20 bg-primary/20 backdrop-blur-md border border-primary/40 rounded-full flex items-center justify-center group-hover:scale-110 group-hover:bg-primary/30 transition-all duration-300">
+<span class="material-symbols-outlined text-primary text-5xl translate-x-1" data-weight="fill" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<!-- Ornament Accents -->
+<div class="absolute top-4 left-4 opacity-40">
+<svg fill="none" height="40" viewbox="0 0 40 40" width="40" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0V10C0 15.5228 4.47715 20 10 20H20V10C20 4.47715 15.5228 0 10 0H0Z" fill="#43ded4" fill-opacity="0.2"></path>
+<path d="M2 2V8C2 11.3137 4.68629 14 8 14H14V8C14 4.68629 11.3137 2 8 2H2Z" stroke="#43ded4" stroke-width="1"></path>
+</svg>
+</div>
+</div>
+</section>
+<!-- Phrases Section -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md text-on-surface">Ситуативные фразы</h2>
+<span class="text-primary font-label-mono text-[10px] uppercase tracking-widest bg-primary/10 px-2 py-1 rounded">Vocabulary</span>
+</div>
+<div class="grid gap-4">
+<!-- Card 1 -->
+<div class="glass-card p-6 rounded-xl relative group hover:border-primary/50 transition-all duration-300">
+<div class="flex justify-between items-start mb-2">
+<div class="space-y-1">
+<h3 class="font-kazakh-prompt text-kazakh-prompt text-on-surface">Танысып қоялық, менің атым...</h3>
+<p class="text-on-surface-variant font-body-md text-sm italic text-primary/80">[танысып коялык, менің атым...]</p>
+</div>
+<button class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-all active:scale-90">
+<span class="material-symbols-outlined text-xl">volume_up</span>
+</button>
+</div>
+<p class="text-on-surface-variant font-body-md">Давайте познакомимся, меня зовут...</p>
+</div>
+<!-- Card 2 -->
+<div class="glass-card p-6 rounded-xl relative group hover:border-primary/50 transition-all duration-300">
+<div class="flex justify-between items-start mb-2">
+<div class="space-y-1">
+<h3 class="font-kazakh-prompt text-kazakh-prompt text-on-surface">Сен қайдан боласың?</h3>
+<p class="text-on-surface-variant font-body-md text-sm italic text-primary/80">[сен кайдан боласын?]</p>
+</div>
+<button class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-all active:scale-90">
+<span class="material-symbols-outlined text-xl">volume_up</span>
+</button>
+</div>
+<p class="text-on-surface-variant font-body-md">Ты откуда?</p>
+</div>
+<!-- Card 3 -->
+<div class="glass-card p-6 rounded-xl relative group hover:border-primary/50 transition-all duration-300">
+<div class="flex justify-between items-start mb-2">
+<div class="space-y-1">
+<h3 class="font-kazakh-prompt text-kazakh-prompt text-on-surface">Мен Алматыданмын.</h3>
+<p class="text-on-surface-variant font-body-md text-sm italic text-primary/80">[мен алматыданмын]</p>
+</div>
+<button class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-all active:scale-90">
+<span class="material-symbols-outlined text-xl">volume_up</span>
+</button>
+</div>
+<p class="text-on-surface-variant font-body-md">Я из Алматы.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Actions Sticky Bar -->
+<footer class="fixed bottom-0 left-0 right-0 bg-surface-container/90 backdrop-blur-lg border-t border-outline-variant/20 p-4 pb-8 z-50">
+<div class="container mx-auto max-w-4xl space-y-4">
+<div class="flex gap-4">
+<button class="flex-1 h-14 rounded-xl border border-primary/50 bg-surface/50 text-primary font-bold hover:bg-primary/5 transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">forum</span>
+                    Диалог
+                </button>
+<button class="flex-[1.5] h-14 rounded-xl bg-primary text-on-primary-container font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">edit_note</span>
+                    Сдать урок
+                </button>
+</div>
+<p class="text-center text-on-surface-variant font-body-md text-xs px-8 leading-relaxed">
+                Изучи фразы, пройди диалог и сдай мини-экзамен, чтобы открыть следующий урок
+            </p>
+</div>
+</footer>
+<!-- Background Atmospheric Effect -->
+<div class="fixed inset-0 pointer-events-none -z-10 opacity-30">
+</div>
+<script>
+        // Micro-interactions for speaker buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const icon = this.querySelector('.material-symbols-outlined');
+                if (icon && icon.textContent === 'volume_up') {
+                    icon.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        icon.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html class="dark" lang="kk"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Прогресс | sitkaz.kz</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#111317",
+                    "on-primary-fixed-variant": "#00504b",
+                    "on-secondary-fixed-variant": "#594400",
+                    "on-primary-fixed": "#00201e",
+                    "surface-container-high": "#282a2e",
+                    "tertiary-fixed": "#dbe3f3",
+                    "on-secondary": "#3d2e00",
+                    "on-error-container": "#ffdad6",
+                    "on-background": "#e2e2e8",
+                    "surface-container-low": "#1a1c20",
+                    "primary-fixed": "#65f8ed",
+                    "on-secondary-container": "#352800",
+                    "on-surface": "#e2e2e8",
+                    "inverse-on-surface": "#2f3035",
+                    "surface-tint": "#40dcd1",
+                    "surface-dim": "#111317",
+                    "on-error": "#690005",
+                    "on-tertiary": "#29313d",
+                    "background": "#111317",
+                    "on-tertiary-container": "#3a424f",
+                    "on-surface-variant": "#bbcac7",
+                    "surface-variant": "#333539",
+                    "secondary": "#ebc24e",
+                    "outline-variant": "#3c4948",
+                    "tertiary": "#c1c9da",
+                    "secondary-fixed-dim": "#ebc24e",
+                    "primary": "#43ded4",
+                    "inverse-surface": "#e2e2e8",
+                    "on-primary": "#003734",
+                    "surface-container": "#1e2024",
+                    "inverse-primary": "#006a64",
+                    "secondary-fixed": "#ffdf91",
+                    "on-secondary-fixed": "#241a00",
+                    "primary-fixed-dim": "#40dcd1",
+                    "surface-bright": "#37393e",
+                    "tertiary-container": "#a6aebe",
+                    "on-tertiary-fixed": "#141c28",
+                    "error-container": "#93000a",
+                    "tertiary-fixed-dim": "#bfc7d7",
+                    "surface-container-lowest": "#0c0e12",
+                    "primary-container": "#00c2b8",
+                    "on-tertiary-fixed-variant": "#3f4754",
+                    "surface-container-highest": "#333539",
+                    "error": "#ffb4ab",
+                    "on-primary-container": "#004a46",
+                    "secondary-container": "#b08c19",
+                    "outline": "#859491"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "margin-desktop": "40px",
+                    "stack-sm": "8px",
+                    "stack-lg": "32px",
+                    "stack-md": "16px",
+                    "margin-mobile": "16px",
+                    "container-max": "1200px"
+            },
+            "fontFamily": {
+                    "label-mono": ["JetBrains Mono"],
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "kazakh-prompt": ["Plus Jakarta Sans"],
+                    "display-lg-mobile": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "translation-sub": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "label-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "kazakh-prompt": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "translation-sub": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background: radial-gradient(circle at top right, #1a1c22, #111317);
+            min-height: 100vh;
+            color: #e2e2e8;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-card {
+            background: rgba(30, 32, 36, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(133, 148, 145, 0.1);
+        }
+        .ornament-corner {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+        /* Ram's Horn Motif Svg Pattern as Mask */
+        .ram-horn-mask {
+            mask-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0c-2.5 0-5 2.5-5 5s2.5 5 5 5 5-2.5 5-5-2.5-5-5-5zm0 40c2.5 0 5-2.5 5-5s-2.5-5-5-5-5 2.5-5 5 2.5 5 5 5zM0 20c0 2.5 2.5 5 5 5s5-2.5 5-5-2.5-5-5-5-5 2.5-5 5zm40 0c0-2.5-2.5-5-5-5s-5 2.5-5 5 2.5 5 5 5 5-2.5 5-5z' fill='%23000' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.05); }
+        }
+        .active-glow {
+            box-shadow: 0 0 15px rgba(67, 222, 212, 0.2);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md overflow-x-hidden selection:bg-primary/30">
+<!-- Top App Bar -->
+<header class="fixed top-0 z-50 w-full h-16 flex justify-between items-center px-4 bg-surface/80 dark:bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-[0_0_20px_rgba(64,220,209,0.1)]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">qr_code_2</span>
+<h1 class="font-display-lg-mobile text-display-lg-mobile bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">sitkaz.kz</h1>
+</div>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-variant/40 border border-outline-variant/30 text-secondary active:scale-95 transition-transform">
+<span class="text-sm font-bold">⭐ Білгір</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="pt-20 pb-32 px-4 max-w-lg mx-auto space-y-6">
+<!-- 1. Level Card -->
+<section class="relative group">
+<div class="glass-card rounded-2xl p-6 relative overflow-hidden border-primary/20">
+<!-- Ornament Corners -->
+<div class="absolute top-0 left-0 p-2 opacity-30">
+<svg class="text-primary stroke-current" fill="none" height="24" viewbox="0 0 24 24" width="24">
+<path d="M2 12C2 6.47715 6.47715 2 12 2M2 2V6M2 2H6" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="absolute bottom-0 right-0 p-2 opacity-30 rotate-180">
+<svg class="text-primary stroke-current" fill="none" height="24" viewbox="0 0 24 24" width="24">
+<path d="M2 12C2 6.47715 6.47715 2 12 2M2 2V6M2 2H6" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-2">
+<h2 class="font-headline-md text-headline-md text-on-surface">⭐ Білгір · знаток <span class="text-secondary font-label-mono text-sm">LVL 3</span></h2>
+</div>
+<p class="text-on-surface-variant font-translation-sub text-translation-sub mb-4">
+                        440 XP — до звания «Сөйлеуші» ещё 460 XP
+                    </p>
+<div class="relative h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="absolute top-0 left-0 h-full w-[48%] bg-gradient-to-r from-secondary to-primary rounded-full shadow-[0_0_12px_rgba(67,222,212,0.4)]">
+<!-- Pattern Texture on bar -->
+<div class="absolute inset-0 ram-horn-mask bg-white/10"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. Stats Grid -->
+<section class="grid grid-cols-3 gap-3">
+<!-- Streak Card (Full width relative to its cell) -->
+<div class="glass-card rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-1">
+<span class="text-xl">🔥</span>
+<span class="font-label-mono text-[11px] uppercase text-on-surface-variant">5 дней</span>
+<span class="text-[10px] text-primary/80">подряд</span>
+</div>
+<div class="glass-card rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-1">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+<span class="font-label-mono text-[11px] text-on-surface">7/10</span>
+<span class="text-[10px] text-on-surface-variant">фраз</span>
+</div>
+<div class="glass-card rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-1">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">done_all</span>
+<span class="font-label-mono text-[11px] text-on-surface">23</span>
+<span class="text-[10px] text-on-surface-variant">выучено</span>
+</div>
+<div class="glass-card rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-1">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">auto_stories</span>
+<span class="font-label-mono text-[11px] text-on-surface">85</span>
+<span class="text-[10px] text-on-surface-variant">в работе</span>
+</div>
+<div class="glass-card rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-1 border-secondary/20">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="font-label-mono text-[11px] text-on-surface">12</span>
+<span class="text-[10px] text-secondary">повтор</span>
+</div>
+<div class="glass-card rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-1">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span class="font-label-mono text-[11px] text-on-surface">6</span>
+<span class="text-[10px] text-on-surface-variant">уроков</span>
+</div>
+<div class="glass-card rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-1">
+<span class="material-symbols-outlined text-primary/70" style="font-variation-settings: 'FILL' 0;">pie_chart</span>
+<span class="font-label-mono text-[11px] text-on-surface">30%</span>
+<span class="text-[10px] text-on-surface-variant">курса</span>
+</div>
+<div class="glass-card rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-1">
+<span class="material-symbols-outlined text-secondary/70" style="font-variation-settings: 'FILL' 0;">quiz</span>
+<span class="font-label-mono text-[11px] text-on-surface">9</span>
+<span class="text-[10px] text-on-surface-variant">квизов</span>
+</div>
+<div class="glass-card rounded-xl p-3 flex flex-col items-center justify-center text-center space-y-1">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+<span class="font-label-mono text-[11px] text-on-surface">8/10</span>
+<span class="text-[10px] text-on-surface-variant">топ</span>
+</div>
+</section>
+<!-- 3. Achievements Section -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface">Достижения · 5/14</h3>
+<span class="material-symbols-outlined text-on-surface-variant">arrow_forward_ios</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Earned Badge 1 -->
+<div class="glass-card rounded-2xl p-4 border-secondary/30 relative active:scale-95 transition-transform duration-200">
+<div class="bg-secondary/10 w-12 h-12 rounded-full flex items-center justify-center mb-3">
+<span class="text-2xl">🌱</span>
+</div>
+<div class="absolute top-3 right-3 text-secondary text-lg">🏆</div>
+<h4 class="font-bold text-sm text-on-surface mb-1">Алғашқы қадам</h4>
+<p class="text-[11px] text-on-surface-variant leading-tight">первый урок сдан</p>
+</div>
+<!-- Earned Badge 2 -->
+<div class="glass-card rounded-2xl p-4 border-secondary/30 relative active:scale-95 transition-transform duration-200">
+<div class="bg-secondary/10 w-12 h-12 rounded-full flex items-center justify-center mb-3">
+<span class="text-2xl">🔥</span>
+</div>
+<div class="absolute top-3 right-3 text-secondary text-lg">🏆</div>
+<h4 class="font-bold text-sm text-on-surface mb-1">3 дня подряд</h4>
+<p class="text-[11px] text-on-surface-variant leading-tight">настоящая дисциплина</p>
+</div>
+<!-- Locked Badge 1 -->
+<div class="glass-card rounded-2xl p-4 opacity-50 grayscale bg-surface-container-low/40">
+<div class="bg-surface-variant w-12 h-12 rounded-full flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-on-surface-variant">lock</span>
+</div>
+<h4 class="font-bold text-sm text-on-surface mb-1">Весь курс</h4>
+<p class="text-[11px] text-on-surface-variant leading-tight">пройден до конца!</p>
+</div>
+<!-- Locked Badge 2 -->
+<div class="glass-card rounded-2xl p-4 opacity-50 grayscale bg-surface-container-low/40">
+<div class="bg-surface-variant w-12 h-12 rounded-full flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-on-surface-variant">lock</span>
+</div>
+<h4 class="font-bold text-sm text-on-surface mb-1">Месяц!</h4>
+<p class="text-[11px] text-on-surface-variant leading-tight">Нағыз батыр</p>
+</div>
+</div>
+</section>
+<!-- 4. Motivational Footer -->
+<section class="pb-10">
+<div class="glass-card rounded-2xl p-6 relative overflow-hidden bg-gradient-to-tr from-surface-container-high to-surface-container-low">
+<!-- Background visual -->
+<div class="absolute -right-4 -bottom-4 opacity-10 rotate-12">
+<span class="material-symbols-outlined text-[120px] text-primary">rocket_launch</span>
+</div>
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Так держать! 🚀</h3>
+<p class="text-on-surface-variant text-sm mb-6">Ваш общий прогресс в казахском языке стабильно растёт.</p>
+<div class="space-y-2">
+<div class="flex justify-between text-label-mono text-[10px] text-primary uppercase">
+<span>Общий курс</span>
+<span>30%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full w-[30%] bg-primary rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20 bg-surface-container-high/90 backdrop-blur-lg border-t border-outline-variant/20 rounded-t-xl shadow-[0_-4px_24px_rgba(0,0,0,0.4)]">
+<!-- Курс -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-mono text-label-mono mt-1">Курс</span>
+</a>
+<!-- Практика -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">style</span>
+<span class="font-label-mono text-label-mono mt-1">Практика</span>
+</a>
+<!-- Квиз -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">check_circle</span>
+<span class="font-label-mono text-label-mono mt-1">Квиз</span>
+</a>
+<!-- Прогресс (ACTIVE) -->
+<a class="flex flex-col items-center justify-center text-primary bg-primary-container/20 rounded-xl px-4 py-1.5 active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bar_chart</span>
+<span class="font-label-mono text-label-mono mt-1">Прогресс</span>
+</a>
+</nav>
+<!-- Decorative Atmosphere Scripts -->
+<script>
+        // Subtle interaction for the progress bar
+        document.addEventListener('DOMContentLoaded', () => {
+            const progressBar = document.querySelector('.bg-gradient-to-r');
+            if (progressBar) {
+                progressBar.style.transition = 'width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                progressBar.style.width = '0%';
+                setTimeout(() => {
+                    progressBar.style.width = '48%';
+                }, 300);
+            }
+
+            // Interaction sounds or feedback simulation
+            const cards = document.querySelectorAll('.glass-card');
+            cards.forEach(card => {
+                card.addEventListener('touchstart', () => {
+                    card.style.borderColor = 'rgba(67, 222, 212, 0.4)';
+                });
+                card.addEventListener('touchend', () => {
+                    card.style.borderColor = 'rgba(133, 148, 145, 0.1)';
+                });
+            });
+        });
+    </script>
+</body></html>

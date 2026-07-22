@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html class="dark" lang="kk"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>sitkaz.kz - Quiz</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ornament-bg {
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 10c-5 0-10 5-10 10s5 10 10 10 10-5 10-10-5-10-10-10zm0 4c3.3 0 6 2.7 6 6s-2.7 6-6 6-6-2.7-6-6 2.7-6 6-6zm0 46c-15 0-25-10-25-25 0-5 5-10 10-10s10 5 10 10c0 5 5 10 5 10s5-5 5-10c0-5 5-10 10-10s10 5 10 10c0 15-10 25-25 25z' fill='%2300C2B8' fill-opacity='0.05'/%3E%3C/svg%3E");
+        }
+        .glass-card {
+            background: rgba(30, 32, 36, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(60, 73, 72, 0.3);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(64, 220, 209, 0.15); }
+            50% { box-shadow: 0 0 40px rgba(64, 220, 209, 0.3); }
+        }
+        .active-glow {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#3a424f",
+                    "surface": "#111317",
+                    "primary-fixed-dim": "#40dcd1",
+                    "secondary-fixed-dim": "#ebc24e",
+                    "surface-container-low": "#1a1c20",
+                    "outline": "#859491",
+                    "surface-container-lowest": "#0c0e12",
+                    "tertiary-container": "#a6aebe",
+                    "outline-variant": "#3c4948",
+                    "surface-container": "#1e2024",
+                    "on-tertiary-fixed": "#141c28",
+                    "surface-variant": "#333539",
+                    "on-primary-container": "#004a46",
+                    "error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#3f4754",
+                    "on-primary": "#003734",
+                    "error": "#ffb4ab",
+                    "secondary": "#ebc24e",
+                    "primary-container": "#00c2b8",
+                    "secondary-fixed": "#ffdf91",
+                    "on-secondary": "#3d2e00",
+                    "surface-container-highest": "#333539",
+                    "on-surface": "#e2e2e8",
+                    "on-primary-fixed": "#00201e",
+                    "secondary-container": "#b08c19",
+                    "surface-bright": "#37393e",
+                    "primary": "#43ded4",
+                    "on-background": "#e2e2e8",
+                    "surface-dim": "#111317",
+                    "on-error-container": "#ffdad6",
+                    "surface-tint": "#40dcd1",
+                    "on-surface-variant": "#bbcac7",
+                    "inverse-on-surface": "#2f3035",
+                    "tertiary-fixed": "#dbe3f3",
+                    "primary-fixed": "#65f8ed",
+                    "on-secondary-fixed-variant": "#594400",
+                    "inverse-surface": "#e2e2e8",
+                    "on-primary-fixed-variant": "#00504b",
+                    "tertiary": "#c1c9da",
+                    "on-tertiary": "#29313d",
+                    "on-error": "#690005",
+                    "on-secondary-container": "#352800",
+                    "inverse-primary": "#006a64",
+                    "background": "#111317",
+                    "tertiary-fixed-dim": "#bfc7d7",
+                    "surface-container-high": "#282a2e",
+                    "on-secondary-fixed": "#241a00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "32px",
+                    "margin-desktop": "40px",
+                    "margin-mobile": "16px",
+                    "stack-sm": "8px",
+                    "container-max": "1200px",
+                    "stack-md": "16px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "translation-sub": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "kazakh-prompt": ["Plus Jakarta Sans"],
+                    "label-mono": ["JetBrains Mono"],
+                    "display-lg-mobile": ["Plus Jakarta Sans"],
+                    "display-lg": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                    "translation-sub": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                    "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                    "kazakh-prompt": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                    "label-mono": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                    "display-lg-mobile": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                    "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col items-center ornament-bg selection:bg-primary/30">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center px-4 h-16 w-full fixed top-0 z-50 bg-surface/80 dark:bg-surface/80 backdrop-blur-xl shadow-[0_0_20px_rgba(64,220,209,0.1)] border-b border-outline-variant/30">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="language_kazakh">qr_code_2</span>
+<span class="font-display-lg-mobile text-display-lg-mobile bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">sitkaz.kz</span>
+</div>
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-high text-secondary text-label-mono font-label-mono border border-secondary/20 active:scale-95 transition-transform">
+            ⭐ Білгір
+        </button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-lg mt-24 mb-32 px-4 flex flex-col items-center">
+<!-- Progress Info -->
+<div class="w-full mb-8 text-center">
+<div class="flex justify-between items-center mb-4">
+<span class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest">Вопрос 4 из 10</span>
+<span class="font-label-mono text-label-mono text-secondary font-bold">очки: 3</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-2/5 shadow-[0_0_8px_rgba(67,222,212,0.5)]"></div>
+</div>
+<h2 class="mt-6 font-headline-md text-headline-md text-on-surface">Аудирование: послушай и выбери</h2>
+</div>
+<!-- Central Audio Component -->
+<div class="relative group cursor-pointer mb-12" onclick="playAudio()">
+<div class="absolute inset-0 bg-primary/20 blur-[60px] rounded-full scale-125 opacity-50 group-hover:opacity-80 transition-opacity"></div>
+<div class="relative w-48 h-48 rounded-full glass-card flex items-center justify-center border-2 border-primary/40 active-glow transition-all hover:scale-105 active:scale-95 overflow-hidden">
+<!-- Subtle Ram's Horn Motif -->
+<svg class="absolute inset-0 w-full h-full text-primary/10 rotate-12" viewbox="0 0 100 100">
+<path d="M10,50 Q10,10 50,10 Q90,10 90,50 Q90,90 50,90 Q10,90 10,50 M30,50 Q30,30 50,30 Q70,30 70,50" fill="none" stroke="currentColor" stroke-width="0.5"></path>
+</svg>
+<span class="material-symbols-outlined text-primary text-6xl" data-icon="volume_up" style="font-variation-settings: 'FILL' 1;">volume_up</span>
+</div>
+<p class="mt-4 text-center font-label-mono text-label-mono text-on-surface-variant/70 uppercase tracking-tighter">нажми, чтобы прослушать ещё раз</p>
+</div>
+<!-- Answer Options Bento-style stack -->
+<div class="w-full space-y-3">
+<!-- Option 1: Default -->
+<button class="w-full glass-card p-5 rounded-xl flex items-center justify-between text-left group hover:bg-surface-variant/30 transition-all border border-outline-variant/30">
+<span class="font-kazakh-prompt text-kazakh-prompt text-on-surface group-hover:text-primary transition-colors">Доброе утро</span>
+<span class="font-label-mono text-label-mono text-on-surface-variant opacity-40">A</span>
+</button>
+<!-- Option 2: Correct State -->
+<button class="w-full bg-primary/10 border-2 border-primary p-5 rounded-xl flex items-center justify-between text-left shadow-[0_0_24px_rgba(64,220,209,0.15)]">
+<span class="font-kazakh-prompt text-kazakh-prompt text-primary font-bold">Добрый день</span>
+<div class="flex items-center gap-2">
+<span class="font-label-mono text-label-mono text-primary font-bold">B</span>
+<span class="material-symbols-outlined text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</button>
+<!-- Option 3: Error State -->
+<button class="w-full bg-error-container/10 border-2 border-error/50 p-5 rounded-xl flex items-center justify-between text-left">
+<span class="font-kazakh-prompt text-kazakh-prompt text-error/80">Добрый вечер</span>
+<div class="flex items-center gap-2">
+<span class="font-label-mono text-label-mono text-error/50">C</span>
+<span class="material-symbols-outlined text-error" data-icon="cancel">cancel</span>
+</div>
+</button>
+<!-- Option 4: Default -->
+<button class="w-full glass-card p-5 rounded-xl flex items-center justify-between text-left group hover:bg-surface-variant/30 transition-all border border-outline-variant/30">
+<span class="font-kazakh-prompt text-kazakh-prompt text-on-surface group-hover:text-primary transition-colors">Спокойной ночи</span>
+<span class="font-label-mono text-label-mono text-on-surface-variant opacity-40">D</span>
+</button>
+</div>
+</main>
+<!-- Bottom Nav Bar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20 bg-surface-container-high/90 backdrop-blur-lg border-t border-outline-variant/20 shadow-[0_-4px_24px_rgba(0,0,0,0.4)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all px-3 py-1 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="menu_book">menu_book</span>
+<span class="font-label-mono text-label-mono">Курс</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all px-3 py-1 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="style">style</span>
+<span class="font-label-mono text-label-mono">Практика</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary bg-primary-container/20 rounded-xl px-3 py-1 scale-105" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-mono text-label-mono font-bold">Квиз</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-variant/50 transition-all px-3 py-1 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="bar_chart">bar_chart</span>
+<span class="font-label-mono text-label-mono">Прогресс</span>
+</a>
+</nav>
+<script>
+        function playAudio() {
+            // Haptic/Visual feedback for the speaker icon
+            const speaker = document.querySelector('.material-symbols-outlined[data-icon="volume_up"]');
+            speaker.classList.add('scale-125', 'text-secondary');
+            setTimeout(() => {
+                speaker.classList.remove('scale-125', 'text-secondary');
+            }, 300);
+
+            // Logic to play sound would go here
+            console.log("Playing Kazakh audio prompt...");
+        }
+        // Add a micro-glow follows mouse for glass effects
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.glass-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body></html>
