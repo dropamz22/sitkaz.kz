@@ -591,6 +591,8 @@ body::before {
   width: 26px; height: 26px; border-radius: 50%;
   background: var(--ice); color: var(--faint);
   display: grid; place-items: center;
+  font-family: var(--font-label); font-size: 13px; font-weight: 700;
+  flex-shrink: 0;
   transition: background .2s, color .2s;
 }
 .step.active .step-dot { background: var(--amber); color: #fff; }

@@ -390,9 +390,9 @@ function ModuleView({ module: m, progress, onOpen, onBack }) {
 // Индикатор этапов урока
 function StepBar({ stage }) {
   const steps = [
-    { id: "study", label: "Изучение", ic: "menu_book" },
-    { id: "practice", label: "Практика", ic: "fitness_center" },
-    { id: "quiz", label: "Экзамен", ic: "workspace_premium" },
+    { id: "study", label: "Изучение" },
+    { id: "practice", label: "Практика" },
+    { id: "quiz", label: "Экзамен" },
   ];
   const order = { study: 0, practice: 1, quiz: 2 };
   const cur = order[stage] ?? 0;
@@ -400,9 +400,7 @@ function StepBar({ stage }) {
     <div className="stepbar">
       {steps.map((s, idx) => (
         <div key={s.id} className={"step" + (idx === cur ? " active" : idx < cur ? " done" : "")}>
-          <div className="step-dot">
-            {idx < cur ? <Icon name="check" style={{ fontSize: 16 }} /> : <Icon name={s.ic} style={{ fontSize: 16 }} />}
-          </div>
+          <div className="step-dot">{idx < cur ? "✓" : idx + 1}</div>
           <span>{s.label}</span>
         </div>
       ))}
