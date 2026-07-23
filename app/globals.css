@@ -561,6 +561,75 @@ body::before {
 .due-btn:hover { filter: brightness(1.05); }
 .due-btn:active { transform: scale(0.97); }
 
+/* ── Вторичная кнопка «Повторить» на главной ── */
+.due-btn.secondary {
+  background: #d0e2f3; color: #384956;
+  box-shadow: var(--shadow);
+  margin-top: 10px;
+}
+
+/* ── Шапка урока + индикатор этапов ── */
+.lesson-head { margin-bottom: 14px; }
+.lesson-head h2 { font-size: 24px; font-weight: 700; color: var(--heading); }
+.stepbar {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--card);
+  border: 2px solid var(--card-border);
+  border-radius: var(--pill);
+  padding: 8px 10px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow);
+}
+.step { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; }
+.step span { font-size: 12px; font-weight: 700; color: var(--faint); font-family: var(--font-label); }
+.step-dot {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--ice); color: var(--faint);
+  display: grid; place-items: center;
+  transition: background .2s, color .2s;
+}
+.step.active .step-dot { background: var(--amber); color: #fff; }
+.step.active span { color: var(--heading); }
+.step.done .step-dot { background: var(--amber-soft); color: #623300; }
+.step.done span { color: var(--muted); }
+
+/* ── Прогресс внутри урока ── */
+.lesson-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.lesson-progress-bar { flex: 1; height: 10px; background: var(--ice-deep); border-radius: var(--pill); overflow: hidden; }
+.lesson-progress-bar > div { height: 100%; background: var(--amber); border-radius: var(--pill); transition: width .4s ease; }
+.lesson-progress span { font-family: var(--font-label); font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+
+/* ── Карточка этапа «Изучение» ── */
+.study-card {
+  background: var(--card);
+  border: 2px solid var(--card-border);
+  border-radius: 40px;
+  padding: 40px 28px;
+  text-align: center;
+  box-shadow: var(--shadow-big);
+  margin-bottom: 16px;
+  cursor: pointer;
+  min-height: 260px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  animation: cardIn .3s ease;
+}
+.study-kk { font-size: 28px; font-weight: 700; color: var(--heading); line-height: 1.25; }
+.study-tr { color: var(--muted); font-size: 15px; font-style: italic; }
+.study-ru {
+  font-size: 18px; font-weight: 600; color: var(--amber);
+  background: rgba(242, 149, 60, 0.1);
+  border-radius: 20px; padding: 12px 20px;
+  animation: cardIn .25s ease;
+}
+.study-reveal {
+  background: var(--ice); color: var(--muted);
+  border: none; border-radius: var(--pill);
+  padding: 11px 22px; font-size: 14px; font-weight: 700; cursor: pointer;
+  font-family: var(--font-main);
+  transition: transform .1s ease;
+}
+.study-reveal:active { transform: scale(0.95); }
+
 /* ── Аудирование: барс в наушниках ── */
 .listen-btn {
   position: relative;

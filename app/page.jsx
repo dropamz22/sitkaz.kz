@@ -174,7 +174,7 @@ export default function App() {
       </div>
 
       {tab === "course" && (
-        <Course progress={progress} doneCount={doneCountN} onOpenModule={openModule} goPractice={() => setTab("practice")} />
+        <Course progress={progress} doneCount={doneCountN} onOpenModule={openModule} onOpen={openLesson} goPractice={() => setTab("practice")} />
       )}
       {tab === "module" && activeModule && (
         <ModuleView
@@ -223,13 +223,15 @@ export default function App() {
 
 // ────────────────────────── Курс ──────────────────────────
 
-function Course({ progress, doneCount, onOpenModule, goPractice }) {
+function Course({ progress, doneCount, onOpenModule, onOpen, goPractice }) {
   const total = lessons.length;
   const pct = Math.round((doneCount / total) * 100);
   const due = dueCount(progress.srs);
   const streak = displayStreak(progress.streak);
   const today = doneToday(progress.streak);
   const goal = progress.goal || 10;
+  // Следующий незавершённый урок — для кнопки «Продолжить»
+  const nextLesson = lessons.find((l) => !progress.done[l.id]) || null;
   // Модуль считается открытым, если пройден предыдущий (или это первый)
   const moduleUnlocked = (idx) => idx === 0 || modules.slice(0, idx).every((pm) =>
     lessonsByModule(pm.id).every((l) => progress.done[l.id])
@@ -267,9 +269,15 @@ function Course({ progress, doneCount, onOpenModule, goPractice }) {
         {today >= goal && (
           <p style={{ marginTop: 10 }}><Icon name="celebration" filled style={{ color: "var(--amber)" }} /> Цель на сегодня выполнена!</p>
         )}
+        {nextLesson && (
+          <button className="due-btn" onClick={() => onOpen(nextLesson)}>
+            <span><Icon name="play_arrow" filled style={{ fontSize: 20, verticalAlign: "-0.25em" }} /> Продолжить: урок {nextLesson.id} · {nextLesson.title}</span>
+            <span>→</span>
+          </button>
+        )}
         {due > 0 && (
-          <button className="due-btn" onClick={goPractice}>
-            <span>Повторить сегодня: {due} {plural(due, "фразу", "фразы", "фраз")}</span>
+          <button className="due-btn secondary" onClick={goPractice}>
+            <span><Icon name="autorenew" style={{ fontSize: 18, verticalAlign: "-0.2em" }} /> Повторить: {due} {plural(due, "фразу", "фразы", "фраз")}</span>
             <span>→</span>
           </button>
         )}
@@ -369,83 +377,178 @@ function ModuleView({ module: m, progress, onOpen, onBack }) {
 
 // ────────────────────────── Урок ──────────────────────────
 
+// Индикатор этапов урока
+function StepBar({ stage }) {
+  const steps = [
+    { id: "study", label: "Изучение", ic: "menu_book" },
+    { id: "practice", label: "Практика", ic: "fitness_center" },
+    { id: "quiz", label: "Экзамен", ic: "workspace_premium" },
+  ];
+  const order = { study: 0, practice: 1, quiz: 2 };
+  const cur = order[stage] ?? 0;
+  return (
+    <div className="stepbar">
+      {steps.map((s, idx) => (
+        <div key={s.id} className={"step" + (idx === cur ? " active" : idx < cur ? " done" : "")}>
+          <div className="step-dot">
+            {idx < cur ? <Icon name="check" style={{ fontSize: 16 }} /> : <Icon name={s.ic} style={{ fontSize: 16 }} />}
+          </div>
+          <span>{s.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComplete, onOpen, onBack }) {
   const mod = modules.find((m) => m.id === lesson.module);
   const dialog = dialogForLesson(lesson.id);
   const nextLesson = lessons.find((l) => l.id === lesson.id + 1) || null;
-  const [stage, setStage] = useState("learn"); // learn | dialog | quiz
+  // Сразу в изучение — никакого промежуточного списка
+  const [stage, setStage] = useState("study"); // study | practice | quiz | dialog
+
+  const header = (
+    <>
+      <button className="back" onClick={onBack}>
+        <Icon name="arrow_back" style={{ fontSize: 18 }} /> Выйти
+      </button>
+      <div className="lesson-head">
+        <div className="section-title" style={{ color: mod?.color, margin: "0 0 4px" }}>
+          Урок {lesson.id} · {mod?.title}{done ? " · пройден" : ""}
+        </div>
+        <h2 style={{ marginBottom: 2 }}>{lesson.title}</h2>
+        <p style={{ color: "var(--muted)" }}>{lesson.ru}</p>
+      </div>
+      <StepBar stage={stage === "dialog" ? "study" : stage} />
+    </>
+  );
 
   if (stage === "dialog" && dialog) {
     return (
-      <DialogView
-        dialog={dialog}
-        onBack={() => setStage("learn")}
-        onComplete={onDialogComplete}
-      />
+      <DialogView dialog={dialog} onBack={() => setStage("study")} onComplete={onDialogComplete} />
     );
   }
 
-  if (stage === "quiz") {
+  if (stage === "study") {
     return (
+      <>
+        {header}
+        <StudyTrainer lesson={lesson} onDone={() => setStage("practice")} />
+      </>
+    );
+  }
+
+  if (stage === "practice") {
+    return (
+      <>
+        {header}
+        <LessonPractice lesson={lesson} review={review} onDone={() => setStage("quiz")} onBack={() => setStage("study")} />
+      </>
+    );
+  }
+
+  // stage === "quiz"
+  return (
+    <>
+      {header}
       <LessonQuiz
         lesson={lesson}
         review={review}
         onPassed={onPassed}
-        onBack={() => setStage("learn")}
+        onBack={() => setStage("practice")}
         nextLesson={nextLesson}
         onOpen={onOpen}
+        dialog={dialog}
+        dialogDone={dialogDone}
+        onDialog={() => setStage("dialog")}
       />
-    );
-  }
+    </>
+  );
+}
+
+// ─────────── Этап 1: Изучение (карточки по одной) ───────────
+
+function StudyTrainer({ lesson, onDone }) {
+  const [i, setI] = useState(0);
+  const [revealed, setRevealed] = useState(false);
+  const total = lesson.phrases.length;
+  const p = lesson.phrases[i];
+
+  useEffect(() => { speak(p.kk); }, [i]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const next = () => {
+    if (i + 1 >= total) { onDone(); return; }
+    setI(i + 1); setRevealed(false);
+  };
 
   return (
     <>
-      <button className="back" onClick={onBack}>← К списку уроков</button>
-      <div className="section-title" style={{ color: mod?.color }}>
-        Урок {lesson.id} · {mod?.title} {done && "· пройден ✓"}
-      </div>
-      <h2 style={{ marginBottom: 4 }}>{lesson.title}</h2>
-      <p style={{ color: "var(--muted)", marginBottom: 16 }}>{lesson.ru}</p>
-
-      <div className="video-wrap">
-        <img className="mascot-video-peek" src={MASCOT.peek} alt="" />
-        <div className="video-box">
-          {lesson.video ? (
-            <iframe src={lesson.video} title={lesson.title} allowFullScreen />
-          ) : (
-            <div className="video-placeholder">
-              <Icon name="play_circle" filled style={{ fontSize: 44, color: "var(--amber)" }} />
-              <div>Видео-лекция скоро появится</div>
-              <small>Добавьте ссылку в поле <code>video</code> урока</small>
-            </div>
-          )}
-        </div>
+      <div className="lesson-progress">
+        <div className="lesson-progress-bar"><div style={{ width: `${((i + 1) / total) * 100}%` }} /></div>
+        <span>{i + 1} / {total}</span>
       </div>
 
-      <div className="section-title">Ситуативные фразы</div>
-      {lesson.phrases.map((p) => (
-        <div key={p.kk} className="word-card" onClick={() => speak(p.kk)}>
-          <div className="kk">{p.kk}</div>
-          <div className="ru">{p.ru}</div>
-          <div className="tr">[{p.tr}] <Icon name="volume_up" style={{ fontSize: 14 }} /></div>
-        </div>
-      ))}
-
-      <div className="flash-controls" style={{ marginTop: 16 }}>
-        {dialog && (
-          <button className="btn ghost" onClick={() => setStage("dialog")}>
-            <Icon name="forum" /> Диалог{dialogDone ? " ✓" : ""}
+      <div className="study-card" onClick={() => speak(p.kk)}>
+        <div className="study-kk">{p.kk}</div>
+        <div className="study-tr">[{p.tr}] <Icon name="volume_up" style={{ fontSize: 16 }} /></div>
+        {revealed ? (
+          <div className="study-ru">{p.ru}</div>
+        ) : (
+          <button
+            className="study-reveal"
+            onClick={(e) => { e.stopPropagation(); setRevealed(true); }}
+          >
+            Показать перевод
           </button>
         )}
-        <button className={done ? "btn ghost" : "btn primary"} onClick={() => setStage("quiz")}>
-          <Icon name="edit_note" /> {done ? "Пересдать урок" : "Сдать урок"}
-        </button>
       </div>
-      {!done && (
-        <p style={{ color: "var(--muted)", fontSize: 12, textAlign: "center", marginTop: 10 }}>
-          Изучи фразы{dialog ? ", пройди диалог" : ""} и сдай мини-экзамен, чтобы открыть следующий урок.
-        </p>
-      )}
+
+      <button className="btn primary" style={{ width: "100%", marginTop: 6 }} onClick={next}>
+        {i + 1 >= total ? "К практике →" : "Дальше →"}
+      </button>
+    </>
+  );
+}
+
+// ─────────── Этап 2: Практика (активное припоминание) ───────────
+
+function makePracticeQ(p, lesson) {
+  const w = { ...p, lesson: lesson.title, lessonId: lesson.id };
+  const words = w.kk.split(/\s+/).filter(Boolean);
+  const types = ["kk2ru", "ru2kk", "listen"];
+  if (words.length >= 3 && words.length <= 8) types.push("assemble");
+  const type = types[Math.floor(Math.random() * types.length)];
+  if (type === "assemble") return { type, word: w, words: shuffle(words) };
+  const wrong = shuffle(allPhrases.filter((x) => x.ru !== w.ru)).slice(0, 3);
+  return { type, word: w, options: shuffle([w, ...wrong]) };
+}
+
+function LessonPractice({ lesson, review, onDone, onBack }) {
+  const [queue, setQueue] = useState(() => shuffle(lesson.phrases).map((p) => makePracticeQ(p, lesson)));
+  const [i, setI] = useState(0);
+  const total = lesson.phrases.length;
+  const q = queue[i];
+
+  const answered = (ok) => {
+    review(q.word, ok);
+    if (!ok) {
+      // неверно — фраза вернётся ещё раз в конце
+      setQueue((prev) => [...prev, makePracticeQ(q.word, lesson)]);
+    }
+    if (i + 1 >= queue.length) { onDone(); return; }
+    setI(i + 1);
+  };
+
+  return (
+    <>
+      <div className="lesson-progress">
+        <div className="lesson-progress-bar"><div style={{ width: `${Math.min(100, ((i + 1) / total) * 100)}%` }} /></div>
+        <span>{Math.min(i + 1, total)} / {total}</span>
+      </div>
+      <div className="q-type">{Q_LABEL[q.type]}</div>
+      {q.type === "assemble"
+        ? <AssembleQ key={i} q={q} onAnswer={answered} />
+        : <ChoiceQ key={i} q={q} onAnswer={answered} />}
     </>
   );
 }
@@ -466,7 +569,7 @@ function makeLessonQuestions(lesson) {
   });
 }
 
-function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen }) {
+function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen, dialog, dialogDone, onDialog }) {
   const [questions, setQuestions] = useState(() => makeLessonQuestions(lesson));
   const [i, setI] = useState(0);
   const [score, setScore] = useState(0);
@@ -500,12 +603,17 @@ function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen }) {
         {passed ? (
           <>
             <p>Керемет! Урок «{lesson.title}» сдан! +50 м высоты.{nextLesson ? " Следующий лагерь открыт." : " Это была вершина курса!"}</p>
+            {dialog && !dialogDone && (
+              <button className="btn ghost" style={{ width: "100%", marginBottom: 10 }} onClick={onDialog}>
+                <Icon name="forum" /> Пройти диалог-сценку
+              </button>
+            )}
             {nextLesson ? (
-              <button className="btn primary" onClick={() => onOpen(nextLesson)}>
+              <button className="btn primary" style={{ width: "100%" }} onClick={() => onOpen(nextLesson)}>
                 Урок {nextLesson.id}: {nextLesson.title} →
               </button>
             ) : (
-              <button className="btn primary" onClick={onBack}>К списку уроков</button>
+              <button className="btn primary" style={{ width: "100%" }} onClick={onBack}>К темам</button>
             )}
           </>
         ) : (
@@ -523,7 +631,6 @@ function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen }) {
 
   return (
     <>
-      <button className="back" onClick={onBack}>← К уроку</button>
       <div className="quiz-progress">Экзамен · вопрос {i + 1} из {questions.length} · верно: {score}</div>
       <div className="q-type">{Q_LABEL[q.type]}</div>
       {q.type === "assemble"
