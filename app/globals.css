@@ -594,6 +594,22 @@ body::before {
   margin-top: 10px;
 }
 
+/* Лёгкая ссылка «Повторить» под главной кнопкой */
+.repeat-link {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  background: none; border: none;
+  color: var(--muted);
+  font-family: var(--font-main);
+  font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  padding: 6px;
+  transition: color .2s ease;
+}
+.repeat-link:hover { color: var(--amber); }
+.repeat-link:active { opacity: .7; }
+
 /* ── Шапка урока + индикатор этапов ── */
 .lesson-topbar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
 .lesson-topbar .back { flex-shrink: 0; width: 40px; height: 40px; padding: 0; display: grid; place-items: center; }

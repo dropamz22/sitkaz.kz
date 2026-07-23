@@ -261,23 +261,18 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
         </div>
         <div className="chips-row">
           <div className="chip"><Icon name="local_fire_department" filled /> <b>{streak}</b> {daysWord(streak, t, lang)}</div>
-          <div className="chip"><Icon name="target" /> {t.chip_today} <b>{today}</b>/{goal}</div>
-          <div className="chip"><Icon name="autorenew" /> {t.chip_repeat} <b>{due}</b></div>
           <div className="chip"><Icon name="landscape" filled /> <b>{progress.xp || 0}</b> {lang === "en" ? "m" : "м"}</div>
+          {due > 0 && <div className="chip"><Icon name="autorenew" /> {t.chip_repeat} <b>{due}</b></div>}
         </div>
-        {today >= goal && (
-          <p style={{ marginTop: 10 }}><Icon name="celebration" filled style={{ color: "var(--amber)" }} /> {t.goal_done}</p>
-        )}
         {nextLesson && (
           <button className="due-btn" onClick={() => onOpen(nextLesson)}>
-            <span><Icon name="play_arrow" filled style={{ fontSize: 20, verticalAlign: "-0.25em" }} /> {t.continue}: {P({ ru: "урок", en: "lesson" }, lang)} {nextLesson.id} · {nextLesson.title}</span>
+            <span><Icon name="play_arrow" filled style={{ fontSize: 20, verticalAlign: "-0.25em" }} /> {t.continue}: {nextLesson.title}</span>
             <span>→</span>
           </button>
         )}
         {due > 0 && (
-          <button className="due-btn secondary" onClick={goPractice}>
-            <span><Icon name="autorenew" style={{ fontSize: 18, verticalAlign: "-0.2em" }} /> {t.repeat}: {due} {phrasesWord(due, t, lang)}</span>
-            <span>→</span>
+          <button className="repeat-link" onClick={goPractice}>
+            <Icon name="autorenew" style={{ fontSize: 16, verticalAlign: "-0.2em" }} /> {t.repeat}: {due} {phrasesWord(due, t, lang)} →
           </button>
         )}
       </div>
