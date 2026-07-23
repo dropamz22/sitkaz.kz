@@ -370,16 +370,16 @@ body::before {
 
 /* ── Нижняя навигация (плавающая пилюля) ── */
 .nav {
-  position: fixed; bottom: calc(16px + var(--tg-bottom)); left: 16px; right: 16px;
-  background: rgba(255, 255, 255, 0.88);
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 2px solid rgba(234, 242, 249, 0.9);
-  border-radius: var(--pill);
-  box-shadow: 0 24px 48px rgba(51, 71, 92, 0.14);
+  border-top: 2px solid rgba(234, 242, 249, 0.9);
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -8px 32px rgba(51, 71, 92, 0.1);
   display: flex; justify-content: space-around; align-items: center;
-  padding: 8px 10px;
-  max-width: 480px; margin: 0 auto;
+  padding: 10px 10px calc(10px + var(--tg-bottom));
+  max-width: 520px; margin: 0 auto;
   z-index: 50;
 }
 .nav button {

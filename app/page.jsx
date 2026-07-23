@@ -217,6 +217,12 @@ function Course({ progress, doneCount, onOpen, goPractice }) {
   const total = lessons.length;
   const pct = Math.round((doneCount / total) * 100);
   const due = dueCount(progress.srs);
+  // По умолчанию раскрыт модуль, в котором пользователь сейчас учится
+  const activeModule = (() => {
+    const next = lessons.find((l) => !progress.done[l.id]);
+    return next ? next.module : modules[0].id;
+  })();
+  const [openModule, setOpenModule] = useState(activeModule);
   const streak = displayStreak(progress.streak);
   const today = doneToday(progress.streak);
   const goal = progress.goal || 10;
@@ -264,16 +270,23 @@ function Course({ progress, doneCount, onOpen, goPractice }) {
       {modules.map((m) => {
         const items = lessonsByModule(m.id);
         const mDone = items.filter((l) => progress.done[l.id]).length;
+        const expanded = openModule === m.id;
         return (
-          <div key={m.id} style={{ marginBottom: 22 }}>
-            <div className="module-head" style={{ borderColor: m.color }}>
+          <div key={m.id} style={{ marginBottom: 16 }}>
+            <div
+              className="module-head"
+              style={{ borderColor: m.color, cursor: "pointer" }}
+              onClick={() => setOpenModule(expanded ? null : m.id)}
+            >
               <div className="module-num" style={{ background: m.color }}>{m.num}</div>
-              <div>
+              <div style={{ flex: 1 }}>
                 <h3>{m.title} · <span style={{ color: "var(--muted)", fontWeight: 400 }}>{m.subtitle}</span></h3>
                 <p>{m.desc}</p>
               </div>
               <div className="module-count">{mDone}/{items.length}</div>
+              <Icon name={expanded ? "expand_less" : "expand_more"} style={{ color: "var(--muted)", fontSize: 24 }} />
             </div>
+            {expanded && (
             <div className="grid" style={{ marginTop: 10 }}>
               {items.map((l) => {
                 const unlocked = l.id === 1 || progress.done[l.id] || progress.done[l.id - 1];
@@ -301,6 +314,7 @@ function Course({ progress, doneCount, onOpen, goPractice }) {
                 );
               })}
             </div>
+            )}
           </div>
         );
       })}
