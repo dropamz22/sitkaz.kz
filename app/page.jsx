@@ -9,6 +9,7 @@ import {
   buildDeck, registerActivity, displayStreak, doneToday,
 } from "../lib/srs";
 import { XP, levelInfo, ACHIEVEMENTS } from "../lib/game";
+import { speak } from "../lib/audio";
 
 const STORE_KEY = "sitkaz_progress_v3";
 const EMPTY = {
@@ -25,15 +26,6 @@ function loadProgress() {
     if (v2) return { ...EMPTY, ...v2 }; // миграция со старой версии
   } catch {}
   return EMPTY;
-}
-
-function speak(text) {
-  if (typeof window === "undefined" || !window.speechSynthesis) return;
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "kk-KZ";
-  u.rate = 0.85;
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(u);
 }
 
 function plural(n, one, few, many) {
