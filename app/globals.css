@@ -632,6 +632,48 @@ body::before {
 .lesson-progress-bar > div { height: 100%; background: var(--amber); border-radius: var(--pill); transition: width .4s ease; }
 .lesson-progress span { font-family: var(--font-label); font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; }
 
+/* ── Промокод ── */
+.promo-box {
+  margin-top: 18px;
+  background: var(--card);
+  border: 2px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+}
+.promo-label { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 10px; }
+.promo-row { display: flex; gap: 8px; }
+.promo-input {
+  flex: 1; min-width: 0;
+  border: 2px solid var(--ice-deep);
+  border-radius: var(--pill);
+  padding: 11px 16px;
+  font-size: 15px; font-family: var(--font-main); color: var(--heading);
+  background: var(--bg);
+  outline: none;
+  transition: border-color .2s ease;
+}
+.promo-input:focus { border-color: var(--amber-soft); }
+.promo-input.err { border-color: var(--coral); }
+.promo-btn {
+  flex-shrink: 0;
+  border: none; border-radius: var(--pill);
+  background: var(--amber); color: #fff;
+  padding: 11px 20px; font-size: 15px; font-weight: 700; cursor: pointer;
+  font-family: var(--font-main);
+  transition: transform .1s ease, filter .15s ease;
+}
+.promo-btn:hover { filter: brightness(1.05); }
+.promo-btn:active { transform: scale(0.96); }
+.promo-err { color: var(--coral); font-size: 13px; font-weight: 600; margin-top: 8px; }
+.promo-done {
+  margin-top: 18px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--amber-soft); color: #623300;
+  border-radius: var(--pill); padding: 12px 18px;
+  font-size: 14px; font-weight: 700;
+}
+
 /* ── Культурная заметка урока ── */
 .note-screen { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 8px 0 10px; }
 .note-title {

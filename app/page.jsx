@@ -14,9 +14,12 @@ import { loadLang, saveLang, dict, tr as trBase } from "../lib/i18n";
 
 const STORE_KEY = "sitkaz_progress_v3";
 const EMPTY = {
-  done: {}, quizzes: 0, bestScore: 0, dialogs: {}, xp: 0, achv: {},
+  done: {}, quizzes: 0, bestScore: 0, dialogs: {}, xp: 0, achv: {}, unlocked: false,
   srs: {}, streak: { count: 0, last: null, todayCount: 0 }, goal: 10,
 };
+
+// Промокод, открывающий доступ ко всем урокам
+const PROMO_CODE = "sitkaz";
 
 function loadProgress() {
   if (typeof window === "undefined") return EMPTY;
@@ -142,6 +145,16 @@ export default function App() {
   const openModule = (m) => { setActiveModule(m); setTab("module"); };
   const doneCountN = Object.keys(progress.done).length;
 
+  // Промокод: открыть доступ ко всем урокам
+  const applyPromo = (code) => {
+    if ((code || "").trim().toLowerCase() === PROMO_CODE) {
+      update((p) => ({ ...p, unlocked: true }));
+      celebrate(t.promo_ok);
+      return true;
+    }
+    return false;
+  };
+
   return (
     <LangCtx.Provider value={{ lang, t, setLang }}>
       <div className="app">
@@ -163,7 +176,7 @@ export default function App() {
         </div>
 
         {tab === "course" && (
-          <Course progress={progress} doneCount={doneCountN} onOpenModule={openModule} onOpen={openLesson} goPractice={() => setTab("practice")} />
+          <Course progress={progress} doneCount={doneCountN} onOpenModule={openModule} onOpen={openLesson} goPractice={() => setTab("practice")} applyPromo={applyPromo} />
         )}
         {tab === "module" && activeModule && (
           <ModuleView module={activeModule} progress={progress} onOpen={openLesson} onBack={() => setTab("course")} />
@@ -208,7 +221,7 @@ export default function App() {
 
 // ────────────────────────── Курс ──────────────────────────
 
-function Course({ progress, doneCount, onOpenModule, onOpen, goPractice }) {
+function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPromo }) {
   const { lang, t } = useLang();
   const total = lessons.length;
   const pct = Math.round((doneCount / total) * 100);
@@ -217,8 +230,15 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice }) {
   const today = doneToday(progress.streak);
   const goal = progress.goal || 10;
   const nextLesson = lessons.find((l) => !progress.done[l.id]) || null;
-  const moduleUnlocked = (idx) => idx === 0 || modules.slice(0, idx).every((pm) =>
+  const moduleUnlocked = (idx) => progress.unlocked || idx === 0 || modules.slice(0, idx).every((pm) =>
     lessonsByModule(pm.id).every((l) => progress.done[l.id]));
+
+  const [promo, setPromo] = useState("");
+  const [promoErr, setPromoErr] = useState(false);
+  const submitPromo = () => {
+    if (applyPromo(promo)) { setPromo(""); setPromoErr(false); }
+    else setPromoErr(true);
+  };
 
   return (
     <>
@@ -293,6 +313,27 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice }) {
       <p style={{ color: "var(--muted)", fontSize: 13, textAlign: "center", marginTop: 14 }}>
         {t.passed_of(doneCount, total)} ({pct}%)
       </p>
+
+      {progress.unlocked ? (
+        <div className="promo-done">
+          <Icon name="lock_open" filled style={{ color: "var(--amber)", fontSize: 18 }} /> {t.all_unlocked}
+        </div>
+      ) : (
+        <div className="promo-box">
+          <div className="promo-label">{t.promo_label}</div>
+          <div className="promo-row">
+            <input
+              className={"promo-input" + (promoErr ? " err" : "")}
+              value={promo}
+              placeholder={t.promo_placeholder}
+              onChange={(e) => { setPromo(e.target.value); setPromoErr(false); }}
+              onKeyDown={(e) => { if (e.key === "Enter") submitPromo(); }}
+            />
+            <button className="promo-btn" onClick={submitPromo}>{t.promo_apply}</button>
+          </div>
+          {promoErr && <div className="promo-err">{t.promo_bad}</div>}
+        </div>
+      )}
     </>
   );
 }
@@ -322,7 +363,7 @@ function ModuleView({ module: m, progress, onOpen, onBack }) {
       <div className="section-title">{t.lessons}</div>
       <div className="grid">
         {items.map((l) => {
-          const unlocked = l.id === 1 || progress.done[l.id] || progress.done[l.id - 1];
+          const unlocked = progress.unlocked || l.id === 1 || progress.done[l.id] || progress.done[l.id - 1];
           return (
             <div key={l.id} className={"card" + (unlocked ? "" : " locked")} onClick={() => unlocked && onOpen(l)}>
               <div className="lesson-row">
