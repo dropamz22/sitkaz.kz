@@ -48,7 +48,7 @@ export const dialogs = [
     ],
   },
   {
-    lessonId: 2,
+    lessonId: 6,
     title: "Разговор о семье", titleEn: "Talking About Family",
     intro: "Коллега расспрашивает тебя о семье.",
     introEn: "A colleague is asking you about your family.",
@@ -88,7 +88,7 @@ export const dialogs = [
     ],
   },
   {
-    lessonId: 19,
+    lessonId: 12,
     title: "В гостях", titleEn: "Being a Guest",
     intro: "Тебя пригласили в гости. Хозяйка встречает тебя у двери.",
     introEn: "You've been invited over. The host greets you at the door.",

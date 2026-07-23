@@ -632,6 +632,40 @@ body::before {
 .lesson-progress-bar > div { height: 100%; background: var(--amber); border-radius: var(--pill); transition: width .4s ease; }
 .lesson-progress span { font-family: var(--font-label); font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; }
 
+/* ── Культурная заметка урока ── */
+.note-screen { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 8px 0 10px; }
+.note-title {
+  font-family: var(--font-label); font-size: 12px; font-weight: 700;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+}
+.note-card {
+  background: var(--card);
+  border: 2px solid var(--card-border);
+  border-left: 5px solid var(--amber);
+  border-radius: 28px;
+  padding: 22px 24px;
+  font-size: 16px; line-height: 1.6; color: var(--text);
+  text-align: left;
+  box-shadow: var(--shadow);
+}
+
+/* ── Бейдж типа карточки ── */
+.type-badge {
+  font-family: var(--font-label);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 5px 12px; border-radius: var(--pill);
+  align-self: center;
+}
+.type-badge.type-phrase { display: none; }
+.type-badge.type-term { background: rgba(127, 168, 201, 0.18); color: #3a6a92; }
+.type-badge.type-proverb { background: rgba(242, 149, 60, 0.15); color: #a05a12; }
+.type-badge.type-colloc { background: rgba(169, 187, 203, 0.22); color: #556673; }
+
+/* цветной левый акцент карточки под тип */
+.study-card.study-term { border-color: rgba(127, 168, 201, 0.5); }
+.study-card.study-proverb { border-color: rgba(242, 149, 60, 0.45); }
+
 /* ── Карточка этапа «Изучение» ── */
 .study-card {
   background: var(--card);

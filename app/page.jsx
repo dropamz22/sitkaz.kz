@@ -408,14 +408,33 @@ function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComple
 
 // ─────────── Этап 1: Изучение ───────────
 
+const typeLabel = (type, t) => ({
+  term: t.type_term, proverb: t.type_proverb, colloc: t.type_colloc, phrase: t.type_phrase,
+}[type || "phrase"]);
+
 function StudyTrainer({ lesson, onDone }) {
   const { lang, t } = useLang();
+  const [showNote, setShowNote] = useState(!!lesson.note);
   const [i, setI] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const totalN = lesson.phrases.length;
   const p = lesson.phrases[i];
 
-  useEffect(() => { speak(p.kk); }, [i]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!showNote) speak(p.kk); }, [i, showNote]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Экран культурной заметки перед фразами
+  if (showNote && lesson.note) {
+    return (
+      <div className="note-screen">
+        <Mascot className="mascot-big" src={MASCOT.face} alt="Irbis" />
+        <div className="note-title">{t.note_title}</div>
+        <div className="note-card">{lang === "en" ? lesson.note.en : lesson.note.ru}</div>
+        <button className="btn primary" style={{ width: "100%", maxWidth: 320 }} onClick={() => setShowNote(false)}>
+          {t.note_start}
+        </button>
+      </div>
+    );
+  }
 
   const next = () => {
     if (i + 1 >= totalN) { onDone(); return; }
@@ -429,7 +448,8 @@ function StudyTrainer({ lesson, onDone }) {
         <span>{i + 1} / {totalN}</span>
       </div>
 
-      <div className="study-card" onClick={() => speak(p.kk)}>
+      <div className={"study-card" + (p.type && p.type !== "phrase" ? " study-" + p.type : "")} onClick={() => speak(p.kk)}>
+        <div className={"type-badge type-" + (p.type || "phrase")}>{typeLabel(p.type, t)}</div>
         <div className="study-kk">{p.kk}</div>
         <div className="study-tr">[{p.tr}] <Icon name="volume_up" style={{ fontSize: 16 }} /></div>
         {revealed ? (
