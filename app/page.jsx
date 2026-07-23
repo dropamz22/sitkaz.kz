@@ -43,6 +43,16 @@ function plural(n, one, few, many) {
   return many;
 }
 
+// Иконка Material Symbols (вместо эмодзи)
+const Icon = ({ name, filled, style }) => (
+  <span
+    className="msi"
+    style={{ ...(filled ? { fontVariationSettings: "'FILL' 1" } : {}), ...style }}
+  >
+    {name}
+  </span>
+);
+
 export default function App() {
   const [tab, setTab] = useState("course");
   const [activeLesson, setActiveLesson] = useState(null);
@@ -128,17 +138,17 @@ export default function App() {
     }
     const goal = progress.goal || 10;
     if (doneToday(prev.streak) < goal && doneToday(progress.streak) >= goal) {
-      celebrate("🎯 Цель дня выполнена!");
+      celebrate("Цель дня выполнена!");
     }
     const prevLvl = levelInfo(prev.xp || 0).num;
     const curLvl = levelInfo(progress.xp || 0).num;
-    if (curLvl > prevLvl) celebrate(`⭐ Новый уровень: ${levelInfo(progress.xp).title}!`);
+    if (curLvl > prevLvl) celebrate(`Новый уровень: ${levelInfo(progress.xp).title}!`);
     if (earned.length) {
       update((p) => ({
         ...p,
         achv: { ...(p.achv || {}), ...Object.fromEntries(earned.map((a) => [a.id, true])) },
       }));
-      earned.forEach((a) => celebrate("🏆 " + a.title));
+      earned.forEach((a) => celebrate("Достижение: " + a.title));
     }
   }, [progress]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -158,7 +168,7 @@ export default function App() {
           <h1>sitkaz.kz</h1>
           <span>Ситуативный казахский</span>
         </div>
-        <div className="brand-xp">⭐ {levelInfo(progress.xp || 0).title}</div>
+        <div className="brand-xp"><Icon name="star" filled style={{ fontSize: 14 }} /> {levelInfo(progress.xp || 0).title}</div>
       </div>
 
       {tab === "course" && (
@@ -183,20 +193,19 @@ export default function App() {
 
       <nav className="nav">
         {[
-          { id: "course", ic: "📚", label: "Курс" },
-          { id: "practice", ic: "🃏", label: "Практика" },
-          { id: "quiz", ic: "✅", label: "Квиз" },
-          { id: "stats", ic: "📊", label: "Прогресс" },
-        ].map((t) => (
-          <button
-            key={t.id}
-            className={tab === t.id || (t.id === "course" && tab === "lesson") ? "active" : ""}
-            onClick={() => setTab(t.id)}
-          >
-            <span className="ic">{t.ic}</span>
-            {t.label}
-          </button>
-        ))}
+          { id: "course", ic: "school", label: "Курс" },
+          { id: "practice", ic: "style", label: "Практика" },
+          { id: "quiz", ic: "quiz", label: "Квиз" },
+          { id: "stats", ic: "trending_up", label: "Прогресс" },
+        ].map((t) => {
+          const active = tab === t.id || (t.id === "course" && tab === "lesson");
+          return (
+            <button key={t.id} className={active ? "active" : ""} onClick={() => setTab(t.id)}>
+              <span className="ic msi" style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}>{t.ic}</span>
+              {t.label}
+            </button>
+          );
+        })}
       </nav>
     </div>
   );
@@ -217,7 +226,7 @@ function Course({ progress, doneCount, onOpen, goPractice }) {
       <div className="hero">
         <div className="hero-top">
           <div>
-            <h2>Сәлеметсіз бе! 👋</h2>
+            <h2>Сәлеметсіз бе!</h2>
             <p>Разговорный казахский: 3 модуля, 20 уроков. Готовые фразы для реальных ситуаций.</p>
           </div>
           <div className="goal-ring">
@@ -236,12 +245,14 @@ function Course({ progress, doneCount, onOpen, goPractice }) {
           </div>
         </div>
         <div className="chips-row">
-          <div className="chip">🔥 <b>{streak}</b> {plural(streak, "день", "дня", "дней")}</div>
-          <div className="chip">🎯 сегодня <b>{today}</b>/{goal}</div>
-          <div className="chip">🔁 повторить <b>{due}</b></div>
-          <div className="chip">⛰ <b>{progress.xp || 0}</b> м</div>
+          <div className="chip"><Icon name="local_fire_department" filled /> <b>{streak}</b> {plural(streak, "день", "дня", "дней")}</div>
+          <div className="chip"><Icon name="target" /> сегодня <b>{today}</b>/{goal}</div>
+          <div className="chip"><Icon name="autorenew" /> повторить <b>{due}</b></div>
+          <div className="chip"><Icon name="landscape" filled /> <b>{progress.xp || 0}</b> м</div>
         </div>
-        {today >= goal && <p style={{ marginTop: 10 }}>🎉 Цель на сегодня выполнена!</p>}
+        {today >= goal && (
+          <p style={{ marginTop: 10 }}><Icon name="celebration" filled style={{ color: "var(--amber)" }} /> Цель на сегодня выполнена!</p>
+        )}
         {due > 0 && (
           <button className="due-btn" onClick={goPractice}>
             <span>Повторить сегодня: {due} {plural(due, "фразу", "фразы", "фраз")}</span>
@@ -270,7 +281,13 @@ function Course({ progress, doneCount, onOpen, goPractice }) {
                   <div key={l.id} className={"card" + (unlocked ? "" : " locked")} onClick={() => unlocked && onOpen(l)}>
                     <div className="lesson-row">
                       <div className="lesson-icon" style={{ color: m.color }}>
-                        {progress.done[l.id] ? "✓" : unlocked ? l.id : "🔒"}
+                        {progress.done[l.id] ? (
+                          <Icon name="check_circle" filled />
+                        ) : unlocked ? (
+                          l.id
+                        ) : (
+                          <Icon name="lock" />
+                        )}
                       </div>
                       <div className="lesson-meta">
                         <h3>{l.title}</h3>
@@ -342,7 +359,7 @@ function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComple
             <iframe src={lesson.video} title={lesson.title} allowFullScreen />
           ) : (
             <div className="video-placeholder">
-              <div style={{ fontSize: 34 }}>▶️</div>
+              <Icon name="play_circle" filled style={{ fontSize: 44, color: "var(--amber)" }} />
               <div>Видео-лекция скоро появится</div>
               <small>Добавьте ссылку в поле <code>video</code> урока</small>
             </div>
@@ -355,18 +372,18 @@ function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComple
         <div key={p.kk} className="word-card" onClick={() => speak(p.kk)}>
           <div className="kk">{p.kk}</div>
           <div className="ru">{p.ru}</div>
-          <div className="tr">[{p.tr}] 🔊</div>
+          <div className="tr">[{p.tr}] <Icon name="volume_up" style={{ fontSize: 14 }} /></div>
         </div>
       ))}
 
       <div className="flash-controls" style={{ marginTop: 16 }}>
         {dialog && (
           <button className="btn ghost" onClick={() => setStage("dialog")}>
-            💬 Диалог {dialogDone ? "✓" : ""}
+            <Icon name="forum" /> Диалог{dialogDone ? " ✓" : ""}
           </button>
         )}
         <button className={done ? "btn ghost" : "btn primary"} onClick={() => setStage("quiz")}>
-          {done ? "Пересдать урок" : "✍️ Сдать урок"}
+          <Icon name="edit_note" /> {done ? "Пересдать урок" : "Сдать урок"}
         </button>
       </div>
       {!done && (
@@ -423,15 +440,11 @@ function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen }) {
     const passed = score >= need;
     return (
       <div className="result">
-        {passed ? (
-          <img className="mascot-big" src={MASCOT.leap} alt="Ирбис прыгает" />
-        ) : (
-          <div style={{ fontSize: 44 }}>💪</div>
-        )}
+        {passed && <img className="mascot-big" src={MASCOT.leap} alt="Ирбис прыгает" />}
         <div className="score">{score} / {questions.length}</div>
         {passed ? (
           <>
-            <p>Керемет! Урок «{lesson.title}» сдан! +50 м высоты ⛰{nextLesson ? " Следующий лагерь открыт." : " Это была вершина курса!"}</p>
+            <p>Керемет! Урок «{lesson.title}» сдан! +50 м высоты.{nextLesson ? " Следующий лагерь открыт." : " Это была вершина курса!"}</p>
             {nextLesson ? (
               <button className="btn primary" onClick={() => onOpen(nextLesson)}>
                 Урок {nextLesson.id}: {nextLesson.title} →
@@ -493,7 +506,7 @@ function DialogView({ dialog, onBack, onComplete }) {
   return (
     <>
       <button className="back" onClick={onBack}>← К уроку</button>
-      <div className="section-title">💬 Диалог · {dialog.title}</div>
+      <div className="section-title">Диалог · {dialog.title}</div>
       {step === 0 && !finished && <p className="dialog-intro">{dialog.intro}</p>}
 
       <div className="chat">
@@ -531,7 +544,7 @@ function DialogView({ dialog, onBack, onComplete }) {
         <div className="practice-done" style={{ padding: "10px" }}>
           <img className="mascot-big" src={MASCOT.campfire} alt="Ирбис у костра" />
           <h2 style={{ margin: "10px 0 6px" }}>Диалог пройден!</h2>
-          <p style={{ color: "var(--muted)", marginBottom: 18 }}>Ты справился со сценкой «{dialog.title}». +30 м высоты ⛰</p>
+          <p style={{ color: "var(--muted)", marginBottom: 18 }}>Ты справился со сценкой «{dialog.title}». +30 м высоты.</p>
           <button className="btn primary" style={{ maxWidth: 260 }} onClick={onBack}>Вернуться к уроку</button>
         </div>
       ) : (
@@ -619,7 +632,7 @@ function Practice({ srs, review }) {
           {!flipped ? (
             <div>
               <div className="big">{card.kk}</div>
-              <div className="sub">[{card.tr}] 🔊</div>
+              <div className="sub">[{card.tr}] <Icon name="volume_up" style={{ fontSize: 15 }} /></div>
               <div className="hint">Нажми, чтобы увидеть перевод</div>
             </div>
           ) : (
@@ -693,7 +706,7 @@ function Quiz({ update, review }) {
       <div className="result">
         <div className="section-title">Результат</div>
         <div className="score">{score} / {questions.length}</div>
-        <p>{score >= 8 ? "Керемет! Отлично! 🎉" : score >= 5 ? "Жақсы! Хороший результат 👍" : "Давай ещё разок 💪"}</p>
+        <p>{score >= 8 ? "Керемет! Отлично!" : score >= 5 ? "Жақсы! Хороший результат" : "Давай ещё разок"}</p>
         <button className="btn primary" onClick={restart}>Пройти снова</button>
       </div>
     );
@@ -732,7 +745,9 @@ function ChoiceQ({ q, onAnswer }) {
     <>
       {q.type === "kk2ru" && (
         <>
-          <div className="quiz-q" onClick={() => speak(q.word.kk)}>{q.word.kk} 🔊</div>
+          <div className="quiz-q" onClick={() => speak(q.word.kk)}>
+            {q.word.kk} <Icon name="volume_up" style={{ fontSize: 20, color: "var(--amber)" }} />
+          </div>
           <div className="quiz-sub">[{q.word.tr}]</div>
         </>
       )}
@@ -741,7 +756,7 @@ function ChoiceQ({ q, onAnswer }) {
         <>
           <button className="listen-btn" onClick={() => speak(q.word.kk)}>
             <img src={MASCOT.headphones} alt="Ирбис слушает" />
-            <span className="vol-badge">🔊</span>
+            <span className="vol-badge"><Icon name="volume_up" filled /></span>
           </button>
           <div className="quiz-sub">нажми, чтобы прослушать ещё раз</div>
         </>
@@ -851,7 +866,7 @@ function Stats({ progress, doneCount }) {
           <img src={MASCOT.portrait} alt="Ирбис" />
           <div className="lvl-badge">УР. {lv.num}</div>
         </div>
-        <h2>⭐ {lv.title} · {lv.ru}</h2>
+        <h2>{lv.title} · {lv.ru}</h2>
         <p>
           Высота <b>{progress.xp || 0} м</b>
           {lv.next ? <> — до звания «{lv.next.title}» ещё <b>{lv.toNext} м</b></> : " — вершина покорена!"}
@@ -859,7 +874,7 @@ function Stats({ progress, doneCount }) {
       </div>
 
       <div className="stat-row" style={{ marginBottom: 12 }}>
-        <div className="stat"><div className="num">🔥 {streak}</div><div className="lbl">{plural(streak, "день", "дня", "дней")} подряд</div></div>
+        <div className="stat"><div className="num"><Icon name="local_fire_department" filled style={{ fontSize: 20, color: "var(--amber)" }} /> {streak}</div><div className="lbl">{plural(streak, "день", "дня", "дней")} подряд</div></div>
         <div className="stat"><div className="num">{today}/{goal}</div><div className="lbl">фраз сегодня</div></div>
       </div>
       <div className="stat-row" style={{ marginBottom: 12 }}>
@@ -881,7 +896,9 @@ function Stats({ progress, doneCount }) {
           const got = !!(progress.achv && progress.achv[a.id]);
           return (
             <div key={a.id} className={"achv" + (got ? " got" : "")}>
-              <div className="achv-ic">{got ? "🏆" : "🔒"}</div>
+              <div className="achv-ic">
+                <Icon name={got ? "emoji_events" : "lock"} filled={got} style={got ? { color: "var(--amber)" } : undefined} />
+              </div>
               <div className="achv-t">{a.title}</div>
             </div>
           );
@@ -889,7 +906,7 @@ function Stats({ progress, doneCount }) {
       </div>
 
       <div className="hero" style={{ marginTop: 16 }}>
-        <h2>Так держать! 🚀</h2>
+        <h2>Так держать!</h2>
         <p>Проходи по одному уроку в день и закрепляй фразы в практике. Регулярность важнее объёма — фразы возвращаются ровно тогда, когда мозг готов их забыть.</p>
         <div className="progress-bar"><div style={{ width: `${pct}%` }} /></div>
       </div>
