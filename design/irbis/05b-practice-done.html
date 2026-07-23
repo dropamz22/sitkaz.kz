@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html class="light" lang="kk"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Білгір - Сессия завершена</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Nunito+Sans:wght@400;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@100..900&family=Quicksand:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed-variant": "#384956",
+                    "primary-container": "#f2953c",
+                    "surface": "#f7f9ff",
+                    "surface-bright": "#f7f9ff",
+                    "primary": "#8f4e00",
+                    "on-error-container": "#93000a",
+                    "outline-variant": "#dac2b1",
+                    "on-error": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "inverse-surface": "#1e3246",
+                    "surface-variant": "#cfe5ff",
+                    "surface-container-high": "#d9eaff",
+                    "on-surface-variant": "#544437",
+                    "tertiary-fixed": "#dbe3ea",
+                    "tertiary-fixed-dim": "#bfc8ce",
+                    "surface-container-highest": "#cfe5ff",
+                    "secondary": "#4f606e",
+                    "outline": "#877365",
+                    "surface-container": "#e4efff",
+                    "on-tertiary-container": "#384046",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed-dim": "#b7c9d9",
+                    "on-tertiary-fixed-variant": "#40484d",
+                    "secondary-fixed": "#d2e5f5",
+                    "surface-tint": "#8f4e00",
+                    "inverse-primary": "#ffb77b",
+                    "inverse-on-surface": "#e9f1ff",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#2e1500",
+                    "surface-dim": "#c7dcf6",
+                    "primary-fixed": "#ffdcc2",
+                    "on-primary-container": "#623300",
+                    "secondary-container": "#d0e2f3",
+                    "on-primary-fixed-variant": "#6d3a00",
+                    "tertiary": "#575f65",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed": "#0b1d29",
+                    "on-tertiary-fixed": "#151d22",
+                    "surface-container-low": "#eef4ff",
+                    "tertiary-container": "#a4acb3",
+                    "primary-fixed-dim": "#ffb77b",
+                    "on-surface": "#061d30",
+                    "on-secondary-container": "#536573",
+                    "on-background": "#061d30",
+                    "background": "#f7f9ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xl": "48px",
+                    "sm": "16px",
+                    "md": "24px",
+                    "container-padding": "20px",
+                    "base": "4px",
+                    "lg": "32px",
+                    "gutter": "16px",
+                    "xs": "8px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Quicksand"],
+                    "display-lg": ["Quicksand"],
+                    "body-md": ["Quicksand"],
+                    "body-lg": ["Quicksand"],
+                    "label-sm": ["Nunito Sans"],
+                    "headline-lg-mobile": ["Quicksand"],
+                    "title-md": ["Quicksand"],
+                    "label-lg": ["Nunito Sans"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "title-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #FDFEFF;
+            color: #33475C;
+            font-family: 'Quicksand', sans-serif;
+            overflow-x: hidden;
+        }
+        .pebble-card {
+            background: #FDFEFF;
+            border: 2px solid #EAF2F9;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(51, 71, 92, 0.04);
+        }
+        .cloud-glow {
+            box-shadow: 0 30px 60px -12px rgba(51, 71, 92, 0.08);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-pill {
+            background-color: #F2953C;
+            color: #FFFFFF;
+            transform: scale(1.1);
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes zzz {
+            0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+            50% { opacity: 1; transform: translate(10px, -20px) scale(1); }
+            100% { opacity: 0; transform: translate(20px, -40px) scale(1.2); }
+        }
+        .zzz-bubble {
+            position: absolute;
+            font-weight: bold;
+            color: #33475C;
+            opacity: 0;
+            animation: zzz 3s infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex flex-col min-h-screen max-w-md mx-auto relative px-gutter pt-4 pb-32">
+<!-- Top AppBar -->
+<header class="flex justify-between items-center w-full pt-4 px-2 mb-8">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-2xl">menu</span>
+<h1 class="font-title-md text-title-md font-bold text-primary">⭐ Білгір</h1>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden border-2 border-white shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A charming, soft-textured 3D illustration of a baby snow leopard mascot profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7WPtNeAm5mSpdf7RoI_m5bSzwqrxpR87GZpZwft-3Hu7o-eWi5NOA3kV6szOsrmw4TlogkBxucHaftGuFqdkE990nVsR-INNkbrJ_bmquetz6En6ACp9sdmoX-KRK_otKOzUQTpWjGTdbL_Sd-shdFqdLckk7YO9iXKU8XnDZ4LEsKjK3INGqokCab0IFnFR_BOXuKqXYWVpzDBb3_K8D9KlpcjwIKnTcKh-UPqkPmePxdFwEymH_wBIwE3zXtcogaxIKYtAlFt4"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center text-center">
+<!-- Hero Section: Napping Irbis -->
+<div class="relative w-full aspect-square max-w-[280px] mb-8 flex items-center justify-center">
+<!-- Background Snow Mound -->
+<div class="absolute bottom-4 w-48 h-12 bg-surface-container-low rounded-[100%] blur-xl opacity-60"></div>
+<!-- Irbis Mascot Illustration -->
+<div class="relative w-56 h-56 flex items-center justify-center animate-float">
+<div class="zzz-bubble text-xl" style="top: 20%; right: 20%; animation-delay: 0s;">z</div>
+<div class="zzz-bubble text-2xl" style="top: 10%; right: 10%; animation-delay: 1s;">Z</div>
+<div class="zzz-bubble text-lg" style="top: 30%; right: 30%; animation-delay: 2s;">z</div>
+<img class="w-full h-full object-contain" data-alt="A soft and cute vector illustration of a snow leopard mascot curled into a perfect circle, napping peacefully on a round mound of snow." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdQqh0vaIXjCvwM3Re61UkQIPCLO6ZAaMaTGt1O4P607iKQCvHnfOqJePisaCGEm-okBjA8ibtLLg-TvVv781olcL5WwO74zgegHJSX4FfvKQFAJuohOhMR7fFFaAtyg9VCrWLOSaod0umygEKPnzU1O8Jwbl17tqFFI8lj9ZTiaxTcb_sswr8SOjpwjP83ckxiVNfy0_5Kk83KIYzA5KP6G9p3agz2v2eu1XUFUpzUGG31ru9SPB4oQLNGDQBXSHTPVFxXdCGxu0"/>
+</div>
+</div>
+<!-- Headline -->
+<section class="mb-6 px-4">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Сессия завершена</h2>
+<p class="font-body-md text-secondary opacity-80">Отличная работа! Теперь Ирбис может немного отдохнуть.</p>
+</section>
+<!-- Stats Pebble -->
+<div class="pebble-card w-full p-6 mb-10 flex flex-col items-center gap-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">auto_stories</span>
+</div>
+<div class="text-left">
+<p class="font-title-md text-on-surface font-bold">16 фраз</p>
+<p class="font-label-sm text-secondary">изучено сегодня</p>
+</div>
+</div>
+<div class="w-full h-3 bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 75%"></div>
+</div>
+<p class="font-body-md text-on-surface">
+                знал <span class="font-bold text-primary">12</span>, повторим ещё <span class="font-bold text-error">4</span>
+</p>
+</div>
+<!-- CTA Button -->
+<button class="w-full py-5 px-8 rounded-full bg-primary-container text-on-surface font-bold text-body-lg shadow-lg active:scale-95 transition-all duration-200 flex items-center justify-center gap-3 cloud-glow">
+<span>Продолжить практику</span>
+<span class="material-symbols-outlined">arrow_forward_ios</span>
+</button>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-sm rounded-full bg-surface-container-low/80 backdrop-blur-md shadow-xl z-50 flex justify-around items-center px-4 py-2 border border-white/40">
+<!-- Курс -->
+<a class="flex flex-col items-center p-3 text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">school</span>
+<span class="font-label-sm mt-1">Курс</span>
+</a>
+<!-- Практика (Active) -->
+<div class="relative group">
+<a class="bg-primary text-on-primary rounded-full p-4 scale-110 shadow-md flex items-center justify-center transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">exercise</span>
+</a>
+<div class="absolute -top-1 -right-1 bg-primary-container text-[10px] w-4 h-4 rounded-full flex items-center justify-center shadow-sm border border-white">
+<span class="material-symbols-outlined text-[10px] leading-none">pets</span>
+</div>
+</div>
+<!-- Квиз -->
+<a class="flex flex-col items-center p-3 text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">emoji_events</span>
+<span class="font-label-sm mt-1">Квиз</span>
+</a>
+<!-- Прогресс -->
+<a class="flex flex-col items-center p-3 text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">person</span>
+<span class="font-label-sm mt-1">Прогресс</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for button press
+        document.querySelector('button').addEventListener('mousedown', function() {
+            this.style.transform = 'scale(0.96)';
+        });
+        document.querySelector('button').addEventListener('mouseup', function() {
+            this.style.transform = 'scale(1)';
+        });
+
+        // Dynamic Greeting based on time
+        const hour = new Date().getHours();
+        const greetingElement = document.querySelector('p.font-body-md.text-secondary');
+        if (hour < 12) {
+            greetingElement.textContent = "Қайырлы таң! Ирбис уже готов к новым вершинам.";
+        } else if (hour < 18) {
+            greetingElement.textContent = "Отличная дневная тренировка! Ирбис доволен результатом.";
+        } else {
+            greetingElement.textContent = "Кеш жарық! Ирбис отдыхает после продуктивного дня.";
+        }
+    </script>
+</body></html>

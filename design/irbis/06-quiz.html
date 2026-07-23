@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="light" lang="kk"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Білгір - Квиз</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@100..900&family=Quicksand:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#ffdad6",
+                    "secondary-fixed": "#d2e5f5",
+                    "outline-variant": "#dac2b1",
+                    "inverse-primary": "#ffb77b",
+                    "secondary-container": "#d0e2f3",
+                    "on-secondary-fixed-variant": "#384956",
+                    "surface-container-high": "#d9eaff",
+                    "surface-container-highest": "#cfe5ff",
+                    "on-primary-fixed-variant": "#6d3a00",
+                    "surface-variant": "#cfe5ff",
+                    "tertiary-fixed-dim": "#bfc8ce",
+                    "surface-tint": "#8f4e00",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-container": "#536573",
+                    "on-primary-container": "#623300",
+                    "tertiary": "#575f65",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-container": "#a4acb3",
+                    "on-tertiary-fixed": "#151d22",
+                    "on-tertiary-container": "#384046",
+                    "primary-fixed": "#ffdcc2",
+                    "on-error-container": "#93000a",
+                    "secondary": "#4f606e",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed": "#0b1d29",
+                    "secondary-fixed-dim": "#b7c9d9",
+                    "on-tertiary-fixed-variant": "#40484d",
+                    "primary-container": "#f2953c",
+                    "inverse-surface": "#1e3246",
+                    "outline": "#877365",
+                    "on-background": "#061d30",
+                    "on-surface": "#061d30",
+                    "primary-fixed-dim": "#ffb77b",
+                    "error": "#ba1a1a",
+                    "surface-container": "#e4efff",
+                    "inverse-on-surface": "#e9f1ff",
+                    "tertiary-fixed": "#dbe3ea",
+                    "surface-bright": "#f7f9ff",
+                    "on-error": "#ffffff",
+                    "surface-container-low": "#eef4ff",
+                    "surface-dim": "#c7dcf6",
+                    "on-primary": "#ffffff",
+                    "primary": "#8f4e00",
+                    "on-primary-fixed": "#2e1500",
+                    "surface": "#f7f9ff",
+                    "on-surface-variant": "#544437",
+                    "background": "#f7f9ff",
+                    "ice-tint": "#EAF2F9",
+                    "ice-deep": "#D6E6F2",
+                    "slate-blue": "#33475C",
+                    "warm-amber": "#F2953C",
+                    "soft-coral": "#E8887C"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "8px",
+                    "sm": "16px",
+                    "base": "4px",
+                    "md": "24px",
+                    "gutter": "16px",
+                    "lg": "32px",
+                    "xl": "48px",
+                    "container-padding": "20px"
+            },
+            "fontFamily": {
+                    "body-md": ["Quicksand"],
+                    "title-md": ["Quicksand"],
+                    "label-sm": ["Nunito Sans"],
+                    "label-lg": ["Nunito Sans"],
+                    "headline-lg-mobile": ["Quicksand"],
+                    "display-lg": ["Quicksand"],
+                    "headline-lg": ["Quicksand"],
+                    "body-lg": ["Quicksand"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+                    "title-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #FDFEFF;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .snow-hill {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 300px;
+            z-index: -1;
+            background: linear-gradient(180deg, rgba(253, 254, 255, 0) 0%, rgba(234, 242, 249, 0.4) 100%);
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            transform: scaleX(1.5) translateY(50px);
+        }
+        .snow-hill-2 {
+            position: fixed;
+            bottom: -20px;
+            left: -10%;
+            right: -10%;
+            height: 200px;
+            z-index: -1;
+            background: rgba(214, 230, 242, 0.3);
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            filter: blur(10px);
+        }
+        .pulse-amber {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.1; }
+        }
+        .pebble-shadow {
+            box-shadow: 0 20px 40px rgba(51, 71, 92, 0.06);
+        }
+        .active-tap {
+            transform: scale(0.95);
+            transition: transform 0.15s ease;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-slate-blue min-h-screen flex flex-col">
+<!-- Background Elements -->
+<div class="snow-hill"></div>
+<div class="snow-hill-2"></div>
+<!-- Top App Bar -->
+<header class="flex justify-between items-center w-full max-w-md mx-auto pt-4 px-gutter">
+<button class="w-12 h-12 flex items-center justify-center rounded-full bg-ice-tint text-slate-blue hover:opacity-80 active:scale-95 duration-200">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-title-md text-title-md font-bold text-primary">⭐ Білгір</h1>
+<div class="w-12 h-12 rounded-full border-2 border-ice-deep overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A cute stylized snow leopard mascot profile picture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKt0zBYrVcKHtMPiErs84hj2-FVfxCiDsAUH2CyevSoDVYZ_DKN2kaLjVgIqOw72XvY0lmc8ajkalfHzAdzAmP1WeB1qt3dRdbyzg1OoIA_SwfTSw45C4YIQUjUtnsUpRMJzhyYYodedlqt45uj2kjwluIAh4LeTFt9SVi5ohZZhXXnjoILlbXJGfwTDYil1_CkAzfAMs9eIeFTdqcSgjDA6lgZC6Kshn3gWDWrCYgM9eVAZ2aabFLExGCqw1pQR7Honn7oUqGB14"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-md mx-auto px-gutter mt-6 mb-32 flex flex-col items-center">
+<!-- Progress Capsule -->
+<div class="w-full bg-ice-tint rounded-xl p-base mb-sm">
+<div class="relative h-12 flex items-center px-sm">
+<!-- Inner Track -->
+<div class="absolute inset-x-2 h-2 bg-ice-deep rounded-full overflow-hidden">
+<div class="h-full bg-warm-amber w-[40%] rounded-full shadow-sm"></div>
+</div>
+<!-- Progress Text -->
+<div class="z-10 w-full flex justify-center">
+<span class="font-label-lg text-label-lg bg-ice-tint px-4 py-1 rounded-full text-slate-blue">
+                        Вопрос 4 из 10 · очки: 3
+                    </span>
+</div>
+</div>
+</div>
+<!-- Section Label Chip -->
+<div class="bg-ice-deep rounded-full px-6 py-2 mb-lg border-2 border-white shadow-sm">
+<span class="font-body-md text-body-md text-slate-blue">Аудирование: послушай и выбери</span>
+</div>
+<!-- Listen Interaction -->
+<div class="relative flex flex-col items-center mb-xl">
+<!-- Pulsing Ring -->
+<div class="absolute w-56 h-56 rounded-full bg-warm-amber pulse-amber"></div>
+<!-- Listen Button -->
+<button class="relative w-48 h-48 bg-white rounded-full pebble-shadow flex items-center justify-center border-4 border-ice-tint active:scale-95 duration-200 group">
+<div class="w-40 h-40 rounded-full overflow-hidden">
+<img class="w-full h-full object-contain" data-alt="A friendly snow leopard mascot wearing chunky slate blue headphones, sitting in a listening pose." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOojR8fZjCxAcnwHjdTbaldpCgP4c66NgQUCR4iGc9PtEuKvxmD3bG1TP87whYefO07cH937nk-6j3so5JXBa82yb4hNOE4E0jzkgj5gVZsrBt8DsDEcV-SLoNrNsF4ffTAjOMfmjX8VTIs-PWNMg7iuURYStgcVccOfyznHoAWnvhn88b2-rsR7vtdQNYFskIr8PtcBpDCa0X22Xv9lJdqDj2hlTb-DEtc00Yl52shTS59ZVh-g6ju7hGMxoTsBqBzLj51rkzJLU"/>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-warm-amber w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">volume_up</span>
+</div>
+</button>
+<p class="mt-md font-label-sm text-label-sm uppercase tracking-wider text-slate-blue/60">нажми, чтобы прослушать ещё раз</p>
+</div>
+<!-- Answers Section -->
+<div class="w-full space-y-4">
+<!-- Correct Option -->
+<button class="w-full h-16 bg-warm-amber rounded-xl px-6 flex items-center justify-between text-white shadow-lg active:scale-[0.98] transition-transform">
+<span class="font-title-md text-title-md font-bold">Добрый день</span>
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">pets</span>
+</button>
+<!-- Default Option -->
+<button class="w-full h-16 bg-white border-2 border-ice-tint rounded-xl px-6 flex items-center text-slate-blue pebble-shadow hover:bg-ice-tint transition-colors active:scale-[0.98]">
+<span class="font-title-md text-title-md">Доброе утро</span>
+</button>
+<!-- Error Option -->
+<button class="w-full h-16 bg-soft-coral border-2 border-soft-coral/20 rounded-xl px-6 flex items-center justify-between text-white shadow-sm active:scale-[0.98]">
+<span class="font-title-md text-title-md">Добрый вечер</span>
+<span class="material-symbols-outlined text-3xl">close</span>
+</button>
+<!-- Default Option -->
+<button class="w-full h-16 bg-white border-2 border-ice-tint rounded-xl px-6 flex items-center text-slate-blue pebble-shadow hover:bg-ice-tint transition-colors active:scale-[0.98]">
+<span class="font-title-md text-title-md">Спокойной ночи</span>
+</button>
+</div>
+</main>
+<!-- Bottom Nav Bar -->
+<nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-40px)] max-w-sm rounded-full bg-surface-container-low/80 backdrop-blur-md px-6 py-3 shadow-[0_20px_40px_rgba(51,71,92,0.12)] z-50">
+<div class="flex justify-around items-center">
+<!-- Home -->
+<a class="text-secondary p-3 hover:text-primary-container transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined text-2xl">home</span>
+</a>
+<!-- Quiz (Active) -->
+<a class="bg-warm-amber text-white rounded-full p-3 scale-110 shadow-md active:scale-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">pets</span>
+</a>
+<!-- School -->
+<a class="text-secondary p-3 hover:text-primary-container transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined text-2xl">school</span>
+</a>
+<!-- Events -->
+<a class="text-secondary p-3 hover:text-primary-container transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined text-2xl">emoji_events</span>
+</a>
+<!-- Profile -->
+<a class="text-secondary p-3 hover:text-primary-container transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined text-2xl">person</span>
+</a>
+</div>
+</nav>
+<script>
+        // Simple micro-interactions
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('active-tap'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('active-tap'));
+            btn.addEventListener('mouseleave', () => btn.classList.remove('active-tap'));
+        });
+
+        // Listen button specific effect
+        const listenBtn = document.querySelector('.pebble-shadow');
+        if(listenBtn) {
+            listenBtn.addEventListener('click', () => {
+                // Add a small bounce effect
+                listenBtn.style.transform = 'scale(0.92)';
+                setTimeout(() => {
+                    listenBtn.style.transform = 'scale(1)';
+                }, 150);
+            });
+        }
+    </script>
+</body></html>

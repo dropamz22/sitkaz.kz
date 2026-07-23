@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Білгір - Практика</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@100..900&family=Quicksand:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .super-ellipse {
+            border-radius: 48px;
+        }
+        .pebble-shadow {
+            box-shadow: 0 40px 80px -20px rgba(51, 71, 92, 0.08);
+        }
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.03); opacity: 0.9; }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 3s infinite ease-in-out;
+        }
+        .mountain-bg {
+            background: linear-gradient(180deg, #f7f9ff 0%, #eef4ff 100%);
+            overflow: hidden;
+        }
+        .glass-capsule {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        /* Subtle tactile press effect */
+        .active-press:active {
+            transform: scale(0.96);
+            transition: transform 0.1s;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#575f65",
+                      "primary-fixed-dim": "#ffb77b",
+                      "on-surface": "#061d30",
+                      "secondary-fixed-dim": "#b7c9d9",
+                      "tertiary-container": "#a4acb3",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-low": "#eef4ff",
+                      "on-secondary-fixed": "#0b1d29",
+                      "surface-container-lowest": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#f7f9ff",
+                      "primary": "#8f4e00",
+                      "background": "#f7f9ff",
+                      "error": "#ba1a1a",
+                      "on-primary-fixed": "#2e1500",
+                      "primary-fixed": "#ffdcc2",
+                      "on-tertiary-fixed-variant": "#40484d",
+                      "surface-dim": "#c7dcf6",
+                      "surface-variant": "#cfe5ff",
+                      "secondary": "#4f606e",
+                      "inverse-primary": "#ffb77b",
+                      "primary-container": "#f2953c",
+                      "inverse-surface": "#1e3246",
+                      "surface": "#f7f9ff",
+                      "surface-container-high": "#d9eaff",
+                      "secondary-fixed": "#d2e5f5",
+                      "outline": "#877365",
+                      "on-secondary-fixed-variant": "#384956",
+                      "on-secondary-container": "#536573",
+                      "outline-variant": "#dac2b1",
+                      "on-tertiary-container": "#384046",
+                      "tertiary-fixed": "#dbe3ea",
+                      "on-error": "#ffffff",
+                      "inverse-on-surface": "#e9f1ff",
+                      "on-tertiary-fixed": "#151d22",
+                      "tertiary-fixed-dim": "#bfc8ce",
+                      "on-primary-fixed-variant": "#6d3a00",
+                      "surface-tint": "#8f4e00",
+                      "on-background": "#061d30",
+                      "on-secondary": "#ffffff",
+                      "surface-container-highest": "#cfe5ff",
+                      "on-surface-variant": "#544437",
+                      "on-primary-container": "#623300",
+                      "secondary-container": "#d0e2f3",
+                      "surface-container": "#e4efff",
+                      "on-primary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "coral-soft": "#E8887C"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "container-padding": "20px",
+                      "md": "24px",
+                      "lg": "32px",
+                      "xs": "8px",
+                      "base": "4px",
+                      "xl": "48px",
+                      "sm": "16px"
+              },
+              "fontFamily": {
+                      "title-md": ["Quicksand"],
+                      "display-lg": ["Quicksand"],
+                      "label-sm": ["Nunito Sans"],
+                      "label-lg": ["Nunito Sans"],
+                      "body-lg": ["Quicksand"],
+                      "headline-lg-mobile": ["Quicksand"],
+                      "body-md": ["Quicksand"],
+                      "headline-lg": ["Quicksand"]
+              },
+              "fontSize": {
+                      "title-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "500"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="mountain-bg min-h-screen flex flex-col text-on-surface font-body-md overflow-x-hidden">
+<!-- Top App Bar (Shared Logic) -->
+<header class="flex justify-between items-center w-full max-w-md mx-auto pt-4 px-gutter z-20">
+<div class="active-press">
+<span class="material-symbols-outlined text-primary text-2xl">menu</span>
+</div>
+<h1 class="font-title-md text-title-md font-bold text-primary">⭐ Білгір</h1>
+<div class="w-10 h-10 rounded-full border-2 border-surface-container-high overflow-hidden shadow-sm active-press">
+<img class="w-full h-full object-cover" data-alt="A charming digital illustration of a cute snow leopard cub with round ears and warm amber eyes." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwsvZH9h_Im-A30taIWy8XhpzwfO2wrq5Py3q7F4ZTvsY_N5yYcgEPtBL9fC040oYtuv7NKl5NyY7c6Es8l4fOexuvVMB0y9qTJt1qOTAOjKIWLDhPiAPxRrnYSVIht9l_U8eotPeZQkdZhdYvNA04DEK2pCLgL40ILv7TfqGfWtPlzdOq4Xm7Z2aUrUay0gYhu496L0qGaJnPr_F9UgCjj7XOivkMjfArmpz570IY_PpmqWMPj9wlwK4sglfhwvgN-EYiFQYRUyA"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-md mx-auto px-gutter py-md flex flex-col items-center relative">
+<!-- Watercolor Background Aesthetic Elements -->
+<div class="absolute top-40 -left-20 w-80 h-80 opacity-20 pointer-events-none">
+<img class="w-full h-full object-contain" data-alt="Soft, dreamy watercolor painting of snow-capped mountain peaks in shades of pale blue and icy white." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4ZuQcrXci44iGud1KabVqH6q_LC31mjD1DC700VwHYMG3D9QuijIUmYMVN1tKOiApLdKbHWMDzgOXSUG--7bePpDPnrQ-Qo5sF6TPfkDz7rCxoiNNsKCI_j0rCrgZWRRCxFEOtD_LUEOEjQOajKvqELdiFuFVv3deb8kJZJ9sqSB-duAZf6BRRPfEXGTjUt37JruwVaHazc0cDGwETC-Axxr0Dkstu7sTOx-jB8zkA-KJfnusbcAXWIWVFbN9CARokKt9JP59nyU"/>
+</div>
+<!-- Session Capsule -->
+<div class="glass-capsule rounded-full px-6 py-2 shadow-sm mb-lg animate-fade-in flex items-center gap-2 border border-surface-container">
+<span class="font-label-lg text-secondary text-xs uppercase tracking-widest flex items-center gap-2">
+                Карточка <span class="text-primary font-bold">4 / 16</span>
+<span class="w-1 h-1 bg-outline-variant rounded-full"></span>
+                повторение: <span class="text-primary font-bold">12</span>
+<span class="w-1 h-1 bg-outline-variant rounded-full"></span>
+                новых: <span class="text-primary font-bold">4</span>
+</span>
+</div>
+<!-- Flashcard Area -->
+<div class="relative w-full mt-12 mb-lg">
+<!-- Mascot Peeking -->
+<div class="absolute -top-16 left-1/2 -translate-x-1/2 z-10 w-32 pointer-events-none">
+<img class="w-full h-auto" data-alt="A friendly snow leopard mascot playfully hanging its front paws over an invisible edge, looking at the user with warm amber eyes." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCveFuOov_E7nom79QDSiblwpZ0SCXGagj_6PTNDvARh7hPp_mcWlqjk6IYgeaNxXMILDq4AzQGBnfDmIDcZ0oqvFLcogPwQxmO9Vy7NxJpvEyIZk__-5f_q7zwe-we5Ljmsm8b8dIsigBh9cTnjSR5_ahjSuq-1wqZ1bm2EZEGbW2HW2-h5Bebr1DqnhTIMVi7zZg_g7j4VKmZqIZieA-IQWQqXOOXWGt3OFH1845Hk5MHqjM3gaJGNMTf_-VMX5MisL5BRYiKBOc"/>
+</div>
+<!-- The Pebble Card -->
+<div class="bg-surface-container-lowest super-ellipse p-md min-h-[380px] flex flex-col items-center justify-center relative pebble-shadow border-2 border-surface-container-low cursor-pointer active-press group transition-all duration-300" id="flashcard">
+<!-- Paw Print Watermark -->
+<div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-[160px]">pets</span>
+</div>
+<!-- Card Content -->
+<div class="text-center z-20 flex flex-col items-center gap-4">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">Сіз қайдансыз?</h2>
+<div class="flex items-center gap-3">
+<span class="text-secondary font-body-lg text-opacity-80 italic">[сиз кайдансыз]</span>
+<button class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary active-press transition-colors hover:bg-surface-container-high">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">volume_up</span>
+</button>
+</div>
+<!-- Hint Pill -->
+<div class="mt-lg px-6 py-3 bg-primary-container/10 border-2 border-primary-container/20 rounded-full text-primary font-label-lg flex items-center gap-2 animate-pulse-soft">
+<span class="material-symbols-outlined text-sm">visibility</span>
+                        Нажми, чтобы увидеть перевод
+                    </div>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="w-full grid grid-cols-2 gap-sm mb-md px-2">
+<button class="bg-coral-soft text-white font-title-md super-ellipse py-4 shadow-lg active-press transition-all hover:brightness-105 flex items-center justify-center gap-2">
+                Не знаю
+            </button>
+<button class="bg-primary-container text-on-primary-container font-title-md super-ellipse py-4 shadow-lg active-press transition-all hover:brightness-105 flex items-center justify-center gap-2">
+                Знаю <span class="material-symbols-outlined font-bold text-xl">done</span>
+</button>
+</div>
+<!-- Explanation Line -->
+<div class="text-center px-4">
+<p class="text-secondary font-label-sm leading-relaxed opacity-70">
+                «Знаю» — фраза вернётся позже <span class="font-bold text-primary">(1 → 3 → 7 → 21 день)</span>.<br/>
+                «Не знаю» — повторим сегодня.
+            </p>
+</div>
+</main>
+<!-- Bottom Navigation (Shared Component) -->
+<nav class="fixed bottom-6 left-0 right-0 z-50 flex justify-around items-center w-full max-w-sm mx-auto bg-surface-container-low/80 backdrop-blur-md rounded-full px-6 py-3 shadow-xl border border-white/20">
+<a class="text-secondary p-3 hover:text-primary-container transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">home</span>
+</a>
+<a class="bg-primary text-on-primary rounded-full p-3 scale-110 shadow-md transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">school</span>
+</a>
+<a class="text-secondary p-3 hover:text-primary-container transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">emoji_events</span>
+</a>
+<a class="text-secondary p-3 hover:text-primary-container transition-colors active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined">person</span>
+</a>
+</nav>
+<!-- Micro-interactions Script -->
+<script>
+        const card = document.getElementById('flashcard');
+        let flipped = false;
+        card.addEventListener('click', () => {
+            flipped = !flipped;
+            const content = card.querySelector('h2');
+            const hint = card.querySelector('.animate-pulse-soft');
+
+            if (flipped) {
+                card.style.transform = 'rotateY(10deg) scale(0.98)';
+                setTimeout(() => {
+                    card.style.transform = 'rotateY(0deg) scale(1)';
+                    content.innerText = 'Откуда вы?';
+                    content.classList.add('text-primary');
+                    hint.innerHTML = '<span class="material-symbols-outlined text-sm">cached</span> Нажми для оригинала';
+                }, 150);
+            } else {
+                card.style.transform = 'rotateY(-10deg) scale(0.98)';
+                setTimeout(() => {
+                    card.style.transform = 'rotateY(0deg) scale(1)';
+                    content.innerText = 'Сіз қайдансыз?';
+                    content.classList.remove('text-primary');
+                    hint.innerHTML = '<span class="material-symbols-outlined text-sm">visibility</span> Нажми, чтобы увидеть перевод';
+                }, 150);
+            }
+        });
+    </script>
+</body></html>

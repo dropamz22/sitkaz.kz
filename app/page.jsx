@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { modules, lessons, lessonsByModule, allPhrases } from "../data/course";
 import { dialogForLesson } from "../data/dialogs";
+import { MASCOT } from "../data/mascot";
 import {
   phraseId, shuffle, gradeSrs, dueCount, learnedCount,
   buildDeck, registerActivity, displayStreak, doneToday,
@@ -214,24 +215,37 @@ function Course({ progress, doneCount, onOpen, goPractice }) {
   return (
     <>
       <div className="hero">
-        <h2>Сәлеметсіз бе! 👋</h2>
-        <p>Курс разговорного казахского по методике «Ситуативный казахский»: 3 модуля, 20 уроков. Учим готовые фразы для реальных ситуаций.</p>
+        <div className="hero-top">
+          <div>
+            <h2>Сәлеметсіз бе! 👋</h2>
+            <p>Разговорный казахский: 3 модуля, 20 уроков. Готовые фразы для реальных ситуаций.</p>
+          </div>
+          <div className="goal-ring">
+            <svg width="96" height="96" viewBox="0 0 96 96">
+              <circle cx="48" cy="48" r="42" fill="transparent" stroke="#EAF2F9" strokeWidth="6" />
+              <circle
+                cx="48" cy="48" r="42" fill="transparent"
+                stroke="#F2953C" strokeWidth="6" strokeLinecap="round"
+                strokeDasharray="264"
+                strokeDashoffset={264 - 264 * Math.min(1, today / goal)}
+                style={{ transition: "stroke-dashoffset .6s ease" }}
+              />
+            </svg>
+            <img src={MASCOT.face} alt="Ирбис" />
+            <div className="goal-ring-label">Цель дня</div>
+          </div>
+        </div>
         <div className="chips-row">
           <div className="chip">🔥 <b>{streak}</b> {plural(streak, "день", "дня", "дней")}</div>
           <div className="chip">🎯 сегодня <b>{today}</b>/{goal}</div>
           <div className="chip">🔁 повторить <b>{due}</b></div>
-          <div className="chip">⭐ <b>{progress.xp || 0}</b> XP</div>
+          <div className="chip">⛰ <b>{progress.xp || 0}</b> м</div>
         </div>
-        {today < goal ? (
-          <div className="progress-bar" style={{ marginTop: 12 }}>
-            <div style={{ width: `${Math.min(100, Math.round((today / goal) * 100))}%` }} />
-          </div>
-        ) : (
-          <p style={{ marginTop: 10 }}>🎉 Цель на сегодня выполнена!</p>
-        )}
+        {today >= goal && <p style={{ marginTop: 10 }}>🎉 Цель на сегодня выполнена!</p>}
         {due > 0 && (
           <button className="due-btn" onClick={goPractice}>
-            Повторить сегодня: {due} {plural(due, "фразу", "фразы", "фраз")} →
+            <span>Повторить сегодня: {due} {plural(due, "фразу", "фразы", "фраз")}</span>
+            <span>→</span>
           </button>
         )}
       </div>
@@ -321,16 +335,19 @@ function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComple
       <h2 style={{ marginBottom: 4 }}>{lesson.title}</h2>
       <p style={{ color: "var(--muted)", marginBottom: 16 }}>{lesson.ru}</p>
 
-      <div className="video-box">
-        {lesson.video ? (
-          <iframe src={lesson.video} title={lesson.title} allowFullScreen />
-        ) : (
-          <div className="video-placeholder">
-            <div style={{ fontSize: 34 }}>▶️</div>
-            <div>Видео-лекция появится здесь</div>
-            <small>Добавьте ссылку в поле <code>video</code> урока</small>
-          </div>
-        )}
+      <div className="video-wrap">
+        <img className="mascot-video-peek" src={MASCOT.peek} alt="" />
+        <div className="video-box">
+          {lesson.video ? (
+            <iframe src={lesson.video} title={lesson.title} allowFullScreen />
+          ) : (
+            <div className="video-placeholder">
+              <div style={{ fontSize: 34 }}>▶️</div>
+              <div>Видео-лекция скоро появится</div>
+              <small>Добавьте ссылку в поле <code>video</code> урока</small>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="section-title">Ситуативные фразы</div>
@@ -406,11 +423,15 @@ function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen }) {
     const passed = score >= need;
     return (
       <div className="result">
-        <div style={{ fontSize: 44 }}>{passed ? "🎉" : "💪"}</div>
+        {passed ? (
+          <img className="mascot-big" src={MASCOT.leap} alt="Ирбис прыгает" />
+        ) : (
+          <div style={{ fontSize: 44 }}>💪</div>
+        )}
         <div className="score">{score} / {questions.length}</div>
         {passed ? (
           <>
-            <p>Урок «{lesson.title}» сдан!{nextLesson ? " Следующий урок открыт." : " Это был последний урок курса!"}</p>
+            <p>Керемет! Урок «{lesson.title}» сдан! +50 м высоты ⛰{nextLesson ? " Следующий лагерь открыт." : " Это была вершина курса!"}</p>
             {nextLesson ? (
               <button className="btn primary" onClick={() => onOpen(nextLesson)}>
                 Урок {nextLesson.id}: {nextLesson.title} →
@@ -478,31 +499,39 @@ function DialogView({ dialog, onBack, onComplete }) {
       <div className="chat">
         {dialog.steps.slice(0, step).map((s, si) => (
           <div key={si} style={{ display: "contents" }}>
-            <div className="bubble bot" onClick={() => speak(s.bot.kk)}>
-              {s.bot.kk}
-              <div className="ru-sub">{s.bot.ru}</div>
+            <div className="bubble-row">
+              <img className="bubble-avatar" src={MASCOT.face} alt="" />
+              <div className="bubble bot" onClick={() => speak(s.bot.kk)}>
+                {s.bot.kk}
+                <div className="ru-sub">{s.bot.ru}</div>
+              </div>
             </div>
             {history[si] && (
-              <div className="bubble me" onClick={() => speak(history[si].kk)}>
-                {history[si].kk}
-                <div className="ru-sub">{history[si].ru}</div>
+              <div className="bubble-row me">
+                <div className="bubble me" onClick={() => speak(history[si].kk)}>
+                  {history[si].kk}
+                  <div className="ru-sub">{history[si].ru}</div>
+                </div>
               </div>
             )}
           </div>
         ))}
         {current && (
-          <div className="bubble bot" onClick={() => speak(current.bot.kk)}>
-            {current.bot.kk}
-            <div className="ru-sub">{current.bot.ru}</div>
+          <div className="bubble-row">
+            <img className="bubble-avatar" src={MASCOT.face} alt="" />
+            <div className="bubble bot" onClick={() => speak(current.bot.kk)}>
+              {current.bot.kk}
+              <div className="ru-sub">{current.bot.ru}</div>
+            </div>
           </div>
         )}
       </div>
 
       {finished ? (
-        <div className="practice-done" style={{ padding: "20px 10px" }}>
-          <div style={{ fontSize: 40 }}>🎉</div>
+        <div className="practice-done" style={{ padding: "10px" }}>
+          <img className="mascot-big" src={MASCOT.campfire} alt="Ирбис у костра" />
           <h2 style={{ margin: "10px 0 6px" }}>Диалог пройден!</h2>
-          <p style={{ color: "var(--muted)", marginBottom: 18 }}>Ты справился со сценкой «{dialog.title}».</p>
+          <p style={{ color: "var(--muted)", marginBottom: 18 }}>Ты справился со сценкой «{dialog.title}». +30 м высоты ⛰</p>
           <button className="btn primary" style={{ maxWidth: 260 }} onClick={onBack}>Вернуться к уроку</button>
         </div>
       ) : (
@@ -547,9 +576,9 @@ function Practice({ srs, review }) {
   if (!deck.cards.length) {
     return (
       <div className="practice-done">
-        <div style={{ fontSize: 40 }}>🎉</div>
+        <img className="mascot-sleep" src={MASCOT.sleep} alt="Ирбис спит" />
         <h2 style={{ margin: "10px 0 6px" }}>На сегодня всё!</h2>
-        <p style={{ color: "var(--muted)" }}>Все фразы повторены. Возвращайся завтра.</p>
+        <p style={{ color: "var(--muted)" }}>Все фразы повторены — Ирбис может отдохнуть. Возвращайся завтра.</p>
       </div>
     );
   }
@@ -558,7 +587,7 @@ function Practice({ srs, review }) {
     const total = session.known + session.unknown;
     return (
       <div className="practice-done">
-        <div style={{ fontSize: 40 }}>✅</div>
+        <img className="mascot-sleep" src={MASCOT.sleep} alt="Ирбис отдыхает" />
         <h2 style={{ margin: "10px 0 6px" }}>Сессия завершена</h2>
         <p style={{ color: "var(--muted)", marginBottom: 20 }}>
           {total} {plural(total, "фраза", "фразы", "фраз")}: знал {session.known}, повторим ещё {session.unknown}
@@ -585,6 +614,7 @@ function Practice({ srs, review }) {
           : ` · повторение: ${deck.due} · новых: ${deck.fresh}`}
       </div>
       <div className="flash-wrap">
+        <img className="mascot-peek" src={MASCOT.peek} alt="" />
         <div className="flash" onClick={() => { setFlipped((f) => !f); if (!flipped) speak(card.kk); }}>
           {!flipped ? (
             <div>
@@ -709,7 +739,10 @@ function ChoiceQ({ q, onAnswer }) {
       {q.type === "ru2kk" && <div className="quiz-q" style={{ fontSize: 22 }}>{q.word.ru}</div>}
       {q.type === "listen" && (
         <>
-          <button className="listen-btn" onClick={() => speak(q.word.kk)}>🔊</button>
+          <button className="listen-btn" onClick={() => speak(q.word.kk)}>
+            <img src={MASCOT.headphones} alt="Ирбис слушает" />
+            <span className="vol-badge">🔊</span>
+          </button>
           <div className="quiz-sub">нажми, чтобы прослушать ещё раз</div>
         </>
       )}
@@ -803,10 +836,26 @@ function Stats({ progress, doneCount }) {
     <>
       <div className="section-title">Твой прогресс</div>
 
-      <div className="hero" style={{ marginBottom: 12 }}>
-        <h2>⭐ {lv.title} <span style={{ color: "var(--muted)", fontWeight: 400, fontSize: 15 }}>· {lv.ru} · уровень {lv.num}</span></h2>
-        <p>{progress.xp || 0} XP{lv.next ? ` — до звания «${lv.next.title}» ещё ${lv.toNext} XP` : " — максимальный уровень!"}</p>
-        <div className="progress-bar"><div style={{ width: `${lv.pct}%` }} /></div>
+      <div className="level-card">
+        <div className="level-ring">
+          <svg width="128" height="128" viewBox="0 0 128 128">
+            <circle cx="64" cy="64" r="58" fill="transparent" stroke="#D9EAFF" strokeWidth="6" />
+            <circle
+              cx="64" cy="64" r="58" fill="transparent"
+              stroke="#F2953C" strokeWidth="6" strokeLinecap="round"
+              strokeDasharray="364"
+              strokeDashoffset={364 - 364 * (lv.pct / 100)}
+              style={{ transition: "stroke-dashoffset .8s ease" }}
+            />
+          </svg>
+          <img src={MASCOT.portrait} alt="Ирбис" />
+          <div className="lvl-badge">УР. {lv.num}</div>
+        </div>
+        <h2>⭐ {lv.title} · {lv.ru}</h2>
+        <p>
+          Высота <b>{progress.xp || 0} м</b>
+          {lv.next ? <> — до звания «{lv.next.title}» ещё <b>{lv.toNext} м</b></> : " — вершина покорена!"}
+        </p>
       </div>
 
       <div className="stat-row" style={{ marginBottom: 12 }}>
@@ -850,7 +899,7 @@ function Stats({ progress, doneCount }) {
 
 // ────────────────────────── Конфетти ──────────────────────────
 
-const CONFETTI_COLORS = ["#00c2b8", "#ffd45e", "#f0a848", "#c084fc", "#34d399", "#f87171"];
+const CONFETTI_COLORS = ["#F2953C", "#D6E6F2", "#BFDCF0", "#ffffff", "#b7c9d9", "#ffb77b"];
 
 function Confetti() {
   return (

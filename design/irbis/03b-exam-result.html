@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html class="light" lang="kk"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sitkaz.kz - Результат экзамена</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&amp;family=Nunito+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#a4acb3",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#575f65",
+                    "primary-fixed-dim": "#ffb77b",
+                    "on-surface": "#061d30",
+                    "secondary-fixed-dim": "#b7c9d9",
+                    "surface-container-low": "#eef4ff",
+                    "on-secondary-fixed": "#0b1d29",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-bright": "#f7f9ff",
+                    "primary": "#8f4e00",
+                    "background": "#f7f9ff",
+                    "error": "#ba1a1a",
+                    "on-error-container": "#93000a",
+                    "surface-variant": "#cfe5ff",
+                    "secondary": "#4f606e",
+                    "inverse-primary": "#ffb77b",
+                    "on-primary-fixed": "#2e1500",
+                    "primary-fixed": "#ffdcc2",
+                    "on-tertiary-fixed-variant": "#40484d",
+                    "surface-dim": "#c7dcf6",
+                    "surface-container-high": "#d9eaff",
+                    "secondary-fixed": "#d2e5f5",
+                    "outline": "#877365",
+                    "on-secondary-fixed-variant": "#384956",
+                    "on-secondary-container": "#536573",
+                    "primary-container": "#f2953c",
+                    "inverse-surface": "#1e3246",
+                    "surface": "#f7f9ff",
+                    "tertiary-fixed": "#dbe3ea",
+                    "on-error": "#ffffff",
+                    "inverse-on-surface": "#e9f1ff",
+                    "on-tertiary-fixed": "#151d22",
+                    "outline-variant": "#dac2b1",
+                    "on-tertiary-container": "#384046",
+                    "on-primary-fixed-variant": "#6d3a00",
+                    "surface-tint": "#8f4e00",
+                    "on-background": "#061d30",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#bfc8ce",
+                    "secondary-container": "#d0e2f3",
+                    "surface-container": "#e4efff",
+                    "on-primary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "surface-container-highest": "#cfe5ff",
+                    "on-surface-variant": "#544437",
+                    "on-primary-container": "#623300"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "8px",
+                    "md": "24px",
+                    "lg": "32px",
+                    "gutter": "16px",
+                    "container-padding": "20px",
+                    "sm": "16px",
+                    "xl": "48px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Quicksand"],
+                    "headline-lg-mobile": ["Quicksand"],
+                    "body-md": ["Quicksand"],
+                    "label-sm": ["Nunito Sans"],
+                    "label-lg": ["Nunito Sans"],
+                    "body-lg": ["Quicksand"],
+                    "title-md": ["Quicksand"],
+                    "display-lg": ["Quicksand"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "500"}],
+                    "title-md": ["22px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f7f9ff;
+            font-family: 'Quicksand', sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .pebble-card {
+            background-color: #FDFEFF;
+            border: 2px solid #EAF2F9;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(51, 71, 92, 0.05);
+        }
+        .snow-hill {
+            border-radius: 60% 40% 100% 0% / 100% 100% 0% 0%;
+        }
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .confetti {
+            position: absolute;
+            pointer-events: none;
+        }
+        .dotted-trail {
+            background-image: radial-gradient(circle, #b7c9d9 1px, transparent 1px);
+            background-size: 12px 12px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center w-full px-container-padding py-xs bg-background z-50">
+<div class="flex items-center gap-xs">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A stylized, friendly avatar of a young Kazakh girl with a traditional ornament on her vest, soft watercolor style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeORTr50DcjmY00aoEC4LblUfTu4ysHufBd5XhL0RMHfEhNa-gz377A_UI7MENnzCC-BDy8stba_b3YB6soIUGTPebSmWw0fWFunKfg0EUzrDk47ZjGu0T2qeHIC5m1E9XkUx31L9mHOF7nTuiLVuaFUuwUJturPfKx6EunUK-UqxWhq2iKZhoa887-k80DIh17KAkxNHSCziUA5haemWWR5KdUr81HPU5eOPBvm9j_32TKA0PN1sR1GTJiTmYSE96K5b2p2m20fg"/>
+</div>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Ирбис талисман</span>
+</div>
+<div class="flex items-center gap-xs">
+<div class="bg-primary-container/20 px-sm py-1 rounded-full flex items-center gap-1">
+<span class="text-on-primary-container font-label-lg text-label-lg">⭐ Білгір</span>
+</div>
+<span class="material-symbols-outlined text-primary text-[28px]">mountain_flag</span>
+</div>
+</header>
+<main class="flex-grow w-full max-w-md px-container-padding flex flex-col items-center">
+<!-- Hero Section -->
+<section class="relative w-full h-72 mt-md flex flex-col justify-end overflow-hidden rounded-xl">
+<!-- Animated Background Placeholder -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+<div class="confetti-container absolute inset-0"></div>
+<img class="w-64 h-auto floating object-contain" data-alt="A joyful illustration of a snow leopard mascot with large warm amber eyes leaping in a graceful arc, confetti snowflakes falling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzIbHNRQuCvn-vAlrT0G2vVImIQRJJsbvK5Tq67yR9Wh77a3e27zEGKDB3uGCzB5M6sHXwS8o8F9AMQAz7BQPUOUPKzpX4LFRxm8Hl6fa0scu6fhbB0s-kt1ZzcVkhSZmOt2nmAQeBWInl_-nM-BbmwOjE-1QCbjqTSrtEXrUP4H8aU44BLdUlKR6Ozo10JikuonI1uMDqiA2KcJMGaTvtgJvKZs64AJ1zcnGNOkttRgKANZCBznrrhRri8Fl7yw950DfUaNt0Iw0"/>
+</div>
+<!-- Hills -->
+<div class="absolute bottom-0 left-0 right-0 h-32 bg-white/60 backdrop-blur-sm snow-hill z-0"></div>
+</section>
+<!-- Score Badge & Main Result -->
+<div class="pebble-card w-full p-lg -mt-12 relative z-20 flex flex-col items-center gap-md">
+<!-- Score Badge -->
+<div class="w-32 h-32 rounded-full bg-primary-container shadow-xl flex items-center justify-center relative overflow-hidden ring-8 ring-background">
+<div class="absolute inset-0 opacity-10"></div>
+<div class="flex flex-col items-center">
+<span class="font-display-lg text-display-lg text-white">5 / 5</span>
+<span class="material-symbols-outlined text-white/80" style="font-variation-settings: 'FILL' 1;">pets</span>
+</div>
+</div>
+<!-- Text Content -->
+<div class="text-center">
+<span class="font-label-lg text-label-lg text-secondary tracking-widest">РЕЗУЛЬТАТ ЭКЗАМЕНА</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mt-xs mb-sm">Керемет! Урок «Танысу» сдан!</h1>
+<p class="font-body-md text-body-md text-secondary leading-relaxed px-4">
+                    Следующий лагерь открыт. Подъём продолжается!
+                </p>
+</div>
+<!-- Path Indicator -->
+<div class="w-full flex items-center justify-center gap-xs py-md relative">
+<div class="absolute h-[2px] w-48 dotted-trail top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-30"></div>
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center z-10 border-4 border-white shadow-sm">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center z-10 border-4 border-white shadow-lg animate-bounce">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">mic_detect_auto</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center z-10 border-4 border-white shadow-sm">
+<span class="material-symbols-outlined text-tertiary-container text-sm">lock</span>
+</div>
+</div>
+<!-- CTA -->
+<button class="w-full bg-primary-container text-on-primary-container font-headline-lg-mobile py-md rounded-full shadow-lg active:scale-95 transition-all duration-200 flex items-center justify-center gap-xs">
+                Урок 2: Отбасы
+                <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<div class="h-32"></div> <!-- Spacing for bottom nav -->
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-md left-1/2 -translate-x-1/2 w-[90%] rounded-full backdrop-blur-md bg-surface-container-low/80 shadow-xl z-50 flex justify-around items-center px-sm py-xs mx-auto max-w-md h-20">
+<div class="flex flex-col items-center gap-1 active:scale-90 transition-all duration-300 group">
+<div class="flex items-center justify-center text-on-secondary-container w-12 h-12 rounded-full group-hover:bg-secondary-container/50">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-secondary-fixed-variant">Курс</span>
+</div>
+<div class="flex flex-col items-center gap-1 active:scale-90 transition-all duration-300 group">
+<div class="flex items-center justify-center text-on-secondary-container w-12 h-12 rounded-full group-hover:bg-secondary-container/50">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-secondary-fixed-variant">Практика</span>
+</div>
+<div class="flex flex-col items-center gap-1 active:scale-90 transition-all duration-300 group">
+<div class="flex items-center justify-center text-on-secondary-container w-12 h-12 rounded-full group-hover:bg-secondary-container/50">
+<span class="material-symbols-outlined" data-icon="quiz">quiz</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-secondary-fixed-variant">Квиз</span>
+</div>
+<div class="flex flex-col items-center gap-1 active:scale-90 transition-all duration-300">
+<div class="flex items-center justify-center bg-primary-container text-on-primary-container rounded-full w-12 h-12 shadow-md">
+<span class="material-symbols-outlined" data-icon="person" style="font-variation-settings: 'FILL' 1;">person</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold">Прогресс</span>
+</div>
+</nav>
+<script>
+        // Simple confetti effect
+        function createConfetti() {
+            const container = document.querySelector('.confetti-container');
+            const colors = ['#F2953C', '#D6E6F2', '#ffffff', '#b7c9d9'];
+
+            for(let i = 0; i < 40; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                const size = Math.random() * 8 + 4;
+                confetti.style.width = size + 'px';
+                confetti.style.height = size + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = '50%';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = -20 + 'px';
+                confetti.style.opacity = Math.random();
+
+                const duration = Math.random() * 3 + 2;
+                confetti.animate([
+                    { transform: `translateY(0) rotate(0deg) translateX(0)`, opacity: 1 },
+                    { transform: `translateY(300px) rotate(${Math.random() * 360}deg) translateX(${Math.random() * 40 - 20}px)`, opacity: 0 }
+                ], {
+                    duration: duration * 1000,
+                    easing: 'cubic-bezier(0, 0, 0.2, 1)',
+                    iterations: Infinity,
+                    delay: Math.random() * 2000
+                });
+
+                container.appendChild(confetti);
+            }
+        }
+
+        window.onload = createConfetti;
+    </script>
+</body></html>
