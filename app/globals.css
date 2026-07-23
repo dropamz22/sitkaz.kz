@@ -496,33 +496,38 @@ body::before {
 .level-card p { color: var(--muted); font-size: 14px; }
 .level-card b { color: var(--amber); }
 
-/* ── Карточка темы (на вкладке Курс) ── */
-.module-card {
-  display: flex; align-items: center; gap: 14px;
+/* ── Компактный список тем (на вкладке Курс) ── */
+.module-list {
   background: var(--card);
   border: 2px solid var(--card-border);
   border-radius: var(--radius);
-  padding: 18px 16px;
-  cursor: pointer;
+  overflow: hidden;
   box-shadow: var(--shadow);
-  transition: transform .15s ease, border-color .2s ease;
 }
-.module-card:active { transform: scale(0.98); }
-.module-card:hover { border-color: var(--amber-soft); }
-.module-card.locked { opacity: .5; filter: grayscale(1); cursor: default; box-shadow: none; }
-.module-card.locked:hover { border-color: var(--card-border); }
-.module-card.locked:active { transform: none; }
-.module-num {
-  min-width: 40px; height: 40px; border-radius: 50%;
-  display: grid; place-items: center; font-weight: 700; color: #fff; font-size: 16px;
-  flex-shrink: 0;
+.module-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--card-border);
+  transition: background .15s ease;
 }
-.module-card-body { flex: 1; min-width: 0; }
-.module-card-body h3 { font-size: 17px; font-weight: 700; color: var(--heading); }
-.module-card-body h3 span { color: var(--muted); font-weight: 400; font-size: 14px; }
-.module-card-body p { color: var(--muted); font-size: 12px; line-height: 1.4; margin-top: 3px; }
-.module-card-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
-.module-count { color: var(--muted); font-family: var(--font-label); font-size: 12px; font-weight: 700; white-space: nowrap; }
+.module-row:last-child { border-bottom: none; }
+.module-row:active { background: var(--ice); }
+.module-row.current { background: rgba(242, 149, 60, 0.06); }
+.module-row.locked { opacity: .5; filter: grayscale(1); cursor: default; }
+.module-row-num {
+  min-width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700; color: #fff; font-size: 14px;
+  flex-shrink: 0; background: var(--ice-deep);
+}
+.module-row.locked .module-row-num { color: var(--faint); }
+.module-row-body { flex: 1; min-width: 0; }
+.module-row-body h3 { font-size: 15px; font-weight: 700; color: var(--heading); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.module-row-body h3 span { color: var(--muted); font-weight: 400; font-size: 13px; }
+.module-row-bar { height: 5px; background: var(--ice-deep); border-radius: var(--pill); overflow: hidden; margin-top: 6px; }
+.module-row-bar > div { height: 100%; border-radius: var(--pill); transition: width .5s ease; }
+.module-row-count { color: var(--muted); font-family: var(--font-label); font-size: 12px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+.module-row.current .module-row-body h3 { color: var(--amber); }
 
 /* ── Шапка страницы темы ── */
 .module-hero {

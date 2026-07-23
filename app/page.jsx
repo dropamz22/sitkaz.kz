@@ -278,28 +278,29 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
       </div>
 
       <div className="section-title">{t.topics}</div>
-      <div className="grid">
+      <div className="module-list">
         {modules.map((m, idx) => {
           const items = lessonsByModule(m.id);
           const mDone = items.filter((l) => progress.done[l.id]).length;
           const unlocked = moduleUnlocked(idx);
           const mPct = Math.round((mDone / items.length) * 100);
+          const done = mDone === items.length;
+          const current = unlocked && !done && (idx === 0 || modules.slice(0, idx).every((pm) => lessonsByModule(pm.id).every((l) => progress.done[l.id])));
           return (
-            <div key={m.id} className={"module-card" + (unlocked ? "" : " locked")} onClick={() => unlocked && onOpenModule(m)}>
-              <div className="module-num" style={{ background: m.color }}>
-                {unlocked ? m.num : <Icon name="lock" style={{ fontSize: 18 }} />}
+            <div
+              key={m.id}
+              className={"module-row" + (unlocked ? "" : " locked") + (current ? " current" : "")}
+              onClick={() => unlocked && onOpenModule(m)}
+            >
+              <div className="module-row-num" style={{ background: unlocked ? m.color : undefined }}>
+                {done ? <Icon name="check" style={{ fontSize: 16 }} /> : unlocked ? m.num : <Icon name="lock" style={{ fontSize: 15 }} />}
               </div>
-              <div className="module-card-body">
+              <div className="module-row-body">
                 <h3>{m.title} <span>· {lang === "en" ? m.subtitleEn : m.subtitle}</span></h3>
-                <p>{lang === "en" ? m.descEn : m.desc}</p>
-                <div className="progress-bar" style={{ marginTop: 10 }}>
-                  <div style={{ width: `${mPct}%`, background: m.color }} />
-                </div>
+                <div className="module-row-bar"><div style={{ width: `${mPct}%`, background: m.color }} /></div>
               </div>
-              <div className="module-card-meta">
-                <div className="module-count">{mDone}/{items.length}</div>
-                <Icon name="chevron_right" style={{ color: "var(--faint)", fontSize: 22 }} />
-              </div>
+              <div className="module-row-count">{mDone}/{items.length}</div>
+              {unlocked && <Icon name="chevron_right" style={{ color: "var(--faint)", fontSize: 20, flexShrink: 0 }} />}
             </div>
           );
         })}
