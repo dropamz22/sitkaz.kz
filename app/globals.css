@@ -102,6 +102,32 @@ body::before {
   box-shadow: var(--shadow);
 }
 
+/* Переключатель языка RU/EN */
+.lang-switch {
+  margin-left: auto;
+  display: flex;
+  background: var(--ice);
+  border-radius: var(--pill);
+  padding: 3px;
+  gap: 2px;
+}
+.lang-switch button {
+  border: none;
+  background: none;
+  font-family: var(--font-label);
+  font-size: 13px; font-weight: 700;
+  color: var(--muted);
+  padding: 6px 12px;
+  border-radius: var(--pill);
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.lang-switch button.on {
+  background: var(--amber);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(242, 149, 60, 0.3);
+}
+
 /* ── Hero-камушек ── */
 .hero {
   position: relative;

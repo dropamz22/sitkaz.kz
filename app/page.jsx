@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { modules, lessons, lessonsByModule, allPhrases } from "../data/course";
 import { dialogForLesson } from "../data/dialogs";
 import { MASCOT } from "../data/mascot";
@@ -10,6 +10,7 @@ import {
 } from "../lib/srs";
 import { XP, levelInfo, ACHIEVEMENTS } from "../lib/game";
 import { speak } from "../lib/audio";
+import { loadLang, saveLang, dict, tr as trBase } from "../lib/i18n";
 
 const STORE_KEY = "sitkaz_progress_v3";
 const EMPTY = {
@@ -23,7 +24,7 @@ function loadProgress() {
     const v3 = JSON.parse(localStorage.getItem(STORE_KEY));
     if (v3) return { ...EMPTY, ...v3, streak: { ...EMPTY.streak, ...(v3.streak || {}) } };
     const v2 = JSON.parse(localStorage.getItem("sitkaz_progress_v2"));
-    if (v2) return { ...EMPTY, ...v2 }; // миграция со старой версии
+    if (v2) return { ...EMPTY, ...v2 };
   } catch {}
   return EMPTY;
 }
@@ -35,24 +36,23 @@ function plural(n, one, few, many) {
   return many;
 }
 
-// Иконка Material Symbols (вместо эмодзи)
+// ── Язык (контекст) ──
+const LangCtx = createContext({ lang: "ru", t: dict("ru"), setLang: () => {} });
+const useLang = () => useContext(LangCtx);
+// перевод фразы/объекта на текущий язык
+const P = (obj, lang) => trBase(obj, lang);
+// склонение дней/фраз с учётом языка
+const daysWord = (n, t, lang) => lang === "en" ? (n === 1 ? t.day_one : t.day_many) : plural(n, t.day_one, t.day_few, t.day_many);
+const phrasesWord = (n, t, lang) => lang === "en" ? (n === 1 ? t.phrase_one : t.phrase_many) : plural(n, t.phrase_one, t.phrase_few, t.phrase_many);
+
+// Иконка Material Symbols
 const Icon = ({ name, filled, style }) => (
-  <span
-    className="msi"
-    style={{ ...(filled ? { fontVariationSettings: "'FILL' 1" } : {}), ...style }}
-  >
-    {name}
-  </span>
+  <span className="msi" style={{ ...(filled ? { fontVariationSettings: "'FILL' 1" } : {}), ...style }}>{name}</span>
 );
 
-// Картинка маскота — прячется, если CDN недоступен (чтобы не ломать вёрстку)
+// Картинка маскота — прячется при сбое загрузки
 const Mascot = ({ src, className, alt = "" }) => (
-  <img
-    className={className}
-    src={src}
-    alt={alt}
-    onError={(e) => { e.currentTarget.style.display = "none"; }}
-  />
+  <img className={className} src={src} alt={alt} onError={(e) => { e.currentTarget.style.display = "none"; }} />
 );
 
 export default function App() {
@@ -60,14 +60,17 @@ export default function App() {
   const [activeLesson, setActiveLesson] = useState(null);
   const [activeModule, setActiveModule] = useState(null);
   const [progress, setProgress] = useState(EMPTY);
+  const [lang, setLangState] = useState("ru");
+  const t = dict(lang);
 
   useEffect(() => {
     setProgress(loadProgress());
+    setLangState(loadLang());
     const tg = typeof window !== "undefined" && window.Telegram && window.Telegram.WebApp;
-    if (tg) {
-      try { tg.ready(); tg.expand(); } catch {}
-    }
+    if (tg) { try { tg.ready(); tg.expand(); } catch {} }
   }, []);
+
+  const setLang = (l) => { setLangState(l); saveLang(l); };
 
   const update = (fn) => {
     setProgress((prev) => {
@@ -77,7 +80,6 @@ export default function App() {
     });
   };
 
-  // Одна оценка фразы: обновляет SRS + стрик/цель + XP
   const review = (phrase, known) => {
     update((prev) => ({
       ...prev,
@@ -89,39 +91,29 @@ export default function App() {
 
   const markDone = (lessonId) => {
     update((prev) =>
-      prev.done[lessonId]
-        ? prev
-        : { ...prev, done: { ...prev.done, [lessonId]: true }, xp: (prev.xp || 0) + XP.lesson }
-    );
+      prev.done[lessonId] ? prev
+        : { ...prev, done: { ...prev.done, [lessonId]: true }, xp: (prev.xp || 0) + XP.lesson });
   };
 
   const markDialogDone = (lessonId) => {
     update((prev) =>
-      prev.dialogs && prev.dialogs[lessonId]
-        ? prev
-        : {
-            ...prev,
-            dialogs: { ...(prev.dialogs || {}), [lessonId]: true },
-            xp: (prev.xp || 0) + XP.dialog,
-            streak: registerActivity(prev.streak),
-          }
-    );
+      prev.dialogs && prev.dialogs[lessonId] ? prev
+        : { ...prev, dialogs: { ...(prev.dialogs || {}), [lessonId]: true }, xp: (prev.xp || 0) + XP.dialog, streak: registerActivity(prev.streak) });
   };
 
-  // ── Праздники: тосты + конфетти ──
+  // ── Тосты + конфетти ──
   const [toasts, setToasts] = useState([]);
   const [confetti, setConfetti] = useState(false);
   const confettiTimer = useRef(null);
   const celebrate = (msg) => {
     const id = Math.random();
-    setToasts((t) => [...t, { id, msg }]);
-    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 3500);
+    setToasts((tt) => [...tt, { id, msg }]);
+    setTimeout(() => setToasts((tt) => tt.filter((x) => x.id !== id)), 3500);
     setConfetti(true);
     if (confettiTimer.current) clearTimeout(confettiTimer.current);
     confettiTimer.current = setTimeout(() => setConfetti(false), 2600);
   };
 
-  // Следим за прогрессом: новые ачивки и выполнение цели дня
   const prevRef = useRef(EMPTY);
   const hydratedRef = useRef(false);
   useEffect(() => {
@@ -129,29 +121,20 @@ export default function App() {
     prevRef.current = progress;
     const earned = ACHIEVEMENTS.filter((a) => !(progress.achv || {})[a.id] && a.test(progress));
     if (!hydratedRef.current) {
-      // первая загрузка: засчитать уже выполненные ачивки без фанфар
       hydratedRef.current = true;
       if (earned.length) {
-        update((p) => ({
-          ...p,
-          achv: { ...(p.achv || {}), ...Object.fromEntries(earned.map((a) => [a.id, true])) },
-        }));
+        update((p) => ({ ...p, achv: { ...(p.achv || {}), ...Object.fromEntries(earned.map((a) => [a.id, true])) } }));
       }
       return;
     }
     const goal = progress.goal || 10;
-    if (doneToday(prev.streak) < goal && doneToday(progress.streak) >= goal) {
-      celebrate("Цель дня выполнена!");
-    }
+    if (doneToday(prev.streak) < goal && doneToday(progress.streak) >= goal) celebrate(t.toast_goal);
     const prevLvl = levelInfo(prev.xp || 0).num;
     const curLvl = levelInfo(progress.xp || 0).num;
-    if (curLvl > prevLvl) celebrate(`Новый уровень: ${levelInfo(progress.xp).title}!`);
+    if (curLvl > prevLvl) celebrate(t.toast_level(levelInfo(progress.xp).title));
     if (earned.length) {
-      update((p) => ({
-        ...p,
-        achv: { ...(p.achv || {}), ...Object.fromEntries(earned.map((a) => [a.id, true])) },
-      }));
-      earned.forEach((a) => celebrate("Достижение: " + a.title));
+      update((p) => ({ ...p, achv: { ...(p.achv || {}), ...Object.fromEntries(earned.map((a) => [a.id, true])) } }));
+      earned.forEach((a) => celebrate(t.toast_achv(P(a, lang) || a.ru || a.title)));
     }
   }, [progress]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -160,132 +143,126 @@ export default function App() {
   const doneCountN = Object.keys(progress.done).length;
 
   return (
-    <div className="app">
-      {confetti && <Confetti />}
-      <div className="toasts">
-        {toasts.map((t) => <div key={t.id} className="toast">{t.msg}</div>)}
-      </div>
-
-      <div className="brand">
-        <div className="logo">Қ</div>
-        <div>
-          <h1>sitkaz.kz</h1>
-          <span>Ситуативный казахский</span>
+    <LangCtx.Provider value={{ lang, t, setLang }}>
+      <div className="app">
+        {confetti && <Confetti />}
+        <div className="toasts">
+          {toasts.map((x) => <div key={x.id} className="toast">{x.msg}</div>)}
         </div>
-        <div className="brand-xp"><Icon name="star" filled style={{ fontSize: 14 }} /> {levelInfo(progress.xp || 0).title}</div>
+
+        <div className="brand">
+          <div className="logo">Қ</div>
+          <div>
+            <h1>sitkaz.kz</h1>
+            <span>{t.tagline}</span>
+          </div>
+          <div className="lang-switch">
+            <button className={lang === "ru" ? "on" : ""} onClick={() => setLang("ru")}>RU</button>
+            <button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>EN</button>
+          </div>
+        </div>
+
+        {tab === "course" && (
+          <Course progress={progress} doneCount={doneCountN} onOpenModule={openModule} onOpen={openLesson} goPractice={() => setTab("practice")} />
+        )}
+        {tab === "module" && activeModule && (
+          <ModuleView module={activeModule} progress={progress} onOpen={openLesson} onBack={() => setTab("course")} />
+        )}
+        {tab === "lesson" && activeLesson && (
+          <LessonView
+            key={activeLesson.id}
+            lesson={activeLesson}
+            done={!!progress.done[activeLesson.id]}
+            dialogDone={!!(progress.dialogs && progress.dialogs[activeLesson.id])}
+            review={review}
+            onPassed={() => markDone(activeLesson.id)}
+            onDialogComplete={() => markDialogDone(activeLesson.id)}
+            onOpen={openLesson}
+            onBack={() => setTab("course")}
+          />
+        )}
+        {tab === "practice" && <Practice srs={progress.srs} review={review} />}
+        {tab === "quiz" && <Quiz update={update} review={review} />}
+        {tab === "stats" && <Stats progress={progress} doneCount={doneCountN} />}
+
+        <nav className="nav">
+          {[
+            { id: "course", ic: "school", label: t.nav_course },
+            { id: "practice", ic: "style", label: t.nav_practice },
+            { id: "quiz", ic: "quiz", label: t.nav_quiz },
+            { id: "stats", ic: "trending_up", label: t.nav_stats },
+          ].map((x) => {
+            const active = tab === x.id || (x.id === "course" && (tab === "lesson" || tab === "module"));
+            return (
+              <button key={x.id} className={active ? "active" : ""} onClick={() => setTab(x.id)}>
+                <span className="ic msi" style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}>{x.ic}</span>
+                {x.label}
+              </button>
+            );
+          })}
+        </nav>
       </div>
-
-      {tab === "course" && (
-        <Course progress={progress} doneCount={doneCountN} onOpenModule={openModule} onOpen={openLesson} goPractice={() => setTab("practice")} />
-      )}
-      {tab === "module" && activeModule && (
-        <ModuleView
-          module={activeModule}
-          progress={progress}
-          onOpen={openLesson}
-          onBack={() => setTab("course")}
-        />
-      )}
-      {tab === "lesson" && activeLesson && (
-        <LessonView
-          key={activeLesson.id}
-          lesson={activeLesson}
-          done={!!progress.done[activeLesson.id]}
-          dialogDone={!!(progress.dialogs && progress.dialogs[activeLesson.id])}
-          review={review}
-          onPassed={() => markDone(activeLesson.id)}
-          onDialogComplete={() => markDialogDone(activeLesson.id)}
-          onOpen={openLesson}
-          onBack={() => setTab("course")}
-        />
-      )}
-      {tab === "practice" && <Practice srs={progress.srs} review={review} />}
-      {tab === "quiz" && <Quiz update={update} review={review} />}
-      {tab === "stats" && <Stats progress={progress} doneCount={doneCountN} />}
-
-      <nav className="nav">
-        {[
-          { id: "course", ic: "school", label: "Курс" },
-          { id: "practice", ic: "style", label: "Практика" },
-          { id: "quiz", ic: "quiz", label: "Квиз" },
-          { id: "stats", ic: "trending_up", label: "Прогресс" },
-        ].map((t) => {
-          const active = tab === t.id || (t.id === "course" && (tab === "lesson" || tab === "module"));
-          return (
-            <button key={t.id} className={active ? "active" : ""} onClick={() => setTab(t.id)}>
-              <span className="ic msi" style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}>{t.ic}</span>
-              {t.label}
-            </button>
-          );
-        })}
-      </nav>
-    </div>
+    </LangCtx.Provider>
   );
 }
 
 // ────────────────────────── Курс ──────────────────────────
 
 function Course({ progress, doneCount, onOpenModule, onOpen, goPractice }) {
+  const { lang, t } = useLang();
   const total = lessons.length;
   const pct = Math.round((doneCount / total) * 100);
   const due = dueCount(progress.srs);
   const streak = displayStreak(progress.streak);
   const today = doneToday(progress.streak);
   const goal = progress.goal || 10;
-  // Следующий незавершённый урок — для кнопки «Продолжить»
   const nextLesson = lessons.find((l) => !progress.done[l.id]) || null;
-  // Модуль считается открытым, если пройден предыдущий (или это первый)
   const moduleUnlocked = (idx) => idx === 0 || modules.slice(0, idx).every((pm) =>
-    lessonsByModule(pm.id).every((l) => progress.done[l.id])
-  );
+    lessonsByModule(pm.id).every((l) => progress.done[l.id]));
 
   return (
     <>
       <div className="hero">
         <div className="hero-top">
           <div>
-            <h2>Сәлеметсіз бе!</h2>
-            <p>Разговорный казахский: 3 модуля, 20 уроков. Готовые фразы для реальных ситуаций.</p>
+            <h2>{t.hero_greeting}</h2>
+            <p>{t.hero_sub}</p>
           </div>
           <div className="goal-ring">
             <svg width="96" height="96" viewBox="0 0 96 96">
               <circle cx="48" cy="48" r="42" fill="transparent" stroke="#EAF2F9" strokeWidth="6" />
-              <circle
-                cx="48" cy="48" r="42" fill="transparent"
-                stroke="#F2953C" strokeWidth="6" strokeLinecap="round"
-                strokeDasharray="264"
-                strokeDashoffset={264 - 264 * Math.min(1, today / goal)}
-                style={{ transition: "stroke-dashoffset .6s ease" }}
-              />
+              <circle cx="48" cy="48" r="42" fill="transparent" stroke="#F2953C" strokeWidth="6" strokeLinecap="round"
+                strokeDasharray="264" strokeDashoffset={264 - 264 * Math.min(1, today / goal)}
+                style={{ transition: "stroke-dashoffset .6s ease" }} />
             </svg>
-            <Mascot src={MASCOT.face} alt="Ирбис" />
-            <div className="goal-ring-label">Цель дня</div>
+            <Mascot src={MASCOT.face} alt="Irbis" />
+            <div className="goal-ring-label">{t.goal_day}</div>
           </div>
         </div>
         <div className="chips-row">
-          <div className="chip"><Icon name="local_fire_department" filled /> <b>{streak}</b> {plural(streak, "день", "дня", "дней")}</div>
-          <div className="chip"><Icon name="target" /> сегодня <b>{today}</b>/{goal}</div>
-          <div className="chip"><Icon name="autorenew" /> повторить <b>{due}</b></div>
-          <div className="chip"><Icon name="landscape" filled /> <b>{progress.xp || 0}</b> м</div>
+          <div className="chip"><Icon name="local_fire_department" filled /> <b>{streak}</b> {daysWord(streak, t, lang)}</div>
+          <div className="chip"><Icon name="target" /> {t.chip_today} <b>{today}</b>/{goal}</div>
+          <div className="chip"><Icon name="autorenew" /> {t.chip_repeat} <b>{due}</b></div>
+          <div className="chip"><Icon name="landscape" filled /> <b>{progress.xp || 0}</b> {lang === "en" ? "m" : "м"}</div>
         </div>
         {today >= goal && (
-          <p style={{ marginTop: 10 }}><Icon name="celebration" filled style={{ color: "var(--amber)" }} /> Цель на сегодня выполнена!</p>
+          <p style={{ marginTop: 10 }}><Icon name="celebration" filled style={{ color: "var(--amber)" }} /> {t.goal_done}</p>
         )}
         {nextLesson && (
           <button className="due-btn" onClick={() => onOpen(nextLesson)}>
-            <span><Icon name="play_arrow" filled style={{ fontSize: 20, verticalAlign: "-0.25em" }} /> Продолжить: урок {nextLesson.id} · {nextLesson.title}</span>
+            <span><Icon name="play_arrow" filled style={{ fontSize: 20, verticalAlign: "-0.25em" }} /> {t.continue}: {P({ ru: "урок", en: "lesson" }, lang)} {nextLesson.id} · {nextLesson.title}</span>
             <span>→</span>
           </button>
         )}
         {due > 0 && (
           <button className="due-btn secondary" onClick={goPractice}>
-            <span><Icon name="autorenew" style={{ fontSize: 18, verticalAlign: "-0.2em" }} /> Повторить: {due} {plural(due, "фразу", "фразы", "фраз")}</span>
+            <span><Icon name="autorenew" style={{ fontSize: 18, verticalAlign: "-0.2em" }} /> {t.repeat}: {due} {phrasesWord(due, t, lang)}</span>
             <span>→</span>
           </button>
         )}
       </div>
 
-      <div className="section-title">Темы курса</div>
+      <div className="section-title">{t.topics}</div>
       <div className="grid">
         {modules.map((m, idx) => {
           const items = lessonsByModule(m.id);
@@ -293,17 +270,13 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice }) {
           const unlocked = moduleUnlocked(idx);
           const mPct = Math.round((mDone / items.length) * 100);
           return (
-            <div
-              key={m.id}
-              className={"module-card" + (unlocked ? "" : " locked")}
-              onClick={() => unlocked && onOpenModule(m)}
-            >
+            <div key={m.id} className={"module-card" + (unlocked ? "" : " locked")} onClick={() => unlocked && onOpenModule(m)}>
               <div className="module-num" style={{ background: m.color }}>
                 {unlocked ? m.num : <Icon name="lock" style={{ fontSize: 18 }} />}
               </div>
               <div className="module-card-body">
-                <h3>{m.title} <span>· {m.subtitle}</span></h3>
-                <p>{m.desc}</p>
+                <h3>{m.title} <span>· {lang === "en" ? m.subtitleEn : m.subtitle}</span></h3>
+                <p>{lang === "en" ? m.descEn : m.desc}</p>
                 <div className="progress-bar" style={{ marginTop: 10 }}>
                   <div style={{ width: `${mPct}%`, background: m.color }} />
                 </div>
@@ -318,7 +291,7 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice }) {
       </div>
 
       <p style={{ color: "var(--muted)", fontSize: 13, textAlign: "center", marginTop: 14 }}>
-        Пройдено {doneCount} из {total} уроков ({pct}%)
+        {t.passed_of(doneCount, total)} ({pct}%)
       </p>
     </>
   );
@@ -327,25 +300,26 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice }) {
 // ────────────────────── Страница темы ──────────────────────
 
 function ModuleView({ module: m, progress, onOpen, onBack }) {
+  const { lang, t } = useLang();
   const items = lessonsByModule(m.id);
   const mDone = items.filter((l) => progress.done[l.id]).length;
   const mPct = Math.round((mDone / items.length) * 100);
   return (
     <>
-      <button className="back" onClick={onBack}><Icon name="arrow_back" style={{ fontSize: 18 }} /> К темам</button>
+      <button className="back" onClick={onBack}><Icon name="arrow_back" style={{ fontSize: 18 }} /> {t.to_topics}</button>
 
       <div className="module-hero" style={{ borderColor: m.color }}>
         <div className="module-num" style={{ background: m.color, width: 44, height: 44, fontSize: 17 }}>{m.num}</div>
         <h2>{m.title}</h2>
-        <p className="module-hero-sub">{m.subtitle}</p>
-        <p className="module-hero-desc">{m.desc}</p>
+        <p className="module-hero-sub">{lang === "en" ? m.subtitleEn : m.subtitle}</p>
+        <p className="module-hero-desc">{lang === "en" ? m.descEn : m.desc}</p>
         <div className="progress-bar" style={{ marginTop: 14 }}>
           <div style={{ width: `${mPct}%`, background: m.color }} />
         </div>
-        <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>Пройдено {mDone} из {items.length}</p>
+        <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>{t.passed_of(mDone, items.length)}</p>
       </div>
 
-      <div className="section-title">Уроки</div>
+      <div className="section-title">{t.lessons}</div>
       <div className="grid">
         {items.map((l) => {
           const unlocked = l.id === 1 || progress.done[l.id] || progress.done[l.id - 1];
@@ -353,20 +327,14 @@ function ModuleView({ module: m, progress, onOpen, onBack }) {
             <div key={l.id} className={"card" + (unlocked ? "" : " locked")} onClick={() => unlocked && onOpen(l)}>
               <div className="lesson-row">
                 <div className="lesson-icon" style={{ color: m.color }}>
-                  {progress.done[l.id] ? (
-                    <Icon name="check_circle" filled />
-                  ) : unlocked ? (
-                    l.id
-                  ) : (
-                    <Icon name="lock" />
-                  )}
+                  {progress.done[l.id] ? <Icon name="check_circle" filled /> : unlocked ? l.id : <Icon name="lock" />}
                 </div>
                 <div className="lesson-meta">
                   <h3>{l.title}</h3>
-                  <p>{l.ru}</p>
+                  <p>{lang === "en" ? l.en : l.ru}</p>
                 </div>
                 <div className="lesson-count">
-                  {unlocked ? `${l.phrases.length} фраз →` : "сдай предыдущий"}
+                  {unlocked ? t.phrases_count(l.phrases.length) : t.lesson_locked}
                 </div>
               </div>
             </div>
@@ -379,12 +347,12 @@ function ModuleView({ module: m, progress, onOpen, onBack }) {
 
 // ────────────────────────── Урок ──────────────────────────
 
-// Индикатор этапов урока
 function StepBar({ stage }) {
+  const { t } = useLang();
   const steps = [
-    { id: "study", label: "Изучение" },
-    { id: "practice", label: "Практика" },
-    { id: "quiz", label: "Экзамен" },
+    { id: "study", label: t.step_study },
+    { id: "practice", label: t.step_practice },
+    { id: "quiz", label: t.step_quiz },
   ];
   const order = { study: 0, practice: 1, quiz: 2 };
   const cur = order[stage] ?? 0;
@@ -401,21 +369,19 @@ function StepBar({ stage }) {
 }
 
 function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComplete, onOpen, onBack }) {
+  const { lang } = useLang();
   const mod = modules.find((m) => m.id === lesson.module);
   const dialog = dialogForLesson(lesson.id);
   const nextLesson = lessons.find((l) => l.id === lesson.id + 1) || null;
-  // Сразу в изучение — никакого промежуточного списка
-  const [stage, setStage] = useState("study"); // study | practice | quiz | dialog
+  const [stage, setStage] = useState("study");
 
   const header = (
     <>
       <div className="lesson-topbar">
-        <button className="back" style={{ margin: 0 }} onClick={onBack}>
-          <Icon name="close" style={{ fontSize: 18 }} />
-        </button>
+        <button className="back" style={{ margin: 0 }} onClick={onBack}><Icon name="close" style={{ fontSize: 18 }} /></button>
         <div className="lesson-topbar-title">
           <b>{lesson.title}</b>
-          <span>{lesson.ru}</span>
+          <span>{lang === "en" ? lesson.en : lesson.ru}</span>
         </div>
       </div>
       <StepBar stage={stage === "dialog" ? "study" : stage} />
@@ -423,93 +389,64 @@ function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComple
   );
 
   if (stage === "dialog" && dialog) {
-    return (
-      <DialogView dialog={dialog} onBack={() => setStage("study")} onComplete={onDialogComplete} />
-    );
+    return <DialogView dialog={dialog} onBack={() => setStage("study")} onComplete={onDialogComplete} />;
   }
-
   if (stage === "study") {
-    return (
-      <>
-        {header}
-        <StudyTrainer lesson={lesson} onDone={() => setStage("practice")} />
-      </>
-    );
+    return (<>{header}<StudyTrainer lesson={lesson} onDone={() => setStage("practice")} /></>);
   }
-
   if (stage === "practice") {
-    return (
-      <>
-        {header}
-        <LessonPractice lesson={lesson} review={review} onDone={() => setStage("quiz")} onBack={() => setStage("study")} />
-      </>
-    );
+    return (<>{header}<LessonPractice lesson={lesson} review={review} onDone={() => setStage("quiz")} /></>);
   }
-
-  // stage === "quiz"
   return (
     <>
       {header}
-      <LessonQuiz
-        lesson={lesson}
-        review={review}
-        onPassed={onPassed}
-        onBack={() => setStage("practice")}
-        nextLesson={nextLesson}
-        onOpen={onOpen}
-        dialog={dialog}
-        dialogDone={dialogDone}
-        onDialog={() => setStage("dialog")}
-      />
+      <LessonQuiz lesson={lesson} review={review} onPassed={onPassed} onBack={() => setStage("practice")}
+        nextLesson={nextLesson} onOpen={onOpen} dialog={dialog} dialogDone={dialogDone} onDialog={() => setStage("dialog")} />
     </>
   );
 }
 
-// ─────────── Этап 1: Изучение (карточки по одной) ───────────
+// ─────────── Этап 1: Изучение ───────────
 
 function StudyTrainer({ lesson, onDone }) {
+  const { lang, t } = useLang();
   const [i, setI] = useState(0);
   const [revealed, setRevealed] = useState(false);
-  const total = lesson.phrases.length;
+  const totalN = lesson.phrases.length;
   const p = lesson.phrases[i];
 
   useEffect(() => { speak(p.kk); }, [i]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const next = () => {
-    if (i + 1 >= total) { onDone(); return; }
+    if (i + 1 >= totalN) { onDone(); return; }
     setI(i + 1); setRevealed(false);
   };
 
   return (
     <>
       <div className="lesson-progress">
-        <div className="lesson-progress-bar"><div style={{ width: `${((i + 1) / total) * 100}%` }} /></div>
-        <span>{i + 1} / {total}</span>
+        <div className="lesson-progress-bar"><div style={{ width: `${((i + 1) / totalN) * 100}%` }} /></div>
+        <span>{i + 1} / {totalN}</span>
       </div>
 
       <div className="study-card" onClick={() => speak(p.kk)}>
         <div className="study-kk">{p.kk}</div>
         <div className="study-tr">[{p.tr}] <Icon name="volume_up" style={{ fontSize: 16 }} /></div>
         {revealed ? (
-          <div className="study-ru">{p.ru}</div>
+          <div className="study-ru">{P(p, lang)}</div>
         ) : (
-          <button
-            className="study-reveal"
-            onClick={(e) => { e.stopPropagation(); setRevealed(true); }}
-          >
-            Показать перевод
-          </button>
+          <button className="study-reveal" onClick={(e) => { e.stopPropagation(); setRevealed(true); }}>{t.show_translation}</button>
         )}
       </div>
 
       <button className="btn primary" style={{ width: "100%", marginTop: 6 }} onClick={next}>
-        {i + 1 >= total ? "К практике →" : "Дальше →"}
+        {i + 1 >= totalN ? t.to_practice : t.next}
       </button>
     </>
   );
 }
 
-// ─────────── Этап 2: Практика (активное припоминание) ───────────
+// ─────────── Этап 2: Практика ───────────
 
 function makePracticeQ(p, lesson) {
   const w = { ...p, lesson: lesson.title, lessonId: lesson.id };
@@ -518,22 +455,20 @@ function makePracticeQ(p, lesson) {
   if (words.length >= 3 && words.length <= 8) types.push("assemble");
   const type = types[Math.floor(Math.random() * types.length)];
   if (type === "assemble") return { type, word: w, words: shuffle(words) };
-  const wrong = shuffle(allPhrases.filter((x) => x.ru !== w.ru)).slice(0, 3);
+  const wrong = shuffle(allPhrases.filter((x) => x.kk !== w.kk)).slice(0, 3);
   return { type, word: w, options: shuffle([w, ...wrong]) };
 }
 
-function LessonPractice({ lesson, review, onDone, onBack }) {
+function LessonPractice({ lesson, review, onDone }) {
+  const { t } = useLang();
   const [queue, setQueue] = useState(() => shuffle(lesson.phrases).map((p) => makePracticeQ(p, lesson)));
   const [i, setI] = useState(0);
-  const total = lesson.phrases.length;
+  const totalN = lesson.phrases.length;
   const q = queue[i];
 
   const answered = (ok) => {
     review(q.word, ok);
-    if (!ok) {
-      // неверно — фраза вернётся ещё раз в конце
-      setQueue((prev) => [...prev, makePracticeQ(q.word, lesson)]);
-    }
+    if (!ok) setQueue((prev) => [...prev, makePracticeQ(q.word, lesson)]);
     if (i + 1 >= queue.length) { onDone(); return; }
     setI(i + 1);
   };
@@ -541,18 +476,16 @@ function LessonPractice({ lesson, review, onDone, onBack }) {
   return (
     <>
       <div className="lesson-progress">
-        <div className="lesson-progress-bar"><div style={{ width: `${Math.min(100, ((i + 1) / total) * 100)}%` }} /></div>
-        <span>{Math.min(i + 1, total)} / {total}</span>
+        <div className="lesson-progress-bar"><div style={{ width: `${Math.min(100, ((i + 1) / totalN) * 100)}%` }} /></div>
+        <span>{Math.min(i + 1, totalN)} / {totalN}</span>
       </div>
-      <div className="q-type">{Q_LABEL[q.type]}</div>
-      {q.type === "assemble"
-        ? <AssembleQ key={i} q={q} onAnswer={answered} />
-        : <ChoiceQ key={i} q={q} onAnswer={answered} />}
+      <div className="q-type">{qLabel(q.type, t)}</div>
+      {q.type === "assemble" ? <AssembleQ key={i} q={q} onAnswer={answered} /> : <ChoiceQ key={i} q={q} onAnswer={answered} />}
     </>
   );
 }
 
-// ─────────── Мини-экзамен урока (открывает следующий) ───────────
+// ─────────── Мини-экзамен урока ───────────
 
 function makeLessonQuestions(lesson) {
   const pool = shuffle(lesson.phrases).slice(0, 5);
@@ -563,12 +496,13 @@ function makeLessonQuestions(lesson) {
     if (words.length >= 3 && words.length <= 8) types.push("assemble");
     const type = types[Math.floor(Math.random() * types.length)];
     if (type === "assemble") return { type, word: w, words: shuffle(words) };
-    const wrong = shuffle(allPhrases.filter((x) => x.ru !== w.ru)).slice(0, 3);
+    const wrong = shuffle(allPhrases.filter((x) => x.kk !== w.kk)).slice(0, 3);
     return { type, word: w, options: shuffle([w, ...wrong]) };
   });
 }
 
 function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen, dialog, dialogDone, onDialog }) {
+  const { lang, t } = useLang();
   const [questions, setQuestions] = useState(() => makeLessonQuestions(lesson));
   const [i, setI] = useState(0);
   const [score, setScore] = useState(0);
@@ -580,47 +514,42 @@ function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen, dial
     review(q.word, ok);
     const s = ok ? score + 1 : score;
     setScore(s);
-    if (i + 1 >= questions.length) {
-      if (s >= need) onPassed();
-      setDone(true);
-    } else {
-      setI(i + 1);
-    }
+    if (i + 1 >= questions.length) { if (s >= need) onPassed(); setDone(true); }
+    else setI(i + 1);
   };
 
-  const restart = () => {
-    setQuestions(makeLessonQuestions(lesson));
-    setI(0); setScore(0); setDone(false);
-  };
+  const restart = () => { setQuestions(makeLessonQuestions(lesson)); setI(0); setScore(0); setDone(false); };
 
   if (done) {
     const passed = score >= need;
     return (
       <div className="result">
-        {passed && <Mascot className="mascot-big" src={MASCOT.leap} alt="Ирбис прыгает" />}
+        {passed && <Mascot className="mascot-big" src={MASCOT.leap} alt="Irbis" />}
         <div className="score">{score} / {questions.length}</div>
         {passed ? (
           <>
-            <p>Керемет! Урок «{lesson.title}» сдан! +50 м высоты.{nextLesson ? " Следующий лагерь открыт." : " Это была вершина курса!"}</p>
+            <p>{lang === "en"
+              ? `Керемет! Lesson "${lesson.en}" passed! +50 m of altitude.${nextLesson ? " The next camp is open." : " That was the summit of the course!"}`
+              : `Керемет! Урок «${lesson.ru}» сдан! +50 м высоты.${nextLesson ? " Следующий лагерь открыт." : " Это была вершина курса!"}`}</p>
             {dialog && !dialogDone && (
               <button className="btn ghost" style={{ width: "100%", marginBottom: 10 }} onClick={onDialog}>
-                <Icon name="forum" /> Пройти диалог-сценку
+                <Icon name="forum" /> {t.pass_dialog}
               </button>
             )}
             {nextLesson ? (
               <button className="btn primary" style={{ width: "100%" }} onClick={() => onOpen(nextLesson)}>
-                Урок {nextLesson.id}: {nextLesson.title} →
+                {lang === "en" ? "Lesson" : "Урок"} {nextLesson.id}: {nextLesson.title} →
               </button>
             ) : (
-              <button className="btn primary" style={{ width: "100%" }} onClick={onBack}>К темам</button>
+              <button className="btn primary" style={{ width: "100%" }} onClick={onBack}>{t.to_topics}</button>
             )}
           </>
         ) : (
           <>
-            <p>Нужно {need} из {questions.length}. Повтори фразы и попробуй ещё раз.</p>
+            <p>{t.exam_fail(need, questions.length)}</p>
             <div className="flash-controls">
-              <button className="btn ghost" onClick={onBack}>К фразам</button>
-              <button className="btn primary" onClick={restart}>Ещё раз</button>
+              <button className="btn ghost" onClick={onBack}>{t.to_phrases}</button>
+              <button className="btn primary" onClick={restart}>{t.once_more}</button>
             </div>
           </>
         )}
@@ -630,45 +559,37 @@ function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen, dial
 
   return (
     <>
-      <div className="quiz-progress">Экзамен · вопрос {i + 1} из {questions.length} · верно: {score}</div>
-      <div className="q-type">{Q_LABEL[q.type]}</div>
-      {q.type === "assemble"
-        ? <AssembleQ key={i} q={q} onAnswer={answered} />
-        : <ChoiceQ key={i} q={q} onAnswer={answered} />}
+      <div className="quiz-progress">{t.exam} · {t.question.toLowerCase()} {i + 1} {t.of} {questions.length} · {t.correct}: {score}</div>
+      <div className="q-type">{qLabel(q.type, t)}</div>
+      {q.type === "assemble" ? <AssembleQ key={i} q={q} onAnswer={answered} /> : <ChoiceQ key={i} q={q} onAnswer={answered} />}
     </>
   );
 }
 
-// ─────────────── Диалог-сценка (экран-чат) ───────────────
+// ─────────────── Диалог-сценка ───────────────
 
 function DialogView({ dialog, onBack, onComplete }) {
+  const { lang, t } = useLang();
   const [step, setStep] = useState(0);
   const [history, setHistory] = useState([]);
   const [wrongIdx, setWrongIdx] = useState(null);
   const finished = step >= dialog.steps.length;
+  const title = lang === "en" ? dialog.titleEn : dialog.title;
 
-  useEffect(() => {
-    if (finished) onComplete();
-  }, [finished]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (finished) onComplete(); }, [finished]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pick = (opt, idx) => {
-    if (opt.ok) {
-      speak(opt.kk);
-      setHistory((h) => [...h, opt]);
-      setWrongIdx(null);
-      setStep((s) => s + 1);
-    } else {
-      setWrongIdx(idx);
-    }
+    if (opt.ok) { speak(opt.kk); setHistory((h) => [...h, opt]); setWrongIdx(null); setStep((s) => s + 1); }
+    else setWrongIdx(idx);
   };
 
   const current = finished ? null : dialog.steps[step];
 
   return (
     <>
-      <button className="back" onClick={onBack}>← К уроку</button>
-      <div className="section-title">Диалог · {dialog.title}</div>
-      {step === 0 && !finished && <p className="dialog-intro">{dialog.intro}</p>}
+      <button className="back" onClick={onBack}><Icon name="arrow_back" style={{ fontSize: 18 }} /> {t.back_to_lesson}</button>
+      <div className="section-title">{t.dialog} · {title}</div>
+      {step === 0 && !finished && <p className="dialog-intro">{lang === "en" ? dialog.introEn : dialog.intro}</p>}
 
       <div className="chat">
         {dialog.steps.slice(0, step).map((s, si) => (
@@ -677,14 +598,14 @@ function DialogView({ dialog, onBack, onComplete }) {
               <Mascot className="bubble-avatar" src={MASCOT.face} />
               <div className="bubble bot" onClick={() => speak(s.bot.kk)}>
                 {s.bot.kk}
-                <div className="ru-sub">{s.bot.ru}</div>
+                <div className="ru-sub">{P(s.bot, lang)}</div>
               </div>
             </div>
             {history[si] && (
               <div className="bubble-row me">
                 <div className="bubble me" onClick={() => speak(history[si].kk)}>
                   {history[si].kk}
-                  <div className="ru-sub">{history[si].ru}</div>
+                  <div className="ru-sub">{P(history[si], lang)}</div>
                 </div>
               </div>
             )}
@@ -695,7 +616,7 @@ function DialogView({ dialog, onBack, onComplete }) {
             <Mascot className="bubble-avatar" src={MASCOT.face} />
             <div className="bubble bot" onClick={() => speak(current.bot.kk)}>
               {current.bot.kk}
-              <div className="ru-sub">{current.bot.ru}</div>
+              <div className="ru-sub">{P(current.bot, lang)}</div>
             </div>
           </div>
         )}
@@ -703,28 +624,22 @@ function DialogView({ dialog, onBack, onComplete }) {
 
       {finished ? (
         <div className="practice-done" style={{ padding: "10px" }}>
-          <Mascot className="mascot-big" src={MASCOT.campfire} alt="Ирбис у костра" />
-          <h2 style={{ margin: "10px 0 6px" }}>Диалог пройден!</h2>
-          <p style={{ color: "var(--muted)", marginBottom: 18 }}>Ты справился со сценкой «{dialog.title}». +30 м высоты.</p>
-          <button className="btn primary" style={{ maxWidth: 260 }} onClick={onBack}>Вернуться к уроку</button>
+          <Mascot className="mascot-big" src={MASCOT.campfire} alt="Irbis" />
+          <h2 style={{ margin: "10px 0 6px" }}>{t.dialog_done}</h2>
+          <p style={{ color: "var(--muted)", marginBottom: 18 }}>{t.dialog_done_sub(title)}</p>
+          <button className="btn primary" style={{ maxWidth: 260 }} onClick={onBack}>{t.back_to_lesson}</button>
         </div>
       ) : (
         <>
-          <div className="section-title" style={{ marginTop: 6 }}>Твой ответ:</div>
+          <div className="section-title" style={{ marginTop: 6 }}>{t.your_answer}</div>
           {current.options.map((opt, idx) => (
-            <button
-              key={idx}
-              className={"quiz-opt" + (wrongIdx === idx ? " wrong" : "")}
-              onClick={() => pick(opt, idx)}
-            >
+            <button key={idx} className={"quiz-opt" + (wrongIdx === idx ? " wrong" : "")} onClick={() => pick(opt, idx)}>
               {opt.kk}
-              <div style={{ color: "var(--muted)", fontSize: 13, marginTop: 3 }}>{opt.ru}</div>
+              <div style={{ color: "var(--muted)", fontSize: 13, marginTop: 3 }}>{P(opt, lang)}</div>
             </button>
           ))}
           {wrongIdx !== null && (
-            <p style={{ textAlign: "center", color: "var(--bad)", fontSize: 13 }}>
-              Не то — собеседник тебя не понял. Попробуй другой вариант.
-            </p>
+            <p style={{ textAlign: "center", color: "var(--bad)", fontSize: 13 }}>{t.dialog_wrong}</p>
           )}
         </>
       )}
@@ -732,41 +647,39 @@ function DialogView({ dialog, onBack, onComplete }) {
   );
 }
 
-// ─────────────────── Практика (карточки + SRS) ───────────────────
+// ─────────────────── Практика (SRS) ───────────────────
 
 function Practice({ srs, review }) {
+  const { lang, t } = useLang();
   const [deck, setDeck] = useState(() => buildDeck(srs, allPhrases));
   const [i, setI] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [session, setSession] = useState({ known: 0, unknown: 0 });
 
-  const restart = () => {
-    setDeck(buildDeck(srs, allPhrases));
-    setI(0);
-    setFlipped(false);
-    setSession({ known: 0, unknown: 0 });
-  };
+  const restart = () => { setDeck(buildDeck(srs, allPhrases)); setI(0); setFlipped(false); setSession({ known: 0, unknown: 0 }); };
 
   if (!deck.cards.length) {
     return (
       <div className="practice-done">
-        <Mascot className="mascot-sleep" src={MASCOT.sleep} alt="Ирбис спит" />
-        <h2 style={{ margin: "10px 0 6px" }}>На сегодня всё!</h2>
-        <p style={{ color: "var(--muted)" }}>Все фразы повторены — Ирбис может отдохнуть. Возвращайся завтра.</p>
+        <Mascot className="mascot-sleep" src={MASCOT.sleep} alt="Irbis" />
+        <h2 style={{ margin: "10px 0 6px" }}>{t.all_done_today}</h2>
+        <p style={{ color: "var(--muted)" }}>{t.all_reviewed}</p>
       </div>
     );
   }
 
   if (i >= deck.cards.length) {
-    const total = session.known + session.unknown;
+    const totalN = session.known + session.unknown;
     return (
       <div className="practice-done">
-        <Mascot className="mascot-sleep" src={MASCOT.sleep} alt="Ирбис отдыхает" />
-        <h2 style={{ margin: "10px 0 6px" }}>Сессия завершена</h2>
+        <Mascot className="mascot-sleep" src={MASCOT.sleep} alt="Irbis" />
+        <h2 style={{ margin: "10px 0 6px" }}>{t.session_done}</h2>
         <p style={{ color: "var(--muted)", marginBottom: 20 }}>
-          {total} {plural(total, "фраза", "фразы", "фраз")}: знал {session.known}, повторим ещё {session.unknown}
+          {lang === "en"
+            ? `${totalN} ${phrasesWord(totalN, t, lang)}: knew ${session.known}, ${session.unknown} to review again`
+            : `${totalN} ${phrasesWord(totalN, t, lang)}: знал ${session.known}, повторим ещё ${session.unknown}`}
         </p>
-        <button className="btn primary" style={{ maxWidth: 260 }} onClick={restart}>Продолжить практику</button>
+        <button className="btn primary" style={{ maxWidth: 260 }} onClick={restart}>{t.continue_practice}</button>
       </div>
     );
   }
@@ -782,10 +695,8 @@ function Practice({ srs, review }) {
   return (
     <>
       <div className="section-title">
-        Карточка {i + 1} / {deck.cards.length}
-        {deck.free
-          ? " · свободная практика"
-          : ` · повторение: ${deck.due} · новых: ${deck.fresh}`}
+        {t.card} {i + 1} / {deck.cards.length}
+        {deck.free ? ` · ${t.free_practice}` : ` · ${t.reviewing}: ${deck.due} · ${t.new_cards}: ${deck.fresh}`}
       </div>
       <div className="flash-wrap">
         <Mascot className="mascot-peek" src={MASCOT.peek} />
@@ -794,22 +705,20 @@ function Practice({ srs, review }) {
             <div>
               <div className="big">{card.kk}</div>
               <div className="sub">[{card.tr}] <Icon name="volume_up" style={{ fontSize: 15 }} /></div>
-              <div className="hint">Нажми, чтобы увидеть перевод</div>
+              <div className="hint">{t.show_translation}</div>
             </div>
           ) : (
             <div>
-              <div className="big" style={{ fontSize: 24 }}>{card.ru}</div>
+              <div className="big" style={{ fontSize: 24 }}>{P(card, lang)}</div>
               <div className="hint">{card.lesson}</div>
             </div>
           )}
         </div>
         <div className="flash-controls">
-          <button className="btn bad" onClick={() => grade(false)}>Не знаю</button>
-          <button className="btn good" onClick={() => grade(true)}>Знаю ✓</button>
+          <button className="btn bad" onClick={() => grade(false)}>{t.dont_know}</button>
+          <button className="btn good" onClick={() => grade(true)}>{t.know}</button>
         </div>
-        <p style={{ color: "var(--muted)", fontSize: 12, textAlign: "center" }}>
-          «Знаю» — фраза вернётся позже (1 → 3 → 7 → 21 день). «Не знаю» — повторим сегодня.
-        </p>
+        <p style={{ color: "var(--muted)", fontSize: 12, textAlign: "center" }}>{t.srs_hint}</p>
       </div>
     </>
   );
@@ -817,12 +726,9 @@ function Practice({ srs, review }) {
 
 // ────────────────────────── Квиз ──────────────────────────
 
-const Q_LABEL = {
-  kk2ru: "Переведи на русский",
-  ru2kk: "Как это по-казахски?",
-  listen: "Аудирование: послушай и выбери",
-  assemble: "Собери фразу из слов",
-};
+function qLabel(type, t) {
+  return { kk2ru: t.q_type_kk2ru, ru2kk: t.q_type_ru2kk, listen: t.q_type_listen, assemble: t.q_type_assemble }[type];
+}
 
 function makeQuestions() {
   const pool = shuffle(allPhrases).slice(0, 10);
@@ -832,12 +738,13 @@ function makeQuestions() {
     if (words.length >= 3 && words.length <= 8) types.push("assemble", "assemble");
     const type = types[Math.floor(Math.random() * types.length)];
     if (type === "assemble") return { type, word: w, words: shuffle(words) };
-    const wrong = shuffle(allPhrases.filter((x) => x.ru !== w.ru)).slice(0, 3);
+    const wrong = shuffle(allPhrases.filter((x) => x.kk !== w.kk)).slice(0, 3);
     return { type, word: w, options: shuffle([w, ...wrong]) };
   });
 }
 
 function Quiz({ update, review }) {
+  const { t } = useLang();
   const [questions, setQuestions] = useState(makeQuestions);
   const [i, setI] = useState(0);
   const [score, setScore] = useState(0);
@@ -849,15 +756,9 @@ function Quiz({ update, review }) {
     const s = ok ? score + 1 : score;
     setScore(s);
     if (i + 1 >= questions.length) {
-      update((prev) => ({
-        ...prev,
-        quizzes: (prev.quizzes || 0) + 1,
-        bestScore: Math.max(prev.bestScore || 0, s),
-      }));
+      update((prev) => ({ ...prev, quizzes: (prev.quizzes || 0) + 1, bestScore: Math.max(prev.bestScore || 0, s) }));
       setDone(true);
-    } else {
-      setI(i + 1);
-    }
+    } else setI(i + 1);
   };
 
   const restart = () => { setQuestions(makeQuestions()); setI(0); setScore(0); setDone(false); };
@@ -865,34 +766,30 @@ function Quiz({ update, review }) {
   if (done) {
     return (
       <div className="result">
-        <div className="section-title">Результат</div>
+        <div className="section-title">{t.result}</div>
         <div className="score">{score} / {questions.length}</div>
-        <p>{score >= 8 ? "Керемет! Отлично!" : score >= 5 ? "Жақсы! Хороший результат" : "Давай ещё разок"}</p>
-        <button className="btn primary" onClick={restart}>Пройти снова</button>
+        <p>{score >= 8 ? t.quiz_great : score >= 5 ? t.quiz_good : t.quiz_retry}</p>
+        <button className="btn primary" onClick={restart}>{t.quiz_again}</button>
       </div>
     );
   }
 
   return (
     <>
-      <div className="quiz-progress">Вопрос {i + 1} из {questions.length} · очки: {score}</div>
-      <div className="q-type">{Q_LABEL[q.type]}</div>
-      {q.type === "assemble"
-        ? <AssembleQ key={i} q={q} onAnswer={answered} />
-        : <ChoiceQ key={i} q={q} onAnswer={answered} />}
+      <div className="quiz-progress">{t.question} {i + 1} {t.of} {questions.length} · {t.points}: {score}</div>
+      <div className="q-type">{qLabel(q.type, t)}</div>
+      {q.type === "assemble" ? <AssembleQ key={i} q={q} onAnswer={answered} /> : <ChoiceQ key={i} q={q} onAnswer={answered} />}
     </>
   );
 }
 
-// Вопрос с вариантами: kk→ru, ru→kk, аудирование
 function ChoiceQ({ q, onAnswer }) {
+  const { lang, t } = useLang();
   const [picked, setPicked] = useState(null);
 
-  useEffect(() => {
-    if (q.type === "listen") speak(q.word.kk);
-  }, [q]);
+  useEffect(() => { if (q.type === "listen") speak(q.word.kk); }, [q]);
 
-  const isCorrect = (o) => o.kk === q.word.kk && o.ru === q.word.ru;
+  const isCorrect = (o) => o.kk === q.word.kk;
 
   const pick = (opt) => {
     if (picked) return;
@@ -912,14 +809,14 @@ function ChoiceQ({ q, onAnswer }) {
           <div className="quiz-sub">[{q.word.tr}]</div>
         </>
       )}
-      {q.type === "ru2kk" && <div className="quiz-q" style={{ fontSize: 22 }}>{q.word.ru}</div>}
+      {q.type === "ru2kk" && <div className="quiz-q" style={{ fontSize: 22 }}>{P(q.word, lang)}</div>}
       {q.type === "listen" && (
         <>
           <button className="listen-btn" onClick={() => speak(q.word.kk)}>
-            <Mascot src={MASCOT.headphones} alt="Ирбис слушает" />
+            <Mascot src={MASCOT.headphones} alt="Irbis" />
             <span className="vol-badge"><Icon name="volume_up" filled /></span>
           </button>
-          <div className="quiz-sub">нажми, чтобы прослушать ещё раз</div>
+          <div className="quiz-sub">{t.listen_again}</div>
         </>
       )}
 
@@ -930,24 +827,22 @@ function ChoiceQ({ q, onAnswer }) {
           else if (opt === picked) cls += " wrong";
         }
         return (
-          <button key={opt.kk + opt.ru} className={cls} onClick={() => pick(opt)}>
-            {q.type === "ru2kk" ? opt.kk : opt.ru}
+          <button key={opt.kk} className={cls} onClick={() => pick(opt)}>
+            {q.type === "ru2kk" ? opt.kk : P(opt, lang)}
           </button>
         );
       })}
       {picked && q.type === "listen" && (
-        <p style={{ textAlign: "center", color: "var(--accent)", fontStyle: "italic" }}>
-          {q.word.kk} · [{q.word.tr}]
-        </p>
+        <p style={{ textAlign: "center", color: "var(--accent)", fontStyle: "italic" }}>{q.word.kk} · [{q.word.tr}]</p>
       )}
     </>
   );
 }
 
-// «Собери фразу из слов»
 function AssembleQ({ q, onAnswer }) {
-  const [picked, setPicked] = useState([]); // индексы в q.words
-  const [state, setState] = useState(null); // null | "ok" | "bad"
+  const { lang, t } = useLang();
+  const [picked, setPicked] = useState([]);
+  const [state, setState] = useState(null);
   const target = q.word.kk.split(/\s+/).filter(Boolean).join(" ");
 
   const pickWord = (idx) => {
@@ -963,33 +858,26 @@ function AssembleQ({ q, onAnswer }) {
     }
   };
 
-  const unpick = (pos) => {
-    if (state) return;
-    setPicked(picked.filter((_, j) => j !== pos));
-  };
+  const unpick = (pos) => { if (!state) setPicked(picked.filter((_, j) => j !== pos)); };
 
   return (
     <>
-      <div className="quiz-q" style={{ fontSize: 20 }}>{q.word.ru}</div>
+      <div className="quiz-q" style={{ fontSize: 20 }}>{P(q.word, lang)}</div>
       <div className={"assemble-line" + (state === "ok" ? " assemble-ok" : state === "bad" ? " assemble-bad" : "")}>
         {picked.map((idx, pos) => (
           <button key={idx} className="word-chip" onClick={() => unpick(pos)}>{q.words[idx]}</button>
         ))}
-        {!picked.length && <span style={{ color: "var(--muted)", fontSize: 14, alignSelf: "center" }}>Нажимай на слова по порядку</span>}
+        {!picked.length && <span style={{ color: "var(--muted)", fontSize: 14, alignSelf: "center" }}>{t.assemble_hint}</span>}
       </div>
       <div className="word-bank">
         {q.words.map((w, idx) => (
-          <button key={idx} className="word-chip" disabled={picked.includes(idx)} onClick={() => pickWord(idx)}>
-            {w}
-          </button>
+          <button key={idx} className="word-chip" disabled={picked.includes(idx)} onClick={() => pickWord(idx)}>{w}</button>
         ))}
       </div>
       {state === "bad" && (
-        <p style={{ textAlign: "center", color: "var(--bad)" }}>
-          Правильно: <span style={{ color: "var(--text)" }}>{q.word.kk}</span>
-        </p>
+        <p style={{ textAlign: "center", color: "var(--bad)" }}>{t.assemble_wrong(q.word.kk)}</p>
       )}
-      {state === "ok" && <p style={{ textAlign: "center", color: "var(--good)" }}>Дұрыс! Верно ✓</p>}
+      {state === "ok" && <p style={{ textAlign: "center", color: "var(--good)" }}>{t.assemble_ok}</p>}
     </>
   );
 }
@@ -997,6 +885,7 @@ function AssembleQ({ q, onAnswer }) {
 // ────────────────────────── Прогресс ──────────────────────────
 
 function Stats({ progress, doneCount }) {
+  const { lang, t } = useLang();
   const total = lessons.length;
   const pct = Math.round((doneCount / total) * 100);
   const streak = displayStreak(progress.streak);
@@ -1005,53 +894,49 @@ function Stats({ progress, doneCount }) {
   const due = dueCount(progress.srs);
   const learned = learnedCount(progress.srs);
   const inWork = Object.keys(progress.srs).length;
-
   const lv = levelInfo(progress.xp || 0);
+  const unit = lang === "en" ? "m" : "м";
 
   return (
     <>
-      <div className="section-title">Твой прогресс</div>
+      <div className="section-title">{t.your_progress}</div>
 
       <div className="level-card">
         <div className="level-ring">
           <svg width="128" height="128" viewBox="0 0 128 128">
             <circle cx="64" cy="64" r="58" fill="transparent" stroke="#D9EAFF" strokeWidth="6" />
-            <circle
-              cx="64" cy="64" r="58" fill="transparent"
-              stroke="#F2953C" strokeWidth="6" strokeLinecap="round"
-              strokeDasharray="364"
-              strokeDashoffset={364 - 364 * (lv.pct / 100)}
-              style={{ transition: "stroke-dashoffset .8s ease" }}
-            />
+            <circle cx="64" cy="64" r="58" fill="transparent" stroke="#F2953C" strokeWidth="6" strokeLinecap="round"
+              strokeDasharray="364" strokeDashoffset={364 - 364 * (lv.pct / 100)} style={{ transition: "stroke-dashoffset .8s ease" }} />
           </svg>
-          <Mascot src={MASCOT.portrait} alt="Ирбис" />
-          <div className="lvl-badge">УР. {lv.num}</div>
+          <Mascot src={MASCOT.portrait} alt="Irbis" />
+          <div className="lvl-badge">{lang === "en" ? "LVL" : "УР."} {lv.num}</div>
         </div>
-        <h2>{lv.title} · {lv.ru}</h2>
+        <h2>{lv.title} · {lang === "en" ? lv.en : lv.ru}</h2>
         <p>
-          Высота <b>{progress.xp || 0} м</b>
-          {lv.next ? <> — до звания «{lv.next.title}» ещё <b>{lv.toNext} м</b></> : " — вершина покорена!"}
+          {t.altitude(progress.xp || 0)}
+          {lv.next ? <> — {t.to_rank(lv.next.title, lv.toNext)}</> : ` — ${t.summit_reached}`}
         </p>
       </div>
 
       <div className="stat-row" style={{ marginBottom: 12 }}>
-        <div className="stat"><div className="num"><Icon name="local_fire_department" filled style={{ fontSize: 20, color: "var(--amber)" }} /> {streak}</div><div className="lbl">{plural(streak, "день", "дня", "дней")} подряд</div></div>
-        <div className="stat"><div className="num">{today}/{goal}</div><div className="lbl">фраз сегодня</div></div>
+        <div className="stat"><div className="num"><Icon name="local_fire_department" filled style={{ fontSize: 20, color: "var(--amber)" }} /> {streak}</div><div className="lbl">{daysWord(streak, t, lang)} {t.st_days}</div></div>
+        <div className="stat"><div className="num">{today}/{goal}</div><div className="lbl">{t.st_today}</div></div>
       </div>
       <div className="stat-row" style={{ marginBottom: 12 }}>
-        <div className="stat"><div className="num">{learned}</div><div className="lbl">фраз выучено</div></div>
-        <div className="stat"><div className="num">{inWork}</div><div className="lbl">фраз в работе</div></div>
-        <div className="stat"><div className="num">{due}</div><div className="lbl">к повторению</div></div>
+        <div className="stat"><div className="num">{learned}</div><div className="lbl">{t.st_learned}</div></div>
+        <div className="stat"><div className="num">{inWork}</div><div className="lbl">{t.st_inwork}</div></div>
+        <div className="stat"><div className="num">{due}</div><div className="lbl">{t.st_review}</div></div>
       </div>
       <div className="stat-row" style={{ marginBottom: 12 }}>
-        <div className="stat"><div className="num">{doneCount}</div><div className="lbl">уроков пройдено</div></div>
-        <div className="stat"><div className="num">{pct}%</div><div className="lbl">курса</div></div>
+        <div className="stat"><div className="num">{doneCount}</div><div className="lbl">{t.st_lessons}</div></div>
+        <div className="stat"><div className="num">{pct}%</div><div className="lbl">{t.st_course}</div></div>
       </div>
       <div className="stat-row">
-        <div className="stat"><div className="num">{progress.quizzes || 0}</div><div className="lbl">квизов пройдено</div></div>
-        <div className="stat"><div className="num">{progress.bestScore || 0}/10</div><div className="lbl">лучший результат</div></div>
+        <div className="stat"><div className="num">{progress.quizzes || 0}</div><div className="lbl">{t.st_quizzes}</div></div>
+        <div className="stat"><div className="num">{progress.bestScore || 0}/10</div><div className="lbl">{t.st_best}</div></div>
       </div>
-      <div className="section-title" style={{ marginTop: 18 }}>Достижения · {Object.keys(progress.achv || {}).length}/{ACHIEVEMENTS.length}</div>
+
+      <div className="section-title" style={{ marginTop: 18 }}>{t.achievements} · {Object.keys(progress.achv || {}).length}/{ACHIEVEMENTS.length}</div>
       <div className="achv-grid">
         {ACHIEVEMENTS.map((a) => {
           const got = !!(progress.achv && progress.achv[a.id]);
@@ -1060,15 +945,15 @@ function Stats({ progress, doneCount }) {
               <div className="achv-ic">
                 <Icon name={got ? "emoji_events" : "lock"} filled={got} style={got ? { color: "var(--amber)" } : undefined} />
               </div>
-              <div className="achv-t">{a.title}</div>
+              <div className="achv-t">{lang === "en" && a.en ? a.en : a.title}</div>
             </div>
           );
         })}
       </div>
 
       <div className="hero" style={{ marginTop: 16 }}>
-        <h2>Так держать!</h2>
-        <p>Проходи по одному уроку в день и закрепляй фразы в практике. Регулярность важнее объёма — фразы возвращаются ровно тогда, когда мозг готов их забыть.</p>
+        <h2>{t.keep_going}</h2>
+        <p>{t.keep_going_sub}</p>
         <div className="progress-bar"><div style={{ width: `${pct}%` }} /></div>
       </div>
     </>
@@ -1083,15 +968,12 @@ function Confetti() {
   return (
     <div className="confetti">
       {Array.from({ length: 44 }, (_, i) => (
-        <span
-          key={i}
-          style={{
-            left: `${Math.random() * 100}%`,
-            background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-            animationDelay: `${Math.random() * 0.6}s`,
-            animationDuration: `${1.7 + Math.random() * 1.3}s`,
-          }}
-        />
+        <span key={i} style={{
+          left: `${Math.random() * 100}%`,
+          background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+          animationDelay: `${Math.random() * 0.6}s`,
+          animationDuration: `${1.7 + Math.random() * 1.3}s`,
+        }} />
       ))}
     </div>
   );
