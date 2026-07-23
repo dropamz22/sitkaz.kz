@@ -56,6 +56,7 @@ const Icon = ({ name, filled, style }) => (
 export default function App() {
   const [tab, setTab] = useState("course");
   const [activeLesson, setActiveLesson] = useState(null);
+  const [activeModule, setActiveModule] = useState(null);
   const [progress, setProgress] = useState(EMPTY);
 
   useEffect(() => {
@@ -153,6 +154,7 @@ export default function App() {
   }, [progress]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openLesson = (l) => { setActiveLesson(l); setTab("lesson"); };
+  const openModule = (m) => { setActiveModule(m); setTab("module"); };
   const doneCountN = Object.keys(progress.done).length;
 
   return (
@@ -172,7 +174,15 @@ export default function App() {
       </div>
 
       {tab === "course" && (
-        <Course progress={progress} doneCount={doneCountN} onOpen={openLesson} goPractice={() => setTab("practice")} />
+        <Course progress={progress} doneCount={doneCountN} onOpenModule={openModule} goPractice={() => setTab("practice")} />
+      )}
+      {tab === "module" && activeModule && (
+        <ModuleView
+          module={activeModule}
+          progress={progress}
+          onOpen={openLesson}
+          onBack={() => setTab("course")}
+        />
       )}
       {tab === "lesson" && activeLesson && (
         <LessonView
@@ -198,7 +208,7 @@ export default function App() {
           { id: "quiz", ic: "quiz", label: "Квиз" },
           { id: "stats", ic: "trending_up", label: "Прогресс" },
         ].map((t) => {
-          const active = tab === t.id || (t.id === "course" && tab === "lesson");
+          const active = tab === t.id || (t.id === "course" && (tab === "lesson" || tab === "module"));
           return (
             <button key={t.id} className={active ? "active" : ""} onClick={() => setTab(t.id)}>
               <span className="ic msi" style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}>{t.ic}</span>
@@ -213,19 +223,17 @@ export default function App() {
 
 // ────────────────────────── Курс ──────────────────────────
 
-function Course({ progress, doneCount, onOpen, goPractice }) {
+function Course({ progress, doneCount, onOpenModule, goPractice }) {
   const total = lessons.length;
   const pct = Math.round((doneCount / total) * 100);
   const due = dueCount(progress.srs);
-  // По умолчанию раскрыт модуль, в котором пользователь сейчас учится
-  const activeModule = (() => {
-    const next = lessons.find((l) => !progress.done[l.id]);
-    return next ? next.module : modules[0].id;
-  })();
-  const [openModule, setOpenModule] = useState(activeModule);
   const streak = displayStreak(progress.streak);
   const today = doneToday(progress.streak);
   const goal = progress.goal || 10;
+  // Модуль считается открытым, если пройден предыдущий (или это первый)
+  const moduleUnlocked = (idx) => idx === 0 || modules.slice(0, idx).every((pm) =>
+    lessonsByModule(pm.id).every((l) => progress.done[l.id])
+  );
 
   return (
     <>
@@ -267,61 +275,94 @@ function Course({ progress, doneCount, onOpen, goPractice }) {
         )}
       </div>
 
-      {modules.map((m) => {
-        const items = lessonsByModule(m.id);
-        const mDone = items.filter((l) => progress.done[l.id]).length;
-        const expanded = openModule === m.id;
-        return (
-          <div key={m.id} style={{ marginBottom: 16 }}>
+      <div className="section-title">Темы курса</div>
+      <div className="grid">
+        {modules.map((m, idx) => {
+          const items = lessonsByModule(m.id);
+          const mDone = items.filter((l) => progress.done[l.id]).length;
+          const unlocked = moduleUnlocked(idx);
+          const mPct = Math.round((mDone / items.length) * 100);
+          return (
             <div
-              className="module-head"
-              style={{ borderColor: m.color, cursor: "pointer" }}
-              onClick={() => setOpenModule(expanded ? null : m.id)}
+              key={m.id}
+              className={"module-card" + (unlocked ? "" : " locked")}
+              onClick={() => unlocked && onOpenModule(m)}
             >
-              <div className="module-num" style={{ background: m.color }}>{m.num}</div>
-              <div style={{ flex: 1 }}>
-                <h3>{m.title} · <span style={{ color: "var(--muted)", fontWeight: 400 }}>{m.subtitle}</span></h3>
-                <p>{m.desc}</p>
+              <div className="module-num" style={{ background: m.color }}>
+                {unlocked ? m.num : <Icon name="lock" style={{ fontSize: 18 }} />}
               </div>
-              <div className="module-count">{mDone}/{items.length}</div>
-              <Icon name={expanded ? "expand_less" : "expand_more"} style={{ color: "var(--muted)", fontSize: 24 }} />
+              <div className="module-card-body">
+                <h3>{m.title} <span>· {m.subtitle}</span></h3>
+                <p>{m.desc}</p>
+                <div className="progress-bar" style={{ marginTop: 10 }}>
+                  <div style={{ width: `${mPct}%`, background: m.color }} />
+                </div>
+              </div>
+              <div className="module-card-meta">
+                <div className="module-count">{mDone}/{items.length}</div>
+                <Icon name="chevron_right" style={{ color: "var(--faint)", fontSize: 22 }} />
+              </div>
             </div>
-            {expanded && (
-            <div className="grid" style={{ marginTop: 10 }}>
-              {items.map((l) => {
-                const unlocked = l.id === 1 || progress.done[l.id] || progress.done[l.id - 1];
-                return (
-                  <div key={l.id} className={"card" + (unlocked ? "" : " locked")} onClick={() => unlocked && onOpen(l)}>
-                    <div className="lesson-row">
-                      <div className="lesson-icon" style={{ color: m.color }}>
-                        {progress.done[l.id] ? (
-                          <Icon name="check_circle" filled />
-                        ) : unlocked ? (
-                          l.id
-                        ) : (
-                          <Icon name="lock" />
-                        )}
-                      </div>
-                      <div className="lesson-meta">
-                        <h3>{l.title}</h3>
-                        <p>{l.ru}</p>
-                      </div>
-                      <div className="lesson-count">
-                        {unlocked ? `${l.phrases.length} фраз →` : "сдай предыдущий"}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            )}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
 
-      <p style={{ color: "var(--muted)", fontSize: 13, textAlign: "center", marginTop: 8 }}>
+      <p style={{ color: "var(--muted)", fontSize: 13, textAlign: "center", marginTop: 14 }}>
         Пройдено {doneCount} из {total} уроков ({pct}%)
       </p>
+    </>
+  );
+}
+
+// ────────────────────── Страница темы ──────────────────────
+
+function ModuleView({ module: m, progress, onOpen, onBack }) {
+  const items = lessonsByModule(m.id);
+  const mDone = items.filter((l) => progress.done[l.id]).length;
+  const mPct = Math.round((mDone / items.length) * 100);
+  return (
+    <>
+      <button className="back" onClick={onBack}><Icon name="arrow_back" style={{ fontSize: 18 }} /> К темам</button>
+
+      <div className="module-hero" style={{ borderColor: m.color }}>
+        <div className="module-num" style={{ background: m.color, width: 44, height: 44, fontSize: 17 }}>{m.num}</div>
+        <h2>{m.title}</h2>
+        <p className="module-hero-sub">{m.subtitle}</p>
+        <p className="module-hero-desc">{m.desc}</p>
+        <div className="progress-bar" style={{ marginTop: 14 }}>
+          <div style={{ width: `${mPct}%`, background: m.color }} />
+        </div>
+        <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 8 }}>Пройдено {mDone} из {items.length}</p>
+      </div>
+
+      <div className="section-title">Уроки</div>
+      <div className="grid">
+        {items.map((l) => {
+          const unlocked = l.id === 1 || progress.done[l.id] || progress.done[l.id - 1];
+          return (
+            <div key={l.id} className={"card" + (unlocked ? "" : " locked")} onClick={() => unlocked && onOpen(l)}>
+              <div className="lesson-row">
+                <div className="lesson-icon" style={{ color: m.color }}>
+                  {progress.done[l.id] ? (
+                    <Icon name="check_circle" filled />
+                  ) : unlocked ? (
+                    l.id
+                  ) : (
+                    <Icon name="lock" />
+                  )}
+                </div>
+                <div className="lesson-meta">
+                  <h3>{l.title}</h3>
+                  <p>{l.ru}</p>
+                </div>
+                <div className="lesson-count">
+                  {unlocked ? `${l.phrases.length} фраз →` : "сдай предыдущий"}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </>
   );
 }
