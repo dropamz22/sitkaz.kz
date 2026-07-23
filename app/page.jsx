@@ -53,6 +53,16 @@ const Icon = ({ name, filled, style }) => (
   </span>
 );
 
+// Картинка маскота — прячется, если CDN недоступен (чтобы не ломать вёрстку)
+const Mascot = ({ src, className, alt = "" }) => (
+  <img
+    className={className}
+    src={src}
+    alt={alt}
+    onError={(e) => { e.currentTarget.style.display = "none"; }}
+  />
+);
+
 export default function App() {
   const [tab, setTab] = useState("course");
   const [activeLesson, setActiveLesson] = useState(null);
@@ -256,7 +266,7 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice }) {
                 style={{ transition: "stroke-dashoffset .6s ease" }}
               />
             </svg>
-            <img src={MASCOT.face} alt="Ирбис" />
+            <Mascot src={MASCOT.face} alt="Ирбис" />
             <div className="goal-ring-label">Цель дня</div>
           </div>
         </div>
@@ -409,15 +419,14 @@ function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComple
 
   const header = (
     <>
-      <button className="back" onClick={onBack}>
-        <Icon name="arrow_back" style={{ fontSize: 18 }} /> Выйти
-      </button>
-      <div className="lesson-head">
-        <div className="section-title" style={{ color: mod?.color, margin: "0 0 4px" }}>
-          Урок {lesson.id} · {mod?.title}{done ? " · пройден" : ""}
+      <div className="lesson-topbar">
+        <button className="back" style={{ margin: 0 }} onClick={onBack}>
+          <Icon name="close" style={{ fontSize: 18 }} />
+        </button>
+        <div className="lesson-topbar-title">
+          <b>{lesson.title}</b>
+          <span>{lesson.ru}</span>
         </div>
-        <h2 style={{ marginBottom: 2 }}>{lesson.title}</h2>
-        <p style={{ color: "var(--muted)" }}>{lesson.ru}</p>
       </div>
       <StepBar stage={stage === "dialog" ? "study" : stage} />
     </>
@@ -598,7 +607,7 @@ function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen, dial
     const passed = score >= need;
     return (
       <div className="result">
-        {passed && <img className="mascot-big" src={MASCOT.leap} alt="Ирбис прыгает" />}
+        {passed && <Mascot className="mascot-big" src={MASCOT.leap} alt="Ирбис прыгает" />}
         <div className="score">{score} / {questions.length}</div>
         {passed ? (
           <>
@@ -675,7 +684,7 @@ function DialogView({ dialog, onBack, onComplete }) {
         {dialog.steps.slice(0, step).map((s, si) => (
           <div key={si} style={{ display: "contents" }}>
             <div className="bubble-row">
-              <img className="bubble-avatar" src={MASCOT.face} alt="" />
+              <Mascot className="bubble-avatar" src={MASCOT.face} />
               <div className="bubble bot" onClick={() => speak(s.bot.kk)}>
                 {s.bot.kk}
                 <div className="ru-sub">{s.bot.ru}</div>
@@ -693,7 +702,7 @@ function DialogView({ dialog, onBack, onComplete }) {
         ))}
         {current && (
           <div className="bubble-row">
-            <img className="bubble-avatar" src={MASCOT.face} alt="" />
+            <Mascot className="bubble-avatar" src={MASCOT.face} />
             <div className="bubble bot" onClick={() => speak(current.bot.kk)}>
               {current.bot.kk}
               <div className="ru-sub">{current.bot.ru}</div>
@@ -704,7 +713,7 @@ function DialogView({ dialog, onBack, onComplete }) {
 
       {finished ? (
         <div className="practice-done" style={{ padding: "10px" }}>
-          <img className="mascot-big" src={MASCOT.campfire} alt="Ирбис у костра" />
+          <Mascot className="mascot-big" src={MASCOT.campfire} alt="Ирбис у костра" />
           <h2 style={{ margin: "10px 0 6px" }}>Диалог пройден!</h2>
           <p style={{ color: "var(--muted)", marginBottom: 18 }}>Ты справился со сценкой «{dialog.title}». +30 м высоты.</p>
           <button className="btn primary" style={{ maxWidth: 260 }} onClick={onBack}>Вернуться к уроку</button>
@@ -751,7 +760,7 @@ function Practice({ srs, review }) {
   if (!deck.cards.length) {
     return (
       <div className="practice-done">
-        <img className="mascot-sleep" src={MASCOT.sleep} alt="Ирбис спит" />
+        <Mascot className="mascot-sleep" src={MASCOT.sleep} alt="Ирбис спит" />
         <h2 style={{ margin: "10px 0 6px" }}>На сегодня всё!</h2>
         <p style={{ color: "var(--muted)" }}>Все фразы повторены — Ирбис может отдохнуть. Возвращайся завтра.</p>
       </div>
@@ -762,7 +771,7 @@ function Practice({ srs, review }) {
     const total = session.known + session.unknown;
     return (
       <div className="practice-done">
-        <img className="mascot-sleep" src={MASCOT.sleep} alt="Ирбис отдыхает" />
+        <Mascot className="mascot-sleep" src={MASCOT.sleep} alt="Ирбис отдыхает" />
         <h2 style={{ margin: "10px 0 6px" }}>Сессия завершена</h2>
         <p style={{ color: "var(--muted)", marginBottom: 20 }}>
           {total} {plural(total, "фраза", "фразы", "фраз")}: знал {session.known}, повторим ещё {session.unknown}
@@ -789,7 +798,7 @@ function Practice({ srs, review }) {
           : ` · повторение: ${deck.due} · новых: ${deck.fresh}`}
       </div>
       <div className="flash-wrap">
-        <img className="mascot-peek" src={MASCOT.peek} alt="" />
+        <Mascot className="mascot-peek" src={MASCOT.peek} />
         <div className="flash" onClick={() => { setFlipped((f) => !f); if (!flipped) speak(card.kk); }}>
           {!flipped ? (
             <div>
@@ -917,7 +926,7 @@ function ChoiceQ({ q, onAnswer }) {
       {q.type === "listen" && (
         <>
           <button className="listen-btn" onClick={() => speak(q.word.kk)}>
-            <img src={MASCOT.headphones} alt="Ирбис слушает" />
+            <Mascot src={MASCOT.headphones} alt="Ирбис слушает" />
             <span className="vol-badge"><Icon name="volume_up" filled /></span>
           </button>
           <div className="quiz-sub">нажми, чтобы прослушать ещё раз</div>
@@ -1025,7 +1034,7 @@ function Stats({ progress, doneCount }) {
               style={{ transition: "stroke-dashoffset .8s ease" }}
             />
           </svg>
-          <img src={MASCOT.portrait} alt="Ирбис" />
+          <Mascot src={MASCOT.portrait} alt="Ирбис" />
           <div className="lvl-badge">УР. {lv.num}</div>
         </div>
         <h2>{lv.title} · {lv.ru}</h2>

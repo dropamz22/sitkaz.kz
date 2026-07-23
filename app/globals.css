@@ -569,6 +569,11 @@ body::before {
 }
 
 /* ── Шапка урока + индикатор этапов ── */
+.lesson-topbar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.lesson-topbar .back { flex-shrink: 0; width: 40px; height: 40px; padding: 0; display: grid; place-items: center; }
+.lesson-topbar-title { min-width: 0; }
+.lesson-topbar-title b { display: block; font-size: 18px; font-weight: 700; color: var(--heading); line-height: 1.2; }
+.lesson-topbar-title span { font-size: 13px; color: var(--muted); }
 .lesson-head { margin-bottom: 14px; }
 .lesson-head h2 { font-size: 24px; font-weight: 700; color: var(--heading); }
 .stepbar {
