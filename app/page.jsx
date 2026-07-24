@@ -194,15 +194,13 @@ export default function App() {
             onBack={() => setTab("course")}
           />
         )}
-        {tab === "practice" && <Practice srs={progress.srs} review={review} />}
-        {tab === "quiz" && <Quiz update={update} review={review} />}
+        {tab === "practice" && <PracticeHub srs={progress.srs} review={review} update={update} />}
         {tab === "stats" && <Stats progress={progress} doneCount={doneCountN} />}
 
         <nav className="nav">
           {[
             { id: "course", ic: "school", label: t.nav_course },
             { id: "practice", ic: "style", label: t.nav_practice },
-            { id: "quiz", ic: "quiz", label: t.nav_quiz },
             { id: "stats", ic: "trending_up", label: t.nav_stats },
           ].map((x) => {
             const active = tab === x.id || (x.id === "course" && (tab === "lesson" || tab === "module"));
@@ -700,6 +698,26 @@ function DialogView({ dialog, onBack, onComplete }) {
           )}
         </>
       )}
+    </>
+  );
+}
+
+// ─────────────────── Практика: повторение + проверка ───────────────────
+
+function PracticeHub({ srs, review, update }) {
+  const { t } = useLang();
+  const [mode, setMode] = useState("review"); // review | quiz
+  return (
+    <>
+      <div className="mode-switch">
+        <button className={mode === "review" ? "on" : ""} onClick={() => setMode("review")}>
+          <Icon name="autorenew" style={{ fontSize: 17, verticalAlign: "-0.2em" }} /> {t.mode_review}
+        </button>
+        <button className={mode === "quiz" ? "on" : ""} onClick={() => setMode("quiz")}>
+          <Icon name="quiz" style={{ fontSize: 17, verticalAlign: "-0.2em" }} /> {t.mode_check}
+        </button>
+      </div>
+      {mode === "review" ? <Practice srs={srs} review={review} /> : <Quiz update={update} review={review} />}
     </>
   );
 }

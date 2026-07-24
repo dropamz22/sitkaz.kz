@@ -653,6 +653,31 @@ body::before {
 .lesson-progress-bar > div { height: 100%; background: var(--amber); border-radius: var(--pill); transition: width .4s ease; }
 .lesson-progress span { font-family: var(--font-label); font-size: 13px; font-weight: 700; color: var(--muted); white-space: nowrap; }
 
+/* ── Переключатель режимов «Повторение / Проверка» ── */
+.mode-switch {
+  display: flex;
+  gap: 4px;
+  background: var(--ice);
+  border-radius: var(--pill);
+  padding: 4px;
+  margin-bottom: 18px;
+}
+.mode-switch button {
+  flex: 1;
+  border: none; background: none;
+  color: var(--muted);
+  font-family: var(--font-main);
+  font-size: 14px; font-weight: 700;
+  padding: 10px; border-radius: var(--pill);
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+.mode-switch button.on {
+  background: #fff;
+  color: var(--amber);
+  box-shadow: var(--shadow);
+}
+
 /* ── Промокод ── */
 .promo-box {
   margin-top: 18px;
