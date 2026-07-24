@@ -83,12 +83,14 @@ export default function App() {
     });
   };
 
+  // Прогресс засчитывается ТОЛЬКО за правильные ответы:
+  // высота и дневная цель/стрик растут при known=true; ошибка лишь сбрасывает интервал SRS.
   const review = (phrase, known) => {
     update((prev) => ({
       ...prev,
-      xp: (prev.xp || 0) + (known ? XP.correct : XP.wrong),
+      xp: (prev.xp || 0) + (known ? XP.correct : 0),
       srs: gradeSrs(prev.srs, phraseId(phrase), known),
-      streak: registerActivity(prev.streak),
+      streak: known ? registerActivity(prev.streak) : prev.streak,
     }));
   };
 
@@ -858,6 +860,26 @@ function Quiz({ update, review }) {
   );
 }
 
+// Панель разбора ответа: правильный вариант + озвучка + «Дальше»
+function AnswerFeedback({ ok, word, lang, t, onContinue }) {
+  return (
+    <div className={"answer-fb " + (ok ? "ok" : "bad")}>
+      <div className="answer-fb-head">
+        <Icon name={ok ? "check_circle" : "cancel"} filled /> {ok ? t.fb_correct : t.fb_wrong}
+      </div>
+      {!ok && (
+        <div className="answer-fb-correct" onClick={() => speak(word.kk)}>
+          <b>{word.kk}</b> <span>· {P(word, lang)}</span> <Icon name="volume_up" style={{ fontSize: 15 }} />
+        </div>
+      )}
+      <div className="answer-fb-actions">
+        <button className="btn ghost" onClick={() => speak(word.kk)}><Icon name="volume_up" /> {t.play_audio}</button>
+        <button className="btn primary" onClick={() => onContinue(ok)}>{t.cont}</button>
+      </div>
+    </div>
+  );
+}
+
 function ChoiceQ({ q, onAnswer }) {
   const { lang, t } = useLang();
   const [picked, setPicked] = useState(null);
@@ -865,13 +887,13 @@ function ChoiceQ({ q, onAnswer }) {
   useEffect(() => { if (q.type === "listen") speak(q.word.kk); }, [q]);
 
   const isCorrect = (o) => o.kk === q.word.kk;
+  const answered = picked !== null;
+  const ok = answered && isCorrect(picked);
 
   const pick = (opt) => {
-    if (picked) return;
+    if (answered) return;
     setPicked(opt);
-    const ok = isCorrect(opt);
-    if (q.type === "ru2kk" && ok) speak(q.word.kk);
-    setTimeout(() => onAnswer(ok), 900);
+    speak(q.word.kk); // сразу проигрываем правильное произношение
   };
 
   return (
@@ -897,19 +919,19 @@ function ChoiceQ({ q, onAnswer }) {
 
       {q.options.map((opt) => {
         let cls = "quiz-opt";
-        if (picked) {
+        if (answered) {
           if (isCorrect(opt)) cls += " correct";
           else if (opt === picked) cls += " wrong";
+          else cls += " dim";
         }
         return (
-          <button key={opt.kk} className={cls} onClick={() => pick(opt)}>
+          <button key={opt.kk} className={cls} disabled={answered} onClick={() => pick(opt)}>
             {q.type === "ru2kk" ? opt.kk : P(opt, lang)}
           </button>
         );
       })}
-      {picked && q.type === "listen" && (
-        <p style={{ textAlign: "center", color: "var(--accent)", fontStyle: "italic" }}>{q.word.kk} · [{q.word.tr}]</p>
-      )}
+
+      {answered && <AnswerFeedback ok={ok} word={q.word} lang={lang} t={t} onContinue={onAnswer} />}
     </>
   );
 }
@@ -917,23 +939,24 @@ function ChoiceQ({ q, onAnswer }) {
 function AssembleQ({ q, onAnswer }) {
   const { lang, t } = useLang();
   const [picked, setPicked] = useState([]);
-  const [state, setState] = useState(null);
+  const [state, setState] = useState(null); // null | ok | bad
   const target = q.word.kk.split(/\s+/).filter(Boolean).join(" ");
+  const answered = state !== null;
+  const ok = state === "ok";
 
   const pickWord = (idx) => {
-    if (state || picked.includes(idx)) return;
+    if (answered || picked.includes(idx)) return;
     const next = [...picked, idx];
     setPicked(next);
     if (next.length === q.words.length) {
       const answer = next.map((j) => q.words[j]).join(" ");
-      const ok = answer === target;
-      setState(ok ? "ok" : "bad");
-      if (ok) speak(q.word.kk);
-      setTimeout(() => onAnswer(ok), ok ? 1200 : 2000);
+      const good = answer === target;
+      setState(good ? "ok" : "bad");
+      speak(q.word.kk); // проигрываем правильную фразу
     }
   };
 
-  const unpick = (pos) => { if (!state) setPicked(picked.filter((_, j) => j !== pos)); };
+  const unpick = (pos) => { if (!answered) setPicked(picked.filter((_, j) => j !== pos)); };
 
   return (
     <>
@@ -946,13 +969,11 @@ function AssembleQ({ q, onAnswer }) {
       </div>
       <div className="word-bank">
         {q.words.map((w, idx) => (
-          <button key={idx} className="word-chip" disabled={picked.includes(idx)} onClick={() => pickWord(idx)}>{w}</button>
+          <button key={idx} className="word-chip" disabled={answered || picked.includes(idx)} onClick={() => pickWord(idx)}>{w}</button>
         ))}
       </div>
-      {state === "bad" && (
-        <p style={{ textAlign: "center", color: "var(--bad)" }}>{t.assemble_wrong(q.word.kk)}</p>
-      )}
-      {state === "ok" && <p style={{ textAlign: "center", color: "var(--good)" }}>{t.assemble_ok}</p>}
+
+      {answered && <AnswerFeedback ok={ok} word={q.word} lang={lang} t={t} onContinue={onAnswer} />}
     </>
   );
 }

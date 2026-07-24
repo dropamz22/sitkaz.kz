@@ -380,6 +380,36 @@ body::before {
   animation: shake .4s ease;
 }
 
+.quiz-opt.dim { opacity: .45; }
+
+/* ── Панель разбора ответа (показать и подтвердить) ── */
+.answer-fb {
+  margin-top: 8px;
+  border-radius: 24px;
+  padding: 16px 18px;
+  animation: cardIn .25s ease;
+}
+.answer-fb.ok { background: rgba(242, 149, 60, 0.1); border: 2px solid var(--amber); }
+.answer-fb.bad { background: var(--coral-bg); border: 2px solid rgba(232, 136, 124, 0.5); }
+.answer-fb-head {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 15px; font-weight: 700;
+  margin-bottom: 10px;
+}
+.answer-fb.ok .answer-fb-head { color: #a05a12; }
+.answer-fb.bad .answer-fb-head { color: #b5432e; }
+.answer-fb-correct {
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  color: var(--heading);
+}
+.answer-fb-correct b { font-size: 17px; font-weight: 700; }
+.answer-fb-correct span { color: var(--muted); font-size: 14px; }
+.answer-fb-actions { display: flex; gap: 10px; }
+
 /* ── Результат ── */
 .result { text-align: center; padding: 20px 10px; position: relative; }
 .result .score {
