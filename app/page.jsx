@@ -563,21 +563,23 @@ function LessonPractice({ lesson, review, onDone }) {
   const { t } = useLang();
   const [queue, setQueue] = useState(() => shuffle(lesson.phrases).map((p) => makePracticeQ(p, lesson)));
   const [i, setI] = useState(0);
-  const totalN = lesson.phrases.length;
   const q = queue[i];
 
   const answered = (ok) => {
     review(q.word, ok);
-    if (!ok) setQueue((prev) => [...prev, makePracticeQ(q.word, lesson)]);
-    if (i + 1 >= queue.length) { onDone(); return; }
+    // Очередь считаем сразу: иначе на последней карточке этап закрывался
+    // раньше, чем в неё попадал обещанный повтор ошибочной фразы.
+    const nextQueue = ok ? queue : [...queue, makePracticeQ(q.word, lesson)];
+    if (!ok) setQueue(nextQueue);
+    if (i + 1 >= nextQueue.length) { onDone(); return; }
     setI(i + 1);
   };
 
   return (
     <>
       <div className="lesson-progress">
-        <div className="lesson-progress-bar"><div style={{ width: `${Math.min(100, ((i + 1) / totalN) * 100)}%` }} /></div>
-        <span>{Math.min(i + 1, totalN)} / {totalN}</span>
+        <div className="lesson-progress-bar"><div style={{ width: `${((i + 1) / queue.length) * 100}%` }} /></div>
+        <span>{i + 1} / {queue.length}</span>
       </div>
       <div className="q-type">{qLabel(q.type, t)}</div>
       {q.type === "assemble" ? <AssembleQ key={i} q={q} onAnswer={answered} /> : <ChoiceQ key={i} q={q} onAnswer={answered} />}
@@ -587,8 +589,16 @@ function LessonPractice({ lesson, review, onDone }) {
 
 // ─────────── Мини-экзамен урока ───────────
 
+// В уроке 2–4 фразы. Если делать по вопросу на фразу, порог 80% округляется
+// до «без единой ошибки» — поэтому добираем минимум до 3 вопросов, повторяя
+// фразы другим типом задания. Порог: одна ошибка допустима (см. LessonQuiz).
+const EXAM_MIN_Q = 3;
+
 function makeLessonQuestions(lesson) {
-  const pool = shuffle(lesson.phrases).slice(0, 5);
+  const base = shuffle(lesson.phrases).slice(0, 5);
+  const pool = [...base];
+  while (pool.length < Math.min(EXAM_MIN_Q, 5)) pool.push(base[pool.length % base.length]);
+
   return pool.map((p) => {
     const w = { ...p, lesson: lesson.title, lessonId: lesson.id };
     const words = w.kk.split(/\s+/).filter(Boolean);
@@ -607,7 +617,9 @@ function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen, dial
   const [i, setI] = useState(0);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
-  const need = Math.max(1, Math.ceil(questions.length * 0.8));
+  // Одна ошибка допустима: раньше порог 80% при 2–4 вопросах округлялся
+  // до «все верно», и урок не сдавался с единственной опечаткой.
+  const need = Math.max(1, questions.length - 1);
   const q = questions[i];
 
   const answered = (ok) => {
