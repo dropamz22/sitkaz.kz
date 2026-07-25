@@ -1115,6 +1115,112 @@ body::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Знакомство при первом запуске ── */
+.ob { padding-top: 10px; }
+.ob-dots { display: flex; gap: 7px; justify-content: center; margin-bottom: 18px; }
+.ob-dots span {
+  width: 26px; height: 4px; border-radius: var(--pill);
+  background: var(--ice-deep); transition: background .3s ease;
+}
+.ob-dots span.on { background: var(--amber); }
+.ob-card {
+  background: var(--card);
+  border: 2px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  box-shadow: var(--shadow);
+  animation: cardIn .3s ease;
+}
+.ob-card h2 { font-size: 23px; font-weight: 700; color: var(--heading); text-align: center; }
+.ob-card > p {
+  color: var(--muted); font-size: 14px; line-height: 1.55;
+  text-align: center; margin-top: 10px;
+}
+.ob-mascot {
+  width: 96px; height: 96px; border-radius: 50%;
+  object-fit: contain; background: var(--ice);
+  border: 3px solid var(--amber-soft); padding: 5px;
+  display: block; margin: 0 auto 14px;
+  animation: floatSoft 4s ease-in-out infinite;
+}
+/* Первое слово, которое человек уносит с экрана приветствия */
+.ob-phrase {
+  display: block; width: 100%; text-align: center; cursor: pointer;
+  margin-top: 18px; padding: 16px;
+  background: rgba(242, 149, 60, 0.07);
+  border: 2px solid rgba(242, 149, 60, 0.22);
+  border-radius: 24px;
+  font-family: var(--font-main);
+  transition: transform .15s ease;
+}
+.ob-phrase:active { transform: scale(0.98); }
+.ob-phrase-label {
+  display: block; color: var(--amber); font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .07em;
+}
+.ob-phrase-kk { display: block; font-size: 21px; font-weight: 700; color: var(--heading); margin-top: 7px; }
+.ob-phrase-ru { display: block; color: var(--muted); font-size: 13px; margin-top: 5px; }
+.ob-options { display: flex; flex-direction: column; gap: 9px; margin-top: 18px; }
+.ob-option {
+  display: flex; align-items: center; gap: 11px;
+  width: 100%; text-align: left; cursor: pointer;
+  padding: 14px 16px; border-radius: 22px;
+  background: var(--card);
+  border: 2px solid var(--card-border);
+  color: var(--heading); font-size: 15px; font-weight: 600;
+  font-family: var(--font-main);
+  transition: border-color .2s ease, background .2s ease, transform .12s ease;
+}
+.ob-option .msi { font-size: 21px; color: var(--faint); transition: color .2s ease; }
+.ob-option:active { transform: scale(0.98); }
+.ob-option.on { border-color: var(--amber); background: rgba(242, 149, 60, 0.07); }
+.ob-option.on .msi { color: var(--amber); }
+.ob-goals { display: flex; gap: 9px; margin-top: 18px; }
+.ob-goal {
+  flex: 1; cursor: pointer; padding: 16px 8px;
+  border-radius: 24px; background: var(--card);
+  border: 2px solid var(--card-border);
+  font-family: var(--font-main); text-align: center;
+  transition: border-color .2s ease, background .2s ease, transform .12s ease;
+}
+.ob-goal:active { transform: scale(0.97); }
+.ob-goal.on { border-color: var(--amber); background: rgba(242, 149, 60, 0.07); }
+.ob-goal-n { display: block; font-size: 26px; font-weight: 700; color: var(--heading); }
+.ob-goal-t { display: block; font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 3px; }
+.ob-goal-h { display: block; font-size: 10px; color: var(--faint); margin-top: 4px; line-height: 1.3; }
+.ob-goal.on .ob-goal-t { color: var(--amber); }
+.ob-note { color: var(--faint); font-size: 12px; text-align: center; margin-top: 14px; line-height: 1.45; }
+.ob-next { width: 100%; margin-top: 20px; }
+.ob-next:disabled { opacity: .4; cursor: default; }
+
+/* Цель, ради которой человек учится — подсветка нужных тем */
+.topics-reason {
+  float: right; display: inline-flex; align-items: center; gap: 5px;
+  text-transform: none; letter-spacing: 0; font-size: 11px;
+  color: var(--amber); font-weight: 700;
+}
+.topics-reason .msi { font-size: 14px; }
+.module-row.wanted { border-color: var(--amber-soft); }
+.module-row.wanted .module-row-body h3::after {
+  content: "★"; color: var(--amber); font-size: 11px; margin-left: 6px;
+}
+
+/* Настройка цели дня в «Прогрессе» */
+.goal-picker {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--card); border: 2px solid var(--card-border);
+  border-radius: var(--pill); padding: 8px 10px 8px 16px;
+  margin-bottom: 12px; box-shadow: var(--shadow);
+}
+.goal-picker-label { flex: 1; font-size: 13px; font-weight: 700; color: var(--muted); }
+.goal-picker button {
+  min-width: 46px; padding: 9px 0; border: none; cursor: pointer;
+  border-radius: var(--pill); background: var(--ice);
+  font-family: var(--font-label); font-size: 14px; font-weight: 700; color: var(--muted);
+  transition: background .2s ease, color .2s ease;
+}
+.goal-picker button.on { background: var(--amber); color: #fff; }
+
 /* ── Тач-устройства: гасим «залипший» :hover ──
    На телефоне после тапа состояние :hover остаётся на элементе, пока
    не тапнешь в другом месте. Из-за этого вариант ответа выглядел

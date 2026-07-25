@@ -11,11 +11,13 @@ import {
 import { XP, levelInfo, ACHIEVEMENTS } from "../lib/game";
 import { speak } from "../lib/audio";
 import { loadLang, saveLang, dict, tr as trBase } from "../lib/i18n";
+import Onboarding, { REASONS } from "./onboarding";
 
 const STORE_KEY = "sitkaz_progress_v3";
 const EMPTY = {
   done: {}, quizzes: 0, bestScore: 0, dialogs: {}, xp: 0, achv: {}, unlocked: false,
   srs: {}, streak: { count: 0, last: null, todayCount: 0 }, goal: 10,
+  onboarded: false, reason: null,
 };
 
 // Промокод, открывающий доступ ко всем урокам
@@ -64,13 +66,29 @@ export default function App() {
   const [activeModule, setActiveModule] = useState(null);
   const [progress, setProgress] = useState(EMPTY);
   const [lang, setLangState] = useState("ru");
+  const [tgUser, setTgUser] = useState(null);
+  const [hydrated, setHydrated] = useState(false);
   const t = dict(lang);
 
   useEffect(() => {
-    setProgress(loadProgress());
-    setLangState(loadLang());
+    const saved = loadProgress();
+    setProgress(saved);
+    let lng = loadLang();
     const tg = typeof window !== "undefined" && window.Telegram && window.Telegram.WebApp;
-    if (tg) { try { tg.ready(); tg.expand(); } catch {} }
+    if (tg) {
+      try { tg.ready(); tg.expand(); } catch {}
+      const u = tg.initDataUnsafe && tg.initDataUnsafe.user;
+      if (u) {
+        setTgUser(u);
+        // Язык интерфейса берём из Telegram, но только при самом первом запуске —
+        // выбор пользователя в переключателе всегда важнее.
+        if (!saved.onboarded && !localStorage.getItem("sitkaz_lang") && u.language_code) {
+          lng = u.language_code.startsWith("en") ? "en" : "ru";
+        }
+      }
+    }
+    setLangState(lng);
+    setHydrated(true);
   }, []);
 
   const setLang = (l) => { setLangState(l); saveLang(l); };
@@ -157,6 +175,26 @@ export default function App() {
     return false;
   };
 
+  // Знакомство при первом запуске: ответы сразу уходят в прогресс
+  const finishOnboarding = ({ reason, goal }) => {
+    update((p) => ({ ...p, onboarded: true, reason, goal }));
+  };
+
+  if (hydrated && !progress.onboarded) {
+    return (
+      <LangCtx.Provider value={{ lang, t, setLang }}>
+        <div className="app">
+          <Onboarding
+            lang={lang}
+            t={t}
+            userName={tgUser && tgUser.first_name}
+            onDone={finishOnboarding}
+          />
+        </div>
+      </LangCtx.Provider>
+    );
+  }
+
   return (
     <LangCtx.Provider value={{ lang, t, setLang }}>
       <div className="app">
@@ -197,7 +235,9 @@ export default function App() {
           />
         )}
         {tab === "practice" && <PracticeHub progress={progress} review={review} update={update} />}
-        {tab === "stats" && <Stats progress={progress} doneCount={doneCountN} />}
+        {tab === "stats" && (
+          <Stats progress={progress} doneCount={doneCountN} setGoal={(g) => update((p) => ({ ...p, goal: g }))} />
+        )}
 
         <nav className="nav">
           {[
@@ -232,6 +272,10 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
   const nextLesson = lessons.find((l) => !progress.done[l.id]) || null;
   const moduleUnlocked = (idx) => progress.unlocked || idx === 0 || modules.slice(0, idx).every((pm) =>
     lessonsByModule(pm.id).every((l) => progress.done[l.id]));
+
+  // Темы, ради которых человек пришёл (ответ на первом запуске)
+  const myReason = REASONS.find((r) => r.id === progress.reason) || null;
+  const wantedModules = myReason ? myReason.modules : [];
 
   const [promo, setPromo] = useState("");
   const [promoErr, setPromoErr] = useState(false);
@@ -278,7 +322,14 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
         )}
       </div>
 
-      <div className="section-title">{t.topics}</div>
+      <div className="section-title">
+        {t.topics}
+        {myReason && (
+          <span className="topics-reason">
+            <Icon name={myReason.icon} filled /> {lang === "en" ? myReason.en : myReason.ru}
+          </span>
+        )}
+      </div>
       <div className="module-list">
         {modules.map((m, idx) => {
           const items = lessonsByModule(m.id);
@@ -287,10 +338,11 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
           const mPct = Math.round((mDone / items.length) * 100);
           const done = mDone === items.length;
           const current = unlocked && !done && (idx === 0 || modules.slice(0, idx).every((pm) => lessonsByModule(pm.id).every((l) => progress.done[l.id])));
+          const wanted = !done && wantedModules.includes(m.id);
           return (
             <div
               key={m.id}
-              className={"module-row" + (unlocked ? "" : " locked") + (current ? " current" : "")}
+              className={"module-row" + (unlocked ? "" : " locked") + (current ? " current" : "") + (wanted ? " wanted" : "")}
               onClick={() => unlocked && onOpenModule(m)}
             >
               <div className="module-row-num" style={{ background: unlocked ? m.color : undefined }}>
@@ -1121,7 +1173,7 @@ function AssembleQ({ q, onAnswer }) {
 
 // ────────────────────────── Прогресс ──────────────────────────
 
-function Stats({ progress, doneCount }) {
+function Stats({ progress, doneCount, setGoal }) {
   const { lang, t } = useLang();
   const total = lessons.length;
   const pct = Math.round((doneCount / total) * 100);
@@ -1158,6 +1210,13 @@ function Stats({ progress, doneCount }) {
       <div className="stat-row" style={{ marginBottom: 12 }}>
         <div className="stat"><div className="num"><Icon name="local_fire_department" filled style={{ fontSize: 20, color: "var(--amber)" }} /> {streak}</div><div className="lbl">{daysWord(streak, t, lang)} {t.st_days}</div></div>
         <div className="stat"><div className="num">{today}/{goal}</div><div className="lbl">{t.st_today}</div></div>
+      </div>
+
+      <div className="goal-picker">
+        <span className="goal-picker-label">{t.goal_change}</span>
+        {[5, 10, 20].map((g) => (
+          <button key={g} className={goal === g ? "on" : ""} onClick={() => setGoal(g)}>{g}</button>
+        ))}
       </div>
       <div className="stat-row" style={{ marginBottom: 12 }}>
         <div className="stat"><div className="num">{learned}</div><div className="lbl">{t.st_learned}</div></div>
