@@ -1114,3 +1114,20 @@ body::before {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ── Тач-устройства: гасим «залипший» :hover ──
+   На телефоне после тапа состояние :hover остаётся на элементе, пока
+   не тапнешь в другом месте. Из-за этого вариант ответа выглядел
+   подсвеченным без причины — здесь возвращаем обычный вид. */
+@media (hover: none) {
+  .quiz-opt:hover { background: var(--card); }
+  .card:hover { border-color: var(--card-border); }
+  .card:hover .lesson-icon { transform: none; }
+  .word-card:hover { border-color: var(--card-border); }
+  .word-chip:hover { border-color: var(--card-border); }
+  .btn:hover { filter: none; }
+  .due-btn:hover { filter: none; }
+  .promo-btn:hover { filter: none; }
+  .repeat-link:hover { color: var(--muted); }
+  .listen-btn:hover { transform: none; }
+}
