@@ -1120,7 +1120,9 @@ body::before {
    не тапнешь в другом месте. Из-за этого вариант ответа выглядел
    подсвеченным без причины — здесь возвращаем обычный вид. */
 @media (hover: none) {
-  .quiz-opt:hover { background: var(--card); }
+  /* :not() обязателен — иначе сброс перебьёт подсветку верного/неверного ответа
+     и останется белый текст на белом фоне */
+  .quiz-opt:hover:not(.correct):not(.wrong) { background: var(--card); }
   .card:hover { border-color: var(--card-border); }
   .card:hover .lesson-icon { transform: none; }
   .word-card:hover { border-color: var(--card-border); }
