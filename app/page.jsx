@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { modules, lessons, lessonsByModule, allPhrases } from "../data/course";
+import { modules, lessons, lessonsByModule, allPhrases, openPhrases } from "../data/course";
 import { dialogForLesson } from "../data/dialogs";
 import { MASCOT } from "../data/mascot";
 import {
@@ -196,7 +196,7 @@ export default function App() {
             onBack={() => setTab("course")}
           />
         )}
-        {tab === "practice" && <PracticeHub srs={progress.srs} review={review} update={update} />}
+        {tab === "practice" && <PracticeHub progress={progress} review={review} update={update} />}
         {tab === "stats" && <Stats progress={progress} doneCount={doneCountN} />}
 
         <nav className="nav">
@@ -761,9 +761,11 @@ function DialogView({ dialog, onBack, onComplete }) {
 
 // ─────────────────── Практика: повторение + проверка ───────────────────
 
-function PracticeHub({ srs, review, update }) {
+function PracticeHub({ progress, review, update }) {
   const { t } = useLang();
   const [mode, setMode] = useState("review"); // review | quiz
+  // Тренируем только то, что пользователь уже открыл
+  const pool = openPhrases(progress);
   return (
     <>
       <div className="mode-switch">
@@ -774,7 +776,9 @@ function PracticeHub({ srs, review, update }) {
           <Icon name="quiz" style={{ fontSize: 17, verticalAlign: "-0.2em" }} /> {t.mode_check}
         </button>
       </div>
-      {mode === "review" ? <Practice srs={srs} review={review} /> : <Quiz update={update} review={review} />}
+      {mode === "review"
+        ? <Practice srs={progress.srs} pool={pool} review={review} />
+        : <Quiz update={update} review={review} pool={pool} />}
     </>
   );
 }
@@ -784,46 +788,59 @@ function PracticeHub({ srs, review, update }) {
 // Через сколько карточек вернуть фразу, которую не вспомнили
 const RELEARN_GAP = 3;
 
-function Practice({ srs, review }) {
+function Practice({ srs, pool, review }) {
   const { lang, t } = useLang();
-  const [deck, setDeck] = useState(() => buildDeck(srs, allPhrases));
+  const [deck, setDeck] = useState(() => buildDeck(srs, pool));
+  // Повторять нечего и новых фраз нет — колода собрана «просто так»,
+  // показываем финальный экран, а свободную практику предлагаем кнопкой.
+  const [freeMode, setFreeMode] = useState(false);
   // queue — очередь карточек этой сессии; в неё возвращаются фразы после «Не знаю»
   const [queue, setQueue] = useState(() => deck.cards);
   const [i, setI] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [learning, setLearning] = useState(null); // карточка на разборе после «Не знаю»
-  const [session, setSession] = useState({ known: 0, unknown: 0 });
+  // known — сколько раз ответили «Знаю», hard — фразы, которые хоть раз не вспомнили
+  const [session, setSession] = useState({ known: 0, hard: new Set() });
   // Сколько фраз ещё не закрыто ответом «Знаю»
   const [pending, setPending] = useState(() => new Set());
 
-  const restart = () => {
-    const d = buildDeck(srs, allPhrases);
+  const restart = (free = false) => {
+    const d = buildDeck(srs, pool);
+    setFreeMode(free || !d.free);
     setDeck(d); setQueue(d.cards); setI(0); setFlipped(false); setLearning(null);
-    setSession({ known: 0, unknown: 0 }); setPending(new Set());
+    setSession({ known: 0, hard: new Set() }); setPending(new Set());
   };
 
-  if (!deck.cards.length) {
+  // Всё повторено: колода собралась «свободной» или пустой
+  if (!deck.cards.length || (deck.free && !freeMode)) {
     return (
       <div className="practice-done">
         <Mascot className="mascot-sleep" src={MASCOT.sleep} alt="Irbis" />
         <h2 style={{ margin: "10px 0 6px" }}>{t.all_done_today}</h2>
-        <p style={{ color: "var(--muted)" }}>{t.all_reviewed}</p>
+        <p style={{ color: "var(--muted)", marginBottom: deck.cards.length ? 20 : 0 }}>{t.all_reviewed}</p>
+        {deck.cards.length > 0 && (
+          <button className="btn secondary" style={{ maxWidth: 280 }} onClick={() => setFreeMode(true)}>
+            {t.free_practice_start}
+          </button>
+        )}
       </div>
     );
   }
 
   if (i >= queue.length) {
-    const totalN = session.known + session.unknown;
+    // Считаем фразы, а не показы: карточка «не знаю → потом знаю» — это одна фраза
+    const totalN = deck.cards.length;
+    const hardN = session.hard.size;
     return (
       <div className="practice-done">
         <Mascot className="mascot-sleep" src={MASCOT.sleep} alt="Irbis" />
         <h2 style={{ margin: "10px 0 6px" }}>{t.session_done}</h2>
         <p style={{ color: "var(--muted)", marginBottom: 20 }}>
           {lang === "en"
-            ? `${totalN} ${phrasesWord(totalN, t, lang)}: knew ${session.known}, ${session.unknown} needed a second look`
-            : `${totalN} ${phrasesWord(totalN, t, lang)}: знал ${session.known}, ${session.unknown} учили заново`}
+            ? `${totalN} ${phrasesWord(totalN, t, lang)}: knew ${totalN - hardN}, ${hardN} needed a second look`
+            : `${totalN} ${phrasesWord(totalN, t, lang)}: знал ${totalN - hardN}, ${hardN} учили заново`}
         </p>
-        <button className="btn primary" style={{ maxWidth: 260 }} onClick={restart}>{t.continue_practice}</button>
+        <button className="btn primary" style={{ maxWidth: 260 }} onClick={() => restart()}>{t.continue_practice}</button>
       </div>
     );
   }
@@ -843,7 +860,7 @@ function Practice({ srs, review }) {
   // «Не знаю» — показываем разбор, фраза уходит в обучение и вернётся в этой же сессии.
   const dontKnow = () => {
     review(card, false);
-    setSession((s) => ({ ...s, unknown: s.unknown + 1 }));
+    setSession((s) => ({ ...s, hard: new Set(s.hard).add(phraseId(card)) }));
     setPending((p) => new Set(p).add(phraseId(card)));
     speak(card.kk);
     setLearning(card);
@@ -929,9 +946,11 @@ function qLabel(type, t) {
   return { kk2ru: t.q_type_kk2ru, ru2kk: t.q_type_ru2kk, listen: t.q_type_listen, assemble: t.q_type_assemble }[type];
 }
 
-function makeQuestions() {
-  const pool = shuffle(allPhrases).slice(0, 10);
-  return pool.map((w) => {
+// Вопросы строим по открытым фразам; неверные варианты можно брать
+// из всего курса — они служат фоном и не требуют знания урока.
+function makeQuestions(pool = allPhrases) {
+  const picked = shuffle(pool).slice(0, 10);
+  return picked.map((w) => {
     const words = w.kk.split(/\s+/).filter(Boolean);
     const types = ["kk2ru", "ru2kk", "listen"];
     if (words.length >= 3 && words.length <= 8) types.push("assemble", "assemble");
@@ -942,9 +961,9 @@ function makeQuestions() {
   });
 }
 
-function Quiz({ update, review }) {
+function Quiz({ update, review, pool }) {
   const { t } = useLang();
-  const [questions, setQuestions] = useState(makeQuestions);
+  const [questions, setQuestions] = useState(() => makeQuestions(pool));
   const [i, setI] = useState(0);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
@@ -960,7 +979,7 @@ function Quiz({ update, review }) {
     } else setI(i + 1);
   };
 
-  const restart = () => { setQuestions(makeQuestions()); setI(0); setScore(0); setDone(false); };
+  const restart = () => { setQuestions(makeQuestions(pool)); setI(0); setScore(0); setDone(false); };
 
   if (done) {
     return (

@@ -187,13 +187,24 @@ for (const p of allPhrases) {
   }
 }
 
-// Два варианта ответа с одинаковым переводом = вопрос без единственного верного ответа
-const byRu = {};
-for (const p of allPhrases) (byRu[p.ru] ||= []).push(p);
-for (const [ru, list] of Object.entries(byRu)) {
-  const uniqueKk = new Set(list.map((p) => p.kk));
-  if (uniqueKk.size > 1) {
-    err("данные", `перевод «${ru}» у разных фраз (${[...uniqueKk].join(" / ")}) — в квизе получится два верных варианта`);
+// Два варианта ответа с одинаковым переводом = вопрос без единственного верного ответа.
+// Проверяем оба языка интерфейса: дубль в en ломает квиз ровно так же, как в ru.
+for (const field of ["ru", "en"]) {
+  const byTr = {};
+  for (const p of allPhrases) (byTr[p[field]] ||= []).push(p);
+  for (const [text, list] of Object.entries(byTr)) {
+    const uniqueKk = new Set(list.map((p) => p.kk));
+    if (uniqueKk.size > 1) {
+      err("данные", `перевод (${field}) «${text}» у разных фраз (${[...uniqueKk].join(" / ")}) — в квизе получится два верных варианта`);
+    }
+  }
+}
+
+// Русский текст в казахском поле: ответ виден прямо в вопросе, а озвучка читает его казахским голосом
+for (const p of allPhrases) {
+  const kkOnly = p.kk.replace(/[әғқңөұүhіӘҒҚҢӨҰҮҺІ]/g, "");
+  if (/[а-яё]/i.test(kkOnly) && /[«»()]/.test(p.kk)) {
+    err("данные", `фраза «${p.kk}» (урок «${p.lesson}») содержит русское пояснение в поле kk — перенеси его в ru/en`);
   }
 }
 

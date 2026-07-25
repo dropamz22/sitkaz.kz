@@ -369,14 +369,14 @@ export const lessons = [
     },
     phrases: [
       { type: "term", kk: "Есім", ru: "имя", en: "name", tr: "есим" },
-      { type: "phrase", kk: "Нұр — «свет»", ru: "Нұр — «свет» (в именах Нұрлан, Нұргүл)", en: "Nur — 'light' (in names Nurlan, Nurgul)", tr: "нур" },
+      { type: "term", kk: "Нұр", ru: "свет, сияние — в именах Нұрлан, Нұргүл", en: "light, radiance — in the names Nurlan, Nurgul", tr: "нур" },
       { type: "phrase", kk: "Балаға ат қою", ru: "Наречение имени ребёнку", en: "Naming a child", tr: "балага ат кою" },
     ] },
   { id: 39, module: "attar", icon: "map", title: "Жер атаулары", ru: "Топонимы", en: "Place Names", video: null,
     phrases: [
       { type: "term", kk: "Атау", ru: "название", en: "name (of a place/thing)", tr: "атау" },
-      { type: "phrase", kk: "Алматы — «алма» (яблоко)", ru: "Алматы — от «алма» (яблоко)", en: "Almaty — from 'alma' (apple)", tr: "алматы" },
-      { type: "phrase", kk: "Астана — «столица»", ru: "Астана — «столица»", en: "Astana — 'the capital'", tr: "астана" },
+      { type: "term", kk: "Алматы", ru: "Алматы — от «алма» (яблоко)", en: "Almaty — from 'alma' (apple)", tr: "алматы" },
+      { type: "term", kk: "Астана", ru: "Астана — «столица»", en: "Astana — 'the capital'", tr: "астана" },
     ] },
   { id: 40, module: "attar", icon: "label", title: "Атаулар", ru: "Названия вокруг нас", en: "Everyday Names", video: null,
     phrases: [
@@ -393,7 +393,7 @@ export const lessons = [
     },
     phrases: [
       { type: "phrase", kk: "Қырық рулы қазақпыз", ru: "Мы казахи сорока родов", en: "We are the Kazakhs of forty clans", tr: "кырык рулы казакпыз" },
-      { type: "phrase", kk: "Руың кім?", ru: "Из какого ты рода?", en: "Which clan are you from?", tr: "руың ким" },
+      { type: "phrase", kk: "Руың кім?", ru: "Ты из какого рода? (на «ты»)", en: "What's your clan? (informal)", tr: "руың ким" },
       { type: "phrase", kk: "Біз бір атаның балаларымыз", ru: "Мы дети одного предка", en: "We are children of one ancestor", tr: "биз бир атаның балаларымыз" },
     ] },
 ];
@@ -406,3 +406,19 @@ export function lessonsByModule(moduleId) {
 export const allPhrases = lessons.flatMap((l) =>
   l.phrases.map((p) => ({ ...p, lesson: l.title, lessonId: l.id }))
 );
+
+// Фразы, которые пользователь уже видел: из сданных уроков и из тех,
+// что он начал проходить (по ним уже есть записи в SRS).
+// Практика и квиз не должны подсовывать фразы из ещё закрытых уроков.
+export function openPhrases(progress = {}) {
+  const done = progress.done || {};
+  const srs = progress.srs || {};
+  const seenLesson = new Set();
+  for (const key of Object.keys(srs)) {
+    const id = Number(String(key).split(":")[0]);
+    if (!Number.isNaN(id)) seenLesson.add(id);
+  }
+  const open = allPhrases.filter((p) => done[p.lessonId] || seenLesson.has(p.lessonId));
+  // Пока ничего не пройдено — даём первый урок, чтобы практика не была пустой
+  return open.length ? open : allPhrases.filter((p) => p.lessonId === lessons[0].id);
+}
