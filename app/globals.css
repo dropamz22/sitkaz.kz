@@ -220,7 +220,16 @@ body::before {
   background: var(--ice);
   display: grid; place-items: center; font-weight: 700;
   flex-shrink: 0;
+  transition: transform .15s ease;
 }
+.lesson-icon .msi { font-size: 23px; }
+.card:hover .lesson-icon { transform: scale(1.06); }
+/* Пройденный урок — заливка цветом темы, галочка белым */
+.lesson-icon.is-done {
+  background: currentColor !important;
+  box-shadow: 0 5px 12px rgba(51, 71, 92, 0.16);
+}
+.lesson-icon.is-done .msi { color: #fff; }
 .lesson-meta h3 { font-size: 16px; font-weight: 700; color: var(--heading); }
 .lesson-meta p { color: var(--muted); font-size: 13px; }
 .lesson-count { margin-left: auto; color: var(--faint); font-family: var(--font-label); font-size: 11px; font-weight: 700; text-align: right; }
@@ -561,7 +570,11 @@ body::before {
 
 /* ── Шапка страницы темы ── */
 .module-hero {
-  background: var(--card);
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--m-color, var(--amber)) 9%, transparent), transparent 55%),
+    var(--card);
   border: 2px solid var(--card-border);
   border-top: 5px solid var(--amber);
   border-radius: var(--radius);
@@ -569,10 +582,47 @@ body::before {
   margin-bottom: 20px;
   box-shadow: var(--shadow);
 }
+/* Крупная иконка темы фоном — характер темы */
+.module-hero-ghost {
+  position: absolute;
+  top: -14px; right: -10px;
+  font-size: 132px; line-height: 1;
+  color: var(--m-color, var(--amber));
+  opacity: 0.09;
+  pointer-events: none; user-select: none;
+}
+.module-hero > *:not(.module-hero-ghost) { position: relative; }
+.module-num {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: grid; place-items: center;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(51, 71, 92, 0.16);
+}
+.module-num .msi { font-size: 24px; }
 .module-hero .module-num { margin-bottom: 12px; }
 .module-hero h2 { font-size: 26px; font-weight: 700; color: var(--heading); }
 .module-hero-sub { color: var(--muted); font-size: 15px; margin-top: 2px; }
 .module-hero-desc { color: var(--muted); font-size: 13px; line-height: 1.5; margin-top: 10px; }
+
+/* Состав темы: уроки / фразы / диалоги */
+.module-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.m-stat {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: color-mix(in srgb, var(--m-color, var(--amber)) 13%, #fff);
+  color: #3f5162;
+  border-radius: var(--pill);
+  padding: 7px 13px;
+  font-size: 12.5px; font-weight: 600;
+  white-space: nowrap;
+}
+.m-stat b { color: var(--heading); font-weight: 700; font-size: 13.5px; }
+.m-stat .msi { font-size: 15px; color: var(--m-color, var(--amber)); }
+.module-breakdown {
+  display: flex; flex-wrap: wrap; gap: 4px 14px;
+  margin-top: 10px;
+  color: var(--faint); font-size: 12px; font-weight: 600;
+}
+.module-breakdown b { color: var(--muted); font-weight: 700; }
 
 /* ── Видео ── */
 .video-box {

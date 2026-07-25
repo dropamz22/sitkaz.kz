@@ -294,7 +294,11 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
               onClick={() => unlocked && onOpenModule(m)}
             >
               <div className="module-row-num" style={{ background: unlocked ? m.color : undefined }}>
-                {done ? <Icon name="check" style={{ fontSize: 16 }} /> : unlocked ? m.num : <Icon name="lock" style={{ fontSize: 15 }} />}
+                {done
+                  ? <Icon name="check" style={{ fontSize: 16 }} />
+                  : unlocked
+                    ? <Icon name={m.icon} filled style={{ fontSize: 18 }} />
+                    : <Icon name="lock" style={{ fontSize: 15 }} />}
               </div>
               <div className="module-row-body">
                 <h3>{m.title} <span>· {lang === "en" ? m.subtitleEn : m.subtitle}</span></h3>
@@ -342,15 +346,46 @@ function ModuleView({ module: m, progress, onOpen, onBack }) {
   const items = lessonsByModule(m.id);
   const mDone = items.filter((l) => progress.done[l.id]).length;
   const mPct = Math.round((mDone / items.length) * 100);
+
+  // Состав темы: сколько фраз, какого типа, есть ли диалоги и заметки
+  const phraseTotal = items.reduce((a, l) => a + l.phrases.length, 0);
+  const dialogTotal = items.filter((l) => dialogForLesson(l.id)).length;
+  const noteTotal = items.filter((l) => l.note).length;
+  const termTotal = items.reduce((a, l) => a + l.phrases.filter((p) => p.type === "term").length, 0);
+  const proverbTotal = items.reduce((a, l) => a + l.phrases.filter((p) => p.type === "proverb").length, 0);
+  const lessonsWord = (n) => lang === "en"
+    ? (n === 1 ? t.lesson_one : t.lesson_many)
+    : plural(n, t.lesson_one, t.lesson_few, t.lesson_many);
+  const dialogsWord = (n) => lang === "en"
+    ? (n === 1 ? t.dialog_one : t.dialog_many)
+    : plural(n, t.dialog_one, t.dialog_few, t.dialog_many);
+
   return (
     <>
       <button className="back" onClick={onBack}><Icon name="arrow_back" style={{ fontSize: 18 }} /> {t.to_topics}</button>
 
-      <div className="module-hero" style={{ borderColor: m.color }}>
-        <div className="module-num" style={{ background: m.color, width: 44, height: 44, fontSize: 17 }}>{m.num}</div>
+      <div className="module-hero" style={{ borderColor: m.color, "--m-color": m.color }}>
+        <Icon name={m.icon} filled className="module-hero-ghost" />
+        <div className="module-num" style={{ background: m.color }}>
+          <Icon name={m.icon} filled />
+        </div>
         <h2>{m.title}</h2>
         <p className="module-hero-sub">{lang === "en" ? m.subtitleEn : m.subtitle}</p>
         <p className="module-hero-desc">{lang === "en" ? m.descEn : m.desc}</p>
+
+        <div className="module-stats">
+          <span className="m-stat"><Icon name="menu_book" filled /> <b>{items.length}</b> {lessonsWord(items.length)}</span>
+          <span className="m-stat"><Icon name="chat_bubble" filled /> <b>{phraseTotal}</b> {phrasesWord(phraseTotal, t, lang)}</span>
+          {dialogTotal > 0 && (
+            <span className="m-stat"><Icon name="forum" filled /> <b>{dialogTotal}</b> {dialogsWord(dialogTotal)}</span>
+          )}
+        </div>
+        <div className="module-breakdown">
+          {termTotal > 0 && <span><b>{termTotal}</b> {t.m_terms}</span>}
+          {proverbTotal > 0 && <span><b>{proverbTotal}</b> {t.m_proverbs}</span>}
+          {noteTotal > 0 && <span><b>{noteTotal}</b> {noteTotal === 1 ? t.m_note : t.m_notes}</span>}
+        </div>
+
         <div className="progress-bar" style={{ marginTop: 14 }}>
           <div style={{ width: `${mPct}%`, background: m.color }} />
         </div>
@@ -364,8 +399,15 @@ function ModuleView({ module: m, progress, onOpen, onBack }) {
           return (
             <div key={l.id} className={"card" + (unlocked ? "" : " locked")} onClick={() => unlocked && onOpen(l)}>
               <div className="lesson-row">
-                <div className="lesson-icon" style={{ color: m.color }}>
-                  {progress.done[l.id] ? <Icon name="check_circle" filled /> : unlocked ? l.id : <Icon name="lock" />}
+                <div
+                  className={"lesson-icon" + (progress.done[l.id] ? " is-done" : "")}
+                  style={unlocked ? { color: m.color, background: `color-mix(in srgb, ${m.color} 14%, #fff)` } : undefined}
+                >
+                  {progress.done[l.id]
+                    ? <Icon name="check" filled />
+                    : unlocked
+                      ? <Icon name={l.icon} filled />
+                      : <Icon name="lock" />}
                 </div>
                 <div className="lesson-meta">
                   <h3>{l.title}</h3>
