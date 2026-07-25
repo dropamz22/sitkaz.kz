@@ -769,14 +769,26 @@ function PracticeHub({ srs, review, update }) {
 
 // ─────────────────── Практика (SRS) ───────────────────
 
+// Через сколько карточек вернуть фразу, которую не вспомнили
+const RELEARN_GAP = 3;
+
 function Practice({ srs, review }) {
   const { lang, t } = useLang();
   const [deck, setDeck] = useState(() => buildDeck(srs, allPhrases));
+  // queue — очередь карточек этой сессии; в неё возвращаются фразы после «Не знаю»
+  const [queue, setQueue] = useState(() => deck.cards);
   const [i, setI] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [learning, setLearning] = useState(null); // карточка на разборе после «Не знаю»
   const [session, setSession] = useState({ known: 0, unknown: 0 });
+  // Сколько фраз ещё не закрыто ответом «Знаю»
+  const [pending, setPending] = useState(() => new Set());
 
-  const restart = () => { setDeck(buildDeck(srs, allPhrases)); setI(0); setFlipped(false); setSession({ known: 0, unknown: 0 }); };
+  const restart = () => {
+    const d = buildDeck(srs, allPhrases);
+    setDeck(d); setQueue(d.cards); setI(0); setFlipped(false); setLearning(null);
+    setSession({ known: 0, unknown: 0 }); setPending(new Set());
+  };
 
   if (!deck.cards.length) {
     return (
@@ -788,7 +800,7 @@ function Practice({ srs, review }) {
     );
   }
 
-  if (i >= deck.cards.length) {
+  if (i >= queue.length) {
     const totalN = session.known + session.unknown;
     return (
       <div className="practice-done">
@@ -796,31 +808,86 @@ function Practice({ srs, review }) {
         <h2 style={{ margin: "10px 0 6px" }}>{t.session_done}</h2>
         <p style={{ color: "var(--muted)", marginBottom: 20 }}>
           {lang === "en"
-            ? `${totalN} ${phrasesWord(totalN, t, lang)}: knew ${session.known}, ${session.unknown} to review again`
-            : `${totalN} ${phrasesWord(totalN, t, lang)}: знал ${session.known}, повторим ещё ${session.unknown}`}
+            ? `${totalN} ${phrasesWord(totalN, t, lang)}: knew ${session.known}, ${session.unknown} needed a second look`
+            : `${totalN} ${phrasesWord(totalN, t, lang)}: знал ${session.known}, ${session.unknown} учили заново`}
         </p>
         <button className="btn primary" style={{ maxWidth: 260 }} onClick={restart}>{t.continue_practice}</button>
       </div>
     );
   }
 
-  const card = deck.cards[i];
-  const grade = (known) => {
-    review(card, known);
-    setSession((s) => (known ? { ...s, known: s.known + 1 } : { ...s, unknown: s.unknown + 1 }));
+  const card = queue[i];
+  const isRepeat = pending.has(phraseId(card));
+
+  // «Знаю» — фраза закрыта, идём дальше.
+  const known = () => {
+    review(card, true);
+    setSession((s) => ({ ...s, known: s.known + 1 }));
+    setPending((p) => { const n = new Set(p); n.delete(phraseId(card)); return n; });
     setFlipped(false);
     setI((v) => v + 1);
   };
 
+  // «Не знаю» — показываем разбор, фраза уходит в обучение и вернётся в этой же сессии.
+  const dontKnow = () => {
+    review(card, false);
+    setSession((s) => ({ ...s, unknown: s.unknown + 1 }));
+    setPending((p) => new Set(p).add(phraseId(card)));
+    speak(card.kk);
+    setLearning(card);
+  };
+
+  // Возврат карточки в очередь через RELEARN_GAP позиций
+  const continueAfterLearning = () => {
+    setQueue((q) => {
+      const next = [...q];
+      next.splice(Math.min(i + 1 + RELEARN_GAP, next.length), 0, card);
+      return next;
+    });
+    setLearning(null);
+    setFlipped(false);
+    setI((v) => v + 1);
+  };
+
+  if (learning) {
+    return (
+      <>
+        <div className="section-title">
+          {t.card} {i + 1} / {queue.length} · {t.sess_known}: {session.known} · {t.sess_learning}: {pending.size}
+        </div>
+        <div className="flash-wrap">
+          <Mascot className="mascot-peek" src={MASCOT.peek} />
+          <div className="flash is-learning">
+            <div>
+              <div className="learn-label"><Icon name="school" filled /> {t.learn_title}</div>
+              <div className="big">{learning.kk}</div>
+              <div className="sub">
+                [{learning.tr}]{" "}
+                <button className="speak-btn" onClick={() => speak(learning.kk)} aria-label={t.play_audio}>
+                  <Icon name="volume_up" />
+                </button>
+              </div>
+              <div className="learn-tr">{P(learning, lang)}</div>
+              <div className="learn-note">{t.learn_sub}</div>
+            </div>
+          </div>
+          <div className="flash-controls">
+            <button className="btn primary" style={{ width: "100%" }} onClick={continueAfterLearning}>{t.got_it}</button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <div className="section-title">
-        {t.card} {i + 1} / {deck.cards.length}
-        {deck.free ? ` · ${t.free_practice}` : ` · ${t.reviewing}: ${deck.due} · ${t.new_cards}: ${deck.fresh}`}
+        {t.card} {i + 1} / {queue.length} · {t.sess_known}: {session.known} · {t.sess_learning}: {pending.size}
       </div>
       <div className="flash-wrap">
         <Mascot className="mascot-peek" src={MASCOT.peek} />
         <div className="flash" onClick={() => { setFlipped((f) => !f); if (!flipped) speak(card.kk); }}>
+          {isRepeat && <span className="flash-repeat"><Icon name="autorenew" /> {t.card_again}</span>}
           {!flipped ? (
             <div>
               <div className="big">{card.kk}</div>
@@ -835,8 +902,8 @@ function Practice({ srs, review }) {
           )}
         </div>
         <div className="flash-controls">
-          <button className="btn bad" onClick={() => grade(false)}>{t.dont_know}</button>
-          <button className="btn good" onClick={() => grade(true)}>{t.know}</button>
+          <button className="btn bad" onClick={dontKnow}>{t.dont_know}</button>
+          <button className="btn good" onClick={known}>{t.know}</button>
         </div>
         <p style={{ color: "var(--muted)", fontSize: 12, textAlign: "center" }}>{t.srs_hint}</p>
       </div>
