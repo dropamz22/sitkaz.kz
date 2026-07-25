@@ -49,8 +49,8 @@ const daysWord = (n, t, lang) => lang === "en" ? (n === 1 ? t.day_one : t.day_ma
 const phrasesWord = (n, t, lang) => lang === "en" ? (n === 1 ? t.phrase_one : t.phrase_many) : plural(n, t.phrase_one, t.phrase_few, t.phrase_many);
 
 // Иконка Material Symbols
-const Icon = ({ name, filled, style }) => (
-  <span className="msi" style={{ ...(filled ? { fontVariationSettings: "'FILL' 1" } : {}), ...style }}>{name}</span>
+const Icon = ({ name, filled, style, className }) => (
+  <span className={"msi" + (className ? ` ${className}` : "")} style={{ ...(filled ? { fontVariationSettings: "'FILL' 1" } : {}), ...style }}>{name}</span>
 );
 
 // Картинка маскота — прячется при сбое загрузки
@@ -260,9 +260,10 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
           </div>
         </div>
         <div className="chips-row">
-          <div className="chip"><Icon name="local_fire_department" filled /> <b>{streak}</b> {daysWord(streak, t, lang)}</div>
+          <div className={"chip chip-streak" + (streak > 0 ? " is-lit" : "")}>
+            <Icon name="local_fire_department" filled className="flame-icon" /> <b>{streak}</b> {daysWord(streak, t, lang)}
+          </div>
           <div className="chip"><Icon name="landscape" filled /> <b>{progress.xp || 0}</b> {lang === "en" ? "m" : "м"}</div>
-          {due > 0 && <div className="chip"><Icon name="autorenew" /> {t.chip_repeat} <b>{due}</b></div>}
         </div>
         {nextLesson && (
           <button className="due-btn" onClick={() => onOpen(nextLesson)}>

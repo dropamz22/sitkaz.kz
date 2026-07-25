@@ -601,7 +601,7 @@ body::before {
 .video-wrap { position: relative; padding-top: 40px; margin-top: -40px; }
 
 /* ── Стрик, цель, повторения ── */
-.chips-row { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; position: relative; }
+.chips-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; position: relative; }
 .chip {
   background: #d0e2f3;
   border: none;
@@ -609,9 +609,33 @@ body::before {
   white-space: nowrap;
 }
 .chip b { color: #061d30; font-weight: 700; }
+
+/* Стрик — самый «горячий» показатель, выделяем отдельно от нейтральных чипов */
+.chip-streak {
+  background: linear-gradient(135deg, #FFE1C2, #FCD2A8);
+  color: #8a4a12;
+  font-size: 14px;
+  padding: 8px 16px 8px 12px;
+  box-shadow: 0 3px 10px rgba(242, 149, 60, 0.18);
+}
+.chip-streak b { color: #7a3d00; font-size: 15px; }
+.chip-streak.is-lit {
+  background: linear-gradient(135deg, var(--amber), #F7B36B);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(242, 149, 60, 0.4);
+}
+.chip-streak.is-lit b { color: #fff; }
+.chip-streak .flame-icon { font-size: 16px; vertical-align: -0.2em; }
+.chip-streak.is-lit .flame-icon { animation: flameFlicker 1.8s ease-in-out infinite; display: inline-block; }
+@keyframes flameFlicker {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.1) rotate(-4deg); }
+  50% { transform: scale(0.97) rotate(3deg); }
+  75% { transform: scale(1.06) rotate(-2deg); }
+}
 .due-btn {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  width: 100%; margin-top: 14px;
+  width: 100%; margin-top: 18px;
   background: var(--amber); color: #fff; border: none; border-radius: var(--pill);
   padding: 17px 24px; font-weight: 700; font-size: 16px; cursor: pointer;
   font-family: var(--font-main);
