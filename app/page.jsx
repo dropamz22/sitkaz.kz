@@ -12,8 +12,11 @@ import { XP, levelInfo, ACHIEVEMENTS } from "../lib/game";
 import { speak } from "../lib/audio";
 import { loadLang, saveLang, dict, tr as trBase } from "../lib/i18n";
 import Onboarding, { REASONS } from "./onboarding";
+import {
+  loadProgress as loadStored, saveProgress as saveStored,
+  flushProgress, mergeProgress, cloudAvailable,
+} from "../lib/storage";
 
-const STORE_KEY = "sitkaz_progress_v3";
 const EMPTY = {
   done: {}, quizzes: 0, bestScore: 0, dialogs: {}, xp: 0, achv: {}, unlocked: false,
   srs: {}, streak: { count: 0, last: null, todayCount: 0 }, goal: 10,
@@ -23,15 +26,14 @@ const EMPTY = {
 // Промокод, открывающий доступ ко всем урокам
 const PROMO_CODE = "sitkaz";
 
-function loadProgress() {
-  if (typeof window === "undefined") return EMPTY;
+// Старый формат прогресса — переносим, чтобы никто ничего не потерял
+function legacyProgress() {
+  if (typeof window === "undefined") return null;
   try {
-    const v3 = JSON.parse(localStorage.getItem(STORE_KEY));
-    if (v3) return { ...EMPTY, ...v3, streak: { ...EMPTY.streak, ...(v3.streak || {}) } };
     const v2 = JSON.parse(localStorage.getItem("sitkaz_progress_v2"));
     if (v2) return { ...EMPTY, ...v2 };
   } catch {}
-  return EMPTY;
+  return null;
 }
 
 function plural(n, one, few, many) {
@@ -68,27 +70,48 @@ export default function App() {
   const [lang, setLangState] = useState("ru");
   const [tgUser, setTgUser] = useState(null);
   const [hydrated, setHydrated] = useState(false);
+  const progressRef = useRef(EMPTY); // актуальный прогресс для записи при закрытии
   const t = dict(lang);
 
   useEffect(() => {
-    const saved = loadProgress();
-    setProgress(saved);
+    let cancelled = false;
     let lng = loadLang();
     const tg = typeof window !== "undefined" && window.Telegram && window.Telegram.WebApp;
     if (tg) {
       try { tg.ready(); tg.expand(); } catch {}
       const u = tg.initDataUnsafe && tg.initDataUnsafe.user;
-      if (u) {
-        setTgUser(u);
-        // Язык интерфейса берём из Telegram, но только при самом первом запуске —
-        // выбор пользователя в переключателе всегда важнее.
-        if (!saved.onboarded && !localStorage.getItem("sitkaz_lang") && u.language_code) {
-          lng = u.language_code.startsWith("en") ? "en" : "ru";
-        }
-      }
+      if (u) setTgUser(u);
     }
-    setLangState(lng);
-    setHydrated(true);
+
+    // Прогресс приезжает из облака Telegram (или из localStorage вне Telegram)
+    (async () => {
+      const { progress: loaded } = await loadStored(EMPTY);
+      // Прогресс старого формата подмешиваем, чтобы ничего не потерялось
+      const withLegacy = mergeProgress(loaded, legacyProgress());
+      const final = { ...EMPTY, ...withLegacy, streak: { ...EMPTY.streak, ...(withLegacy.streak || {}) } };
+      if (cancelled) return;
+
+      const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+      // Язык интерфейса берём из Telegram, но только при самом первом запуске —
+      // выбор пользователя в переключателе всегда важнее.
+      if (u && !final.onboarded && !localStorage.getItem("sitkaz_lang") && u.language_code) {
+        lng = u.language_code.startsWith("en") ? "en" : "ru";
+      }
+      progressRef.current = final;
+      setProgress(final);
+      setLangState(lng);
+      setHydrated(true);
+    })();
+
+    return () => { cancelled = true; };
+  }, []);
+
+  // Приложение закрывают — дописываем прогресс в облако, не дожидаясь таймера
+  useEffect(() => {
+    const flush = () => flushProgress(progressRef.current);
+    window.addEventListener("pagehide", flush);
+    document.addEventListener("visibilitychange", () => { if (document.hidden) flush(); });
+    return () => window.removeEventListener("pagehide", flush);
   }, []);
 
   const setLang = (l) => { setLangState(l); saveLang(l); };
@@ -96,7 +119,8 @@ export default function App() {
   const update = (fn) => {
     setProgress((prev) => {
       const next = fn(prev);
-      try { localStorage.setItem(STORE_KEY, JSON.stringify(next)); } catch {}
+      progressRef.current = next;
+      saveStored(next);
       return next;
     });
   };
@@ -180,7 +204,19 @@ export default function App() {
     update((p) => ({ ...p, onboarded: true, reason, goal }));
   };
 
-  if (hydrated && !progress.onboarded) {
+  // Пока прогресс едет из облака Telegram, показываем спокойную заставку
+  if (!hydrated) {
+    return (
+      <div className="app">
+        <div className="boot">
+          <Mascot className="boot-mascot" src={MASCOT.face} alt="" />
+          <div className="boot-dots"><span /><span /><span /></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!progress.onboarded) {
     return (
       <LangCtx.Provider value={{ lang, t, setLang }}>
         <div className="app">
