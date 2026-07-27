@@ -89,6 +89,11 @@ export default function App() {
       // Прогресс старого формата подмешиваем, чтобы ничего не потерялось
       const withLegacy = mergeProgress(loaded, legacyProgress());
       const final = { ...EMPTY, ...withLegacy, streak: { ...EMPTY.streak, ...(withLegacy.streak || {}) } };
+      // Кто уже учится — знакомство не показываем: отметки о нём нет только
+      // потому, что человек начал заниматься до появления этого экрана.
+      if (!final.onboarded && (Object.keys(final.done).length || Object.keys(final.srs).length || final.xp)) {
+        final.onboarded = true;
+      }
       if (cancelled) return;
 
       const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
