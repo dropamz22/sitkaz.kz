@@ -62,6 +62,15 @@ const Mascot = ({ src, className, alt = "" }) => (
   <img className={className} src={src} alt={alt} onError={(e) => { e.currentTarget.style.display = "none"; }} />
 );
 
+// Делает кликабельный <div> доступным с клавиатуры: фокус + Enter/Space.
+// Если enabled=false (напр. заблокированный урок) — элемент не интерактивен.
+const clickable = (handler, enabled = true) => enabled ? {
+  role: "button",
+  tabIndex: 0,
+  onClick: handler,
+  onKeyDown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handler(); } },
+} : {};
+
 export default function App() {
   const [tab, setTab] = useState("course");
   const [activeLesson, setActiveLesson] = useState(null);
@@ -384,7 +393,7 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
             <div
               key={m.id}
               className={"module-row" + (unlocked ? "" : " locked") + (current ? " current" : "") + (wanted ? " wanted" : "")}
-              onClick={() => unlocked && onOpenModule(m)}
+              {...clickable(() => onOpenModule(m), unlocked)}
             >
               <div className="module-row-num" style={{ background: unlocked ? m.color : undefined }}>
                 {done
@@ -490,7 +499,7 @@ function ModuleView({ module: m, progress, onOpen, onBack }) {
         {items.map((l) => {
           const unlocked = progress.unlocked || l.id === 1 || progress.done[l.id] || progress.done[l.id - 1];
           return (
-            <div key={l.id} className={"card" + (unlocked ? "" : " locked")} onClick={() => unlocked && onOpen(l)}>
+            <div key={l.id} className={"card" + (unlocked ? "" : " locked")} {...clickable(() => onOpen(l), unlocked)}>
               <div className="lesson-row">
                 <div
                   className={"lesson-icon" + (progress.done[l.id] ? " is-done" : "")}
@@ -1008,7 +1017,7 @@ function Practice({ srs, pool, review }) {
       </div>
       <div className="flash-wrap">
         <Mascot className="mascot-peek" src={MASCOT.peek} />
-        <div className="flash" onClick={() => { setFlipped((f) => !f); if (!flipped) speak(card.kk); }}>
+        <div className="flash" {...clickable(() => { setFlipped((f) => !f); if (!flipped) speak(card.kk); })}>
           {isRepeat && <span className="flash-repeat"><Icon name="autorenew" /> {t.card_again}</span>}
           {!flipped ? (
             <div>

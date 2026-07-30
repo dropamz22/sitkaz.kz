@@ -834,7 +834,7 @@ body::before {
   border: 2px solid var(--ice-deep);
   border-radius: var(--pill);
   padding: 11px 16px;
-  font-size: 15px; font-family: var(--font-main); color: var(--heading);
+  font-size: 16px; font-family: var(--font-main); color: var(--heading);
   background: var(--bg);
   outline: none;
   transition: border-color .2s ease;
@@ -1262,4 +1262,25 @@ body::before {
   .promo-btn:hover { filter: none; }
   .repeat-link:hover { color: var(--muted); }
   .listen-btn:hover { transform: none; }
+}
+
+/* ── Доступность: видимый фокус для клавиатуры ──
+   Мышь/тап не показывают рамку (:focus-visible), а Tab-навигация — показывает. */
+:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.promo-input:focus-visible { outline-offset: 0; }
+
+/* ── Доступность: уважаем «уменьшить движение» ──
+   Отключаем анимации/переходы и конфетти для чувствительных пользователей. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .confetti { display: none; }
 }

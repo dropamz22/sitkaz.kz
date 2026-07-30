@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
       <head>
         {/* Telegram Mini App SDK — приложение работает и внутри Telegram, и в браузере */}
         <script src="https://telegram.org/js/telegram-web-app.js" async />
-        {/* Шрифты дизайн-системы: Plus Jakarta Sans + JetBrains Mono */}
+        {/* Шрифты дизайн-системы: Quicksand + Nunito Sans + Material Symbols */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
