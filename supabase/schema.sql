@@ -36,16 +36,22 @@ alter table public.progress enable row level security;
 create or replace view public.progress_overview as
 select
   u.telegram_id,
-  coalesce(u.username, u.first_name)                        as ученик,
-  u.reason                                                  as цель_обучения,
-  u.goal                                                    as фраз_в_день,
-  coalesce(jsonb_array_length(
-    (select jsonb_agg(k) from jsonb_object_keys(p.data->'done') k)
-  ), 0)                                                     as уроков_пройдено,
-  coalesce((p.data->>'xp')::int, 0)                         as высота_м,
-  coalesce((p.data->'streak'->>'count')::int, 0)            as серия_дней,
-  u.created_at                                              as пришёл,
-  u.last_seen_at                                            as был_в_сети
+  coalesce(u.username, u.first_name)                          as "ученик",
+  u.reason                                                    as "цель_обучения",
+  u.goal                                                      as "фраз_в_день",
+  (select count(*) from jsonb_object_keys(
+     coalesce(p.data->'done', '{}'::jsonb)))                  as "уроков_пройдено",
+  (select count(*) from jsonb_object_keys(
+     coalesce(p.data->'srs', '{}'::jsonb)))                   as "фраз_в_работе",
+  coalesce((p.data->>'xp')::int, 0)                           as "высота_м",
+  coalesce((p.data->'streak'->>'count')::int, 0)              as "серия_дней",
+  u.created_at                                                as "пришёл",
+  u.last_seen_at                                              as "был_в_сети"
 from public.users u
 left join public.progress p on p.telegram_id = u.telegram_id
 order by u.last_seen_at desc;
+
+-- Представление по умолчанию работает от имени владельца базы и обходит защиту
+-- таблиц. Заставляем его подчиняться тем же правилам и закрываем публичным ролям.
+alter view public.progress_overview set (security_invoker = on);
+revoke all on public.progress_overview from anon, authenticated;
