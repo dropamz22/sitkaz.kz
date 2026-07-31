@@ -6,7 +6,9 @@
 const IRBIS = "/mascot/irbis.png";
 
 export const MASCOT = {
-  face: IRBIS,        // главная, аватар в диалоге, онбординг, кольцо цели
+  // Крупный портрет-морда — для маленьких круглых аватаров (кольцо цели, диалог)
+  avatar: "/mascot/irbis-face.png",
+  face: IRBIS,        // большие экраны: заставка, онбординг, заметка урока
   peek: IRBIS,        // практика, разбор фразы
   leap: IRBIS,        // сдан экзамен
   campfire: IRBIS,    // диалог пройден

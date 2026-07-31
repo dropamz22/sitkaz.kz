@@ -9,7 +9,7 @@ import {
   phraseId, shuffle, gradeSrs, dueCount, learnedCount,
   buildDeck, registerActivity, displayStreak, doneToday,
 } from "../lib/srs";
-import { XP, levelInfo, ACHIEVEMENTS, moodPose } from "../lib/game";
+import { XP, levelInfo, ACHIEVEMENTS } from "../lib/game";
 import { speak } from "../lib/audio";
 import { loadLang, saveLang, dict, tr as trBase } from "../lib/i18n";
 import Onboarding, { REASONS } from "./onboarding";
@@ -368,7 +368,7 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
                 style={{ transition: "stroke-dashoffset .6s ease" }} />
             </svg>
             <button className="irbis-btn" onClick={tapIrbis} aria-label={t.irbis_aria}>
-              <Mascot src={MASCOT[moodPose(progress)]} className="irbis-idle" alt="Irbis" />
+              <Mascot src={MASCOT.avatar} className="irbis-idle" alt="Irbis" />
             </button>
             <div className="goal-ring-label">{t.goal_day}</div>
             {bubble && (
@@ -835,7 +835,7 @@ function DialogView({ dialog, onBack, onComplete }) {
         {dialog.steps.slice(0, step).map((s, si) => (
           <div key={si} style={{ display: "contents" }}>
             <div className="bubble-row">
-              <Mascot className="bubble-avatar" src={MASCOT.face} />
+              <Mascot className="bubble-avatar" src={MASCOT.avatar} />
               <div className="bubble bot" onClick={() => speak(s.bot.kk)}>
                 {s.bot.kk}
                 <div className="ru-sub">{P(s.bot, lang)}</div>
@@ -853,7 +853,7 @@ function DialogView({ dialog, onBack, onComplete }) {
         ))}
         {current && (
           <div className="bubble-row">
-            <Mascot className="bubble-avatar" src={MASCOT.face} />
+            <Mascot className="bubble-avatar" src={MASCOT.avatar} />
             <div className="bubble bot" onClick={() => speak(current.bot.kk)}>
               {current.bot.kk}
               <div className="ru-sub">{P(current.bot, lang)}</div>
