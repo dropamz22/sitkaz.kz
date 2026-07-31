@@ -30,7 +30,7 @@ const ROOT = path.join(__dirname, "..");
 const KEY = process.env.AZURE_SPEECH_KEY;
 const REGION = process.env.AZURE_SPEECH_REGION;
 const VOICE = process.env.AZURE_VOICE || "kk-KZ-AigulNeural";
-const RATE = process.env.AZURE_RATE || "-6%"; // чуть медленнее — так учебные фразы разборчивее
+const RATE = process.env.AZURE_RATE || "-15%"; // медленнее — так учебные фразы разборчивее
 
 if (!KEY || !REGION) {
   console.error("❌ Нужны переменные окружения AZURE_SPEECH_KEY и AZURE_SPEECH_REGION.");
@@ -82,6 +82,7 @@ async function synth(text) {
 async function main() {
   const course = await import(pathToFileURL(path.join(ROOT, "data/course.js")).href);
   const dlg = await import(pathToFileURL(path.join(ROOT, "data/dialogs.js")).href);
+  const irbis = await import(pathToFileURL(path.join(ROOT, "data/irbis.js")).href);
 
   const phrases = new Set();
   for (const l of course.lessons) for (const p of l.phrases) phrases.add(p.kk);
@@ -91,6 +92,8 @@ async function main() {
       for (const o of s.options) phrases.add(o.kk);
     }
   }
+  // Подбадривания Ирбиса (тап по маскоту) — тоже с живым голосом
+  for (const c of irbis.IRBIS_CHEERS) phrases.add(c.kk);
 
   const list = [...phrases].filter(Boolean);
   console.log(`Фраз к озвучке: ${list.length}. Голос: ${VOICE}, регион: ${REGION}\n`);

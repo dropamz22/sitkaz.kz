@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { modules, lessons, lessonsByModule, allPhrases, openPhrases } from "../data/course";
 import { dialogForLesson } from "../data/dialogs";
 import { MASCOT } from "../data/mascot";
+import { IRBIS_CHEERS } from "../data/irbis";
 import {
   phraseId, shuffle, gradeSrs, dueCount, learnedCount,
   buildDeck, registerActivity, displayStreak, doneToday,
@@ -25,15 +26,6 @@ const EMPTY = {
 
 // Промокод, открывающий доступ ко всем урокам
 const PROMO_CODE = "sitkaz";
-
-// Короткие казахские подбадривания — Ирбис произносит их при нажатии
-const IRBIS_CHEERS = [
-  { kk: "Жарайсың!", ru: "Молодец!", en: "Well done!", tr: "жарайсың" },
-  { kk: "Керемет!", ru: "Отлично!", en: "Great!", tr: "керемет" },
-  { kk: "Алға!", ru: "Вперёд!", en: "Onward!", tr: "алға" },
-  { kk: "Тамаша!", ru: "Прекрасно!", en: "Wonderful!", tr: "тамаша" },
-  { kk: "Сәтті оқу!", ru: "Удачной учёбы!", en: "Happy learning!", tr: "сәтти оқу" },
-];
 
 // Старый формат прогресса — переносим, чтобы никто ничего не потерял
 function legacyProgress() {
