@@ -26,6 +26,15 @@ const EMPTY = {
 // Промокод, открывающий доступ ко всем урокам
 const PROMO_CODE = "sitkaz";
 
+// Короткие казахские подбадривания — Ирбис произносит их при нажатии
+const IRBIS_CHEERS = [
+  { kk: "Жарайсың!", ru: "Молодец!", en: "Well done!", tr: "жарайсың" },
+  { kk: "Керемет!", ru: "Отлично!", en: "Great!", tr: "керемет" },
+  { kk: "Алға!", ru: "Вперёд!", en: "Onward!", tr: "алға" },
+  { kk: "Тамаша!", ru: "Прекрасно!", en: "Wonderful!", tr: "тамаша" },
+  { kk: "Сәтті оқу!", ru: "Удачной учёбы!", en: "Happy learning!", tr: "сәтти оқу" },
+];
+
 // Старый формат прогресса — переносим, чтобы никто ничего не потерял
 function legacyProgress() {
   if (typeof window === "undefined") return null;
@@ -334,6 +343,23 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
     else setPromoErr(true);
   };
 
+  // Ирбис оживает: нажатие показывает реплику по ситуации и озвучивает казахскую фразу
+  const [bubble, setBubble] = useState(null);
+  const bubbleTimer = useRef(null);
+  const tapIrbis = () => {
+    const cheer = IRBIS_CHEERS[Math.floor(Math.random() * IRBIS_CHEERS.length)];
+    const line =
+      today >= goal ? t.irbis_goal_done
+      : streak > 0 && today === 0 ? t.irbis_streak_keep
+      : due > 0 ? t.irbis_due(due, phrasesWord(due, t, lang))
+      : nextLesson ? t.irbis_continue
+      : t.irbis_hi;
+    setBubble({ cheer, line });
+    speak(cheer.kk);
+    if (bubbleTimer.current) clearTimeout(bubbleTimer.current);
+    bubbleTimer.current = setTimeout(() => setBubble(null), 4200);
+  };
+
   return (
     <>
       <div className="hero">
@@ -349,8 +375,16 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
                 strokeDasharray="264" strokeDashoffset={264 - 264 * Math.min(1, today / goal)}
                 style={{ transition: "stroke-dashoffset .6s ease" }} />
             </svg>
-            <Mascot src={MASCOT.face} alt="Irbis" />
+            <button className="irbis-btn" onClick={tapIrbis} aria-label={t.irbis_aria}>
+              <Mascot src={MASCOT.face} className="irbis-idle" alt="Irbis" />
+            </button>
             <div className="goal-ring-label">{t.goal_day}</div>
+            {bubble && (
+              <div className="irbis-bubble" onClick={() => speak(bubble.cheer.kk)}>
+                <span className="irbis-bubble-kk">{bubble.cheer.kk}</span>
+                <span className="irbis-bubble-sub">{P(bubble.cheer, lang)} · {bubble.line}</span>
+              </div>
+            )}
           </div>
         </div>
         <div className="chips-row">

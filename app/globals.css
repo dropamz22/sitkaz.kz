@@ -170,6 +170,49 @@ body::before {
   padding: 3px;
   animation: floatSoft 4s ease-in-out infinite;
 }
+/* ── Живой Ирбис: нажимаемый маскот с «дыханием» и репликой ── */
+.irbis-btn {
+  border: none; background: none; padding: 0; margin: 0;
+  display: grid; place-items: center; line-height: 0;
+  cursor: pointer;
+}
+@keyframes irbisBreathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-2px) scale(1.035); }
+}
+.irbis-idle { animation: irbisBreathe 3.2s ease-in-out infinite; transform-origin: center bottom; }
+.irbis-btn:active .irbis-idle { animation: none; transform: scale(0.94); }
+
+.irbis-bubble {
+  position: absolute;
+  right: 100%; top: 50%;
+  margin-right: 12px;
+  transform: translateY(-50%);
+  width: max-content; max-width: 210px;
+  background: #fff;
+  border: 2px solid var(--amber-soft);
+  border-radius: 16px;
+  padding: 8px 12px;
+  box-shadow: var(--shadow);
+  text-align: right;
+  display: flex; flex-direction: column; gap: 2px;
+  cursor: pointer;
+  z-index: 6;
+  animation: irbisPop .24s ease;
+}
+@keyframes irbisPop {
+  from { opacity: 0; transform: translateY(-50%) scale(0.9); }
+  to { opacity: 1; transform: translateY(-50%) scale(1); }
+}
+.irbis-bubble::after {
+  content: ""; position: absolute;
+  right: -7px; top: 50%; transform: translateY(-50%);
+  border: 7px solid transparent;
+  border-left-color: var(--amber-soft);
+}
+.irbis-bubble-kk { font-weight: 700; color: var(--heading); font-size: 15px; }
+.irbis-bubble-sub { font-size: 12px; color: var(--muted); line-height: 1.35; }
+
 .goal-ring-label {
   position: absolute;
   bottom: -8px;
