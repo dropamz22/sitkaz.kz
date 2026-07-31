@@ -8,9 +8,9 @@
 import { useState } from "react";
 import { MASCOT } from "../data/mascot";
 import { speak } from "../lib/audio";
-
-// Первое слово, которое человек уносит с экрана приветствия
-export const FIRST_PHRASE = { kk: "Сәлеметсіз бе!", tr: "сәлеметсиз бе", ru: "Здравствуйте!", en: "Hello!" };
+// Первое слово онбординга — в data/irbis.js, чтобы его тоже озвучивал генератор
+import { FIRST_PHRASE } from "../data/irbis";
+export { FIRST_PHRASE };
 
 // Зачем учат казахский. modules — темы, которые подсветим после знакомства.
 export const REASONS = [

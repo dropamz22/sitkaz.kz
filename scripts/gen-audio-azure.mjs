@@ -92,7 +92,8 @@ async function main() {
       for (const o of s.options) phrases.add(o.kk);
     }
   }
-  // Подбадривания Ирбиса (тап по маскоту) — тоже с живым голосом
+  // Приветствие онбординга и подбадривания Ирбиса — тоже с живым голосом
+  phrases.add(irbis.FIRST_PHRASE.kk);
   for (const c of irbis.IRBIS_CHEERS) phrases.add(c.kk);
 
   const list = [...phrases].filter(Boolean);
