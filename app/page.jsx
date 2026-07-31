@@ -8,7 +8,7 @@ import {
   phraseId, shuffle, gradeSrs, dueCount, learnedCount,
   buildDeck, registerActivity, displayStreak, doneToday,
 } from "../lib/srs";
-import { XP, levelInfo, ACHIEVEMENTS } from "../lib/game";
+import { XP, levelInfo, ACHIEVEMENTS, moodPose } from "../lib/game";
 import { speak } from "../lib/audio";
 import { loadLang, saveLang, dict, tr as trBase } from "../lib/i18n";
 import Onboarding, { REASONS } from "./onboarding";
@@ -376,7 +376,7 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
                 style={{ transition: "stroke-dashoffset .6s ease" }} />
             </svg>
             <button className="irbis-btn" onClick={tapIrbis} aria-label={t.irbis_aria}>
-              <Mascot src={MASCOT.face} className="irbis-idle" alt="Irbis" />
+              <Mascot src={MASCOT[moodPose(progress)]} className="irbis-idle" alt="Irbis" />
             </button>
             <div className="goal-ring-label">{t.goal_day}</div>
             {bubble && (
