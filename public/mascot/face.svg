@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="130" viewBox="52 48 128 130" role="img">
+<title>Ирбис — мордочка</title><desc>Дружелюбная мордочка снежного барса с янтарным шарфом</desc>
+<circle cx="116" cy="112" r="62" fill="#EAF2F9"/>
+<ellipse cx="98" cy="118" rx="12" ry="16" fill="#EDF4FA"/><ellipse cx="134" cy="118" rx="12" ry="16" fill="#EDF4FA"/>
+<circle cx="116" cy="120" r="44" fill="#EDF4FA" stroke="#C2D4E4" stroke-width="1.5"/>
+<path d="M92 88 L100 66 L116 84 Z" fill="#E4EEF6"/><path d="M140 88 L132 66 L116 84 Z" fill="#E4EEF6"/>
+<path d="M99 84 L104 72 L112 82 Z" fill="#F6D7D0"/><path d="M133 84 L128 72 L120 82 Z" fill="#F6D7D0"/>
+<path d="M82 78 Q116 60 150 78 L150 90 Q116 74 82 90 Z" fill="#F2953C"/>
+<path d="M82 78 Q116 62 150 78 Q116 72 82 78 Z" fill="#FFB877"/>
+<g fill="#B8CBDB"><circle cx="98" cy="104" r="4"/><circle cx="134" cy="104" r="4"/></g>
+<circle cx="103" cy="120" r="6" fill="#FFFFFF"/><circle cx="129" cy="120" r="6" fill="#FFFFFF"/>
+<circle cx="104" cy="121" r="4" fill="#2E3B47"/><circle cx="128" cy="121" r="4" fill="#2E3B47"/>
+<circle cx="106" cy="119" r="1.3" fill="#fff"/><circle cx="130" cy="119" r="1.3" fill="#fff"/>
+<ellipse cx="116" cy="134" rx="5" ry="3.5" fill="#E8887C"/>
+<path d="M116 138 Q108 145 102 140 M116 138 Q124 145 130 140" fill="none" stroke="#8AA0B5" stroke-width="2" stroke-linecap="round"/>
+<path d="M116 138 L116 143" stroke="#8AA0B5" stroke-width="2" stroke-linecap="round"/>
+<path d="M96 132 Q116 148 138 132" fill="none" stroke="#F2953C" stroke-width="8" stroke-linecap="round"/>
+<path d="M96 132 Q116 148 138 132" fill="none" stroke="#FFB877" stroke-width="3" stroke-linecap="round"/>
+</svg>

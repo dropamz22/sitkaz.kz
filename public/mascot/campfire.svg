@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="132" viewBox="52 298 150 132" role="img">
+<title>Ирбис — у костра</title><desc>Снежный барс с детёнышем сидит у костра</desc>
+<circle cx="122" cy="366" r="72" fill="#EAF2F9"/>
+<path d="M150 388 q22 -6 30 4" fill="none" stroke="#8A5A3C" stroke-width="7" stroke-linecap="round"/>
+<path d="M152 396 q22 -4 30 6" fill="none" stroke="#6E4530" stroke-width="7" stroke-linecap="round"/>
+<path d="M165 384 C152 360 178 356 168 340 C186 352 184 378 165 384 Z" fill="#F2953C"/>
+<path d="M166 382 C158 366 172 362 168 350 C178 360 176 376 166 382 Z" fill="#FFB877"/>
+<ellipse cx="95" cy="392" rx="34" ry="30" fill="#EDF4FA" stroke="#C2D4E4" stroke-width="1.5"/>
+<circle cx="95" cy="345" r="30" fill="#EDF4FA" stroke="#C2D4E4" stroke-width="1.5"/>
+<path d="M78 322 L82 306 L95 320 Z" fill="#E4EEF6"/><path d="M112 322 L108 306 L95 320 Z" fill="#E4EEF6"/>
+<path d="M78 336 Q95 346 112 336 L112 344 Q95 336 78 344 Z" fill="#F2953C"/>
+<circle cx="86" cy="344" r="5" fill="#FFFFFF"/><circle cx="104" cy="344" r="5" fill="#FFFFFF"/>
+<circle cx="87" cy="345" r="3" fill="#2E3B47"/><circle cx="103" cy="345" r="3" fill="#2E3B47"/>
+<ellipse cx="95" cy="356" rx="4" ry="2.6" fill="#E8887C"/>
+<g fill="#B8CBDB"><circle cx="78" cy="336" r="3"/><circle cx="112" cy="336" r="3"/></g>
+<circle cx="140" cy="404" r="18" fill="#EDF4FA" stroke="#C2D4E4" stroke-width="1.2"/>
+<path d="M130 390 L133 380 L142 389 Z" fill="#E4EEF6"/><path d="M150 390 L147 380 L138 389 Z" fill="#E4EEF6"/>
+<circle cx="135" cy="403" r="2.4" fill="#2E3B47"/><circle cx="145" cy="403" r="2.4" fill="#2E3B47"/>
+<ellipse cx="140" cy="410" rx="3" ry="2" fill="#E8887C"/>
+</svg>

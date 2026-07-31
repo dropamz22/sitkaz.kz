@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="112" height="110" viewBox="508 294 112 110" role="img">
+<title>Ирбис — в наушниках</title><desc>Снежный барс в наушниках слушает</desc>
+<circle cx="564" cy="352" r="56" fill="#EAF2F9"/>
+<circle cx="564" cy="352" r="42" fill="#EDF4FA" stroke="#C2D4E4" stroke-width="1.5"/>
+<path d="M540 322 L546 302 L562 320 Z" fill="#E4EEF6"/><path d="M588 322 L582 302 L566 320 Z" fill="#E4EEF6"/>
+<path d="M524 350 A40 40 0 0 1 604 350" fill="none" stroke="#33475C" stroke-width="6"/>
+<rect x="516" y="344" width="18" height="26" rx="8" fill="#F2953C"/>
+<rect x="594" y="344" width="18" height="26" rx="8" fill="#F2953C"/>
+<g fill="#B8CBDB"><circle cx="546" cy="336" r="4"/><circle cx="582" cy="336" r="4"/></g>
+<circle cx="551" cy="352" r="6.5" fill="#FFFFFF"/><circle cx="577" cy="352" r="6.5" fill="#FFFFFF"/>
+<circle cx="552" cy="353" r="4" fill="#2E3B47"/><circle cx="576" cy="353" r="4" fill="#2E3B47"/>
+<circle cx="554" cy="351" r="1.4" fill="#fff"/><circle cx="578" cy="351" r="1.4" fill="#fff"/>
+<ellipse cx="564" cy="366" rx="5" ry="3.4" fill="#E8887C"/>
+<path d="M556 372 Q564 378 572 372" fill="none" stroke="#8AA0B5" stroke-width="2" stroke-linecap="round"/>
+</svg>

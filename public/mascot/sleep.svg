@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="164" viewBox="290 264 128 164" role="img">
+<title>Ирбис — сон</title><desc>Снежный барс спит калачиком, хвост под нос</desc>
+<circle cx="350" cy="388" r="64" fill="#EAF2F9"/>
+<text x="386" y="292" font-family="sans-serif" font-size="13" fill="#8AA0B5">z</text>
+<text x="396" y="284" font-family="sans-serif" font-size="16" fill="#8AA0B5">z</text>
+<text x="408" y="274" font-family="sans-serif" font-size="20" fill="#8AA0B5">z</text>
+<path d="M300 392 C 296 350 340 330 372 352 C 402 372 396 410 360 416 C 330 421 304 420 300 392 Z" fill="#EDF4FA" stroke="#C2D4E4" stroke-width="1.5"/>
+<path d="M372 352 C 402 356 410 392 380 404 C 360 412 344 396 352 384" fill="none" stroke="#DCE8F2" stroke-width="18" stroke-linecap="round"/>
+<g fill="#B8CBDB"><circle cx="330" cy="366" r="4.5"/><circle cx="352" cy="396" r="4"/><circle cx="378" cy="378" r="4"/></g>
+<circle cx="316" cy="392" r="26" fill="#EDF4FA" stroke="#C2D4E4" stroke-width="1.5"/>
+<path d="M304 372 L307 358 L318 370 Z" fill="#E4EEF6"/><path d="M328 372 L325 358 L316 369 Z" fill="#E4EEF6"/>
+<path d="M300 396 Q308 402 316 396" fill="none" stroke="#2E3B47" stroke-width="2.4" stroke-linecap="round"/>
+<path d="M300 388 Q305 384 310 388" fill="none" stroke="#2E3B47" stroke-width="2.2" stroke-linecap="round"/>
+<ellipse cx="300" cy="400" rx="4" ry="2.6" fill="#E8887C"/>
+</svg>
