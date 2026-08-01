@@ -592,7 +592,6 @@ function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComple
           <span>{lang === "en" ? lesson.en : lesson.ru}</span>
         </div>
       </div>
-      <StepBar stage={stage === "dialog" ? "study" : stage} />
     </>
   );
 
