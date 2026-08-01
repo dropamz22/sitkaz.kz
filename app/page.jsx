@@ -1129,21 +1129,29 @@ function Quiz({ update, review, pool }) {
 }
 
 // Панель разбора ответа: правильный вариант + озвучка + «Дальше»
+// Верный ответ — короткая пауза и авто-переход (без кнопки).
+// Неверный — пауза подольше с разбором; можно тапнуть, чтобы перейти раньше.
 function AnswerFeedback({ ok, word, lang, t, onContinue }) {
+  const fired = useRef(false);
+  const go = () => { if (fired.current) return; fired.current = true; onContinue(ok); };
+  useEffect(() => {
+    const id = setTimeout(go, ok ? 900 : 2600);
+    return () => clearTimeout(id);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <div className={"answer-fb " + (ok ? "ok" : "bad")}>
+    <div
+      className={"answer-fb " + (ok ? "ok" : "bad")}
+      onClick={ok ? undefined : go}
+      style={ok ? undefined : { cursor: "pointer" }}
+    >
       <div className="answer-fb-head">
         <Icon name={ok ? "check_circle" : "cancel"} filled /> {ok ? t.fb_correct : t.fb_wrong}
       </div>
       {!ok && (
-        <div className="answer-fb-correct" onClick={() => speak(word.kk)}>
+        <div className="answer-fb-correct" onClick={(e) => { e.stopPropagation(); speak(word.kk); }}>
           <b>{word.kk}</b> <span>· {P(word, lang)}</span> <Icon name="volume_up" style={{ fontSize: 15 }} />
         </div>
       )}
-      <div className="answer-fb-actions">
-        <button className="btn ghost" onClick={() => speak(word.kk)}><Icon name="volume_up" /> {t.play_audio}</button>
-        <button className="btn primary" onClick={() => onContinue(ok)}>{t.cont}</button>
-      </div>
     </div>
   );
 }
