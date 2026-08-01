@@ -224,7 +224,7 @@ export default function App() {
     return (
       <div className="app">
         <div className="boot">
-          <Mascot className="boot-mascot" src={MASCOT.face} alt="" />
+          <Mascot className="boot-mascot" src={MASCOT.avatar} alt="" />
           <div className="boot-dots"><span /><span /><span /></div>
         </div>
       </div>

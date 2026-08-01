@@ -45,7 +45,7 @@ export default function Onboarding({ lang, t, userName, onDone }) {
 
       {step === 0 && (
         <div className="ob-card">
-          <img className="ob-mascot" src={MASCOT.face} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+          <img className="ob-mascot" src={MASCOT.avatar} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} />
           <h2>{hi}</h2>
           <p>{t.ob_intro}</p>
 
