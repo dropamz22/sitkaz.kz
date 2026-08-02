@@ -19,13 +19,10 @@ import {
 } from "../lib/storage";
 
 const EMPTY = {
-  done: {}, quizzes: 0, bestScore: 0, dialogs: {}, xp: 0, achv: {}, unlocked: false,
+  done: {}, quizzes: 0, bestScore: 0, dialogs: {}, xp: 0, achv: {},
   srs: {}, streak: { count: 0, last: null, todayCount: 0 }, goal: 10,
   onboarded: false, reason: null,
 };
-
-// Промокод, открывающий доступ ко всем урокам
-const PROMO_CODE = "sitkaz";
 
 // Старый формат прогресса — переносим, чтобы никто ничего не потерял
 function legacyProgress() {
@@ -220,16 +217,6 @@ export default function App() {
   const openModule = (m) => { setActiveModule(m); setTab("module"); };
   const doneCountN = Object.keys(progress.done).length;
 
-  // Промокод: открыть доступ ко всем урокам
-  const applyPromo = (code) => {
-    if ((code || "").trim().toLowerCase() === PROMO_CODE) {
-      update((p) => ({ ...p, unlocked: true }));
-      celebrate(t.promo_ok);
-      return true;
-    }
-    return false;
-  };
-
   // Знакомство при первом запуске: ответы сразу уходят в прогресс
   const finishOnboarding = ({ reason, goal }) => {
     update((p) => ({ ...p, onboarded: true, reason, goal }));
@@ -283,7 +270,7 @@ export default function App() {
         </div>
 
         {tab === "course" && (
-          <Course progress={progress} doneCount={doneCountN} onOpenModule={openModule} onOpen={openLesson} goPractice={() => setTab("practice")} applyPromo={applyPromo} />
+          <Course progress={progress} doneCount={doneCountN} onOpenModule={openModule} onOpen={openLesson} goPractice={() => setTab("practice")} />
         )}
         {tab === "module" && activeModule && (
           <ModuleView module={activeModule} progress={progress} onOpen={openLesson} onBack={() => setTab("course")} />
@@ -328,7 +315,7 @@ export default function App() {
 
 // ────────────────────────── Курс ──────────────────────────
 
-function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPromo }) {
+function Course({ progress, doneCount, onOpenModule, onOpen, goPractice }) {
   const { lang, t } = useLang();
   const total = lessons.length;
   const pct = Math.round((doneCount / total) * 100);
@@ -337,19 +324,12 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
   const today = doneToday(progress.streak);
   const goal = progress.goal || 10;
   const nextLesson = lessons.find((l) => !progress.done[l.id]) || null;
-  const moduleUnlocked = (idx) => progress.unlocked || idx === 0 || modules.slice(0, idx).every((pm) =>
-    lessonsByModule(pm.id).every((l) => progress.done[l.id]));
+  // Все темы открыты — доступ ко всему курсу без ограничений
+  const moduleUnlocked = () => true;
 
   // Темы, ради которых человек пришёл (ответ на первом запуске)
   const myReason = REASONS.find((r) => r.id === progress.reason) || null;
   const wantedModules = myReason ? myReason.modules : [];
-
-  const [promo, setPromo] = useState("");
-  const [promoErr, setPromoErr] = useState(false);
-  const submitPromo = () => {
-    if (applyPromo(promo)) { setPromo(""); setPromoErr(false); }
-    else setPromoErr(true);
-  };
 
   // Ирбис оживает: нажатие показывает реплику по ситуации и озвучивает казахскую фразу
   const [bubble, setBubble] = useState(null);
@@ -458,27 +438,6 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice, applyPr
       <p style={{ color: "var(--muted)", fontSize: 13, textAlign: "center", marginTop: 14 }}>
         {t.passed_of(doneCount, total)} ({pct}%)
       </p>
-
-      {progress.unlocked ? (
-        <div className="promo-done">
-          <Icon name="lock_open" filled style={{ color: "var(--amber)", fontSize: 18 }} /> {t.all_unlocked}
-        </div>
-      ) : (
-        <div className="promo-box">
-          <div className="promo-label">{t.promo_label}</div>
-          <div className="promo-row">
-            <input
-              className={"promo-input" + (promoErr ? " err" : "")}
-              value={promo}
-              placeholder={t.promo_placeholder}
-              onChange={(e) => { setPromo(e.target.value); setPromoErr(false); }}
-              onKeyDown={(e) => { if (e.key === "Enter") submitPromo(); }}
-            />
-            <button className="promo-btn" onClick={submitPromo}>{t.promo_apply}</button>
-          </div>
-          {promoErr && <div className="promo-err">{t.promo_bad}</div>}
-        </div>
-      )}
     </>
   );
 }
@@ -539,7 +498,7 @@ function ModuleView({ module: m, progress, onOpen, onBack }) {
       <div className="section-title">{t.lessons}</div>
       <div className="grid">
         {items.map((l) => {
-          const unlocked = progress.unlocked || l.id === 1 || progress.done[l.id] || progress.done[l.id - 1];
+          const unlocked = true; // все уроки открыты
           return (
             <div key={l.id} className={"card" + (unlocked ? "" : " locked")} {...clickable(() => onOpen(l), unlocked)}>
               <div className="lesson-row">
