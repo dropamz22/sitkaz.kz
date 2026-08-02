@@ -88,7 +88,23 @@ export default function App() {
     let lng = loadLang();
     const tg = typeof window !== "undefined" && window.Telegram && window.Telegram.WebApp;
     if (tg) {
-      try { tg.ready(); tg.expand(); } catch {}
+      try {
+        tg.ready();
+        tg.expand();
+        // Полноэкранный режим (Telegram 8.0+): приложение занимает весь экран,
+        // не сворачивается свайпом вниз. На старых версиях методов нет — молча пропускаем.
+        tg.disableVerticalSwipes?.();
+        tg.requestFullscreen?.();
+        // Под системную панель Telegram оставляем отступ сверху, чтобы шапку не срезало
+        const applyTopInset = () => {
+          const top = (tg.contentSafeAreaInset?.top || 0) + (tg.safeAreaInset?.top || 0);
+          document.documentElement.style.setProperty("--tg-top", `${top}px`);
+        };
+        applyTopInset();
+        tg.onEvent?.("fullscreenChanged", applyTopInset);
+        tg.onEvent?.("safeAreaChanged", applyTopInset);
+        tg.onEvent?.("contentSafeAreaChanged", applyTopInset);
+      } catch {}
       const u = tg.initDataUnsafe && tg.initDataUnsafe.user;
       if (u) setTgUser(u);
     }
@@ -798,8 +814,10 @@ function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen, dial
 
   return (
     <>
-      <div className="quiz-progress">{t.exam} · {t.question.toLowerCase()} {i + 1} {t.of} {questions.length} · {t.correct}: {score}</div>
-      <div className="q-type">{qLabel(q.type, t)}</div>
+      <div className="lesson-progress">
+        <div className="lesson-progress-bar"><div style={{ width: `${((i + 1) / questions.length) * 100}%` }} /></div>
+        <span>{i + 1} / {questions.length}</span>
+      </div>
       {q.type === "assemble" ? <AssembleQ key={i} q={q} onAnswer={answered} /> : <ChoiceQ key={i} q={q} onAnswer={answered} />}
     </>
   );
@@ -1129,14 +1147,23 @@ function Quiz({ update, review, pool }) {
 }
 
 // Панель разбора ответа: правильный вариант + озвучка + «Дальше»
-// Верный ответ — короткая пауза и авто-переход (без кнопки).
-// Неверный — пауза подольше с разбором; можно тапнуть, чтобы перейти раньше.
+// Сначала целиком проигрываем правильное произношение; только когда звук
+// доиграл, даём паузу «осознать» и переходим дальше — авто-переход не режет аудио.
+// Неверный ответ можно пролистнуть тапом раньше.
+const GRACE_OK = 1100;   // пауза после озвучки на верном ответе
+const GRACE_BAD = 2200;  // пауза после озвучки на неверном (плюс можно тапнуть)
 function AnswerFeedback({ ok, word, lang, t, onContinue }) {
   const fired = useRef(false);
   const go = () => { if (fired.current) return; fired.current = true; onContinue(ok); };
   useEffect(() => {
-    const id = setTimeout(go, ok ? 900 : 2600);
-    return () => clearTimeout(id);
+    let graceId;
+    let started = false;
+    const startGrace = () => { if (started) return; started = true; graceId = setTimeout(go, ok ? GRACE_OK : GRACE_BAD); };
+    // Страховка: если аудио не запустится или не пришлёт событие конца —
+    // всё равно пойдём дальше, не подвиснем.
+    const fallback = setTimeout(startGrace, 4500);
+    speak(word.kk, { onEnd: () => { clearTimeout(fallback); startGrace(); } });
+    return () => { clearTimeout(graceId); clearTimeout(fallback); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div
@@ -1169,7 +1196,7 @@ function ChoiceQ({ q, onAnswer }) {
   const pick = (opt) => {
     if (answered) return;
     setPicked(opt);
-    speak(q.word.kk); // сразу проигрываем правильное произношение
+    // Озвучку и тайминг перехода ведёт AnswerFeedback — здесь не дублируем
   };
 
   return (
@@ -1228,7 +1255,7 @@ function AssembleQ({ q, onAnswer }) {
       const answer = next.map((j) => q.words[j]).join(" ");
       const good = answer === target;
       setState(good ? "ok" : "bad");
-      speak(q.word.kk); // проигрываем правильную фразу
+      // Озвучку и тайминг перехода ведёт AnswerFeedback — здесь не дублируем
     }
   };
 

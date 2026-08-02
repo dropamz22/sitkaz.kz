@@ -31,6 +31,9 @@
   --font-main: "Quicksand", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-label: "Nunito Sans", var(--font-main);
   --tg-bottom: env(safe-area-inset-bottom, 0px);
+  /* Отступ сверху под системную панель Telegram в полноэкранном режиме.
+     Значение задаёт JS из tg.contentSafeAreaInset; вне Telegram — 0. */
+  --tg-top: 0px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -65,7 +68,7 @@ body::before {
   max-width: 520px;
   margin: 0 auto;
   min-height: 100vh;
-  padding: 18px 16px calc(112px + var(--tg-bottom));
+  padding: calc(18px + var(--tg-top)) 16px calc(112px + var(--tg-bottom));
   position: relative;
   z-index: 1;
 }
