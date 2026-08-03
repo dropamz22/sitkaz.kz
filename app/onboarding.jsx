@@ -14,10 +14,10 @@ export { FIRST_PHRASE };
 
 // Зачем учат казахский. modules — темы, которые подсветим после знакомства.
 export const REASONS = [
-  { id: "family", icon: "diversity_1", ru: "Говорить с роднёй", en: "Talk with family", modules: ["uy", "tuys", "tek"] },
-  { id: "work", icon: "work", ru: "Для работы", en: "For work", modules: ["jon", "fraze", "attar"] },
-  { id: "live", icon: "landscape", ru: "Живу в Казахстане", en: "I live in Kazakhstan", modules: ["jon", "uy", "attar"] },
-  { id: "curious", icon: "auto_awesome", ru: "Просто интересно", en: "Just curious", modules: ["makal", "mura", "tek"] },
+  { id: "family", icon: "diversity_1", ru: "Говорить с роднёй", en: "Talk with family", modules: ["otbasy", "tek"] },
+  { id: "work", icon: "work", ru: "Для работы", en: "For work", modules: ["madeniet", "minez"] },
+  { id: "live", icon: "landscape", ru: "Живу в Казахстане", en: "I live in Kazakhstan", modules: ["madeniet", "kozkaras", "tek"] },
+  { id: "curious", icon: "auto_awesome", ru: "Просто интересно", en: "Just curious", modules: ["mura", "minez", "tek"] },
 ];
 
 export const GOALS = [

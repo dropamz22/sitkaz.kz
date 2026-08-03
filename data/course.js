@@ -1,401 +1,3846 @@
-// Курс «Ситуативный казахский» — структура по книге К. Тасибекова
-// (14 глав → модули, подглавы → уроки). Тексты фраз и заметок — учебные
-// формулировки: обычная лексика, простые ситуативные фразы, короткие
-// культурные заметки. Термины родства — общая словарная лексика.
-//
-// Поле фразы: type (term|proverb|phrase|colloc), kk, ru, en, tr.
-// Урок может иметь note: { ru, en } — короткую культурную заметку.
+// Курс «Ситуативный казахский» — реальная лексика 20 уроков (sitkaz.kz).
+// 6 модулей (подтемы), 20 уроков. Поле фразы: type, kk, ru, en, tr.
+// Транслит (tr) сгенерирован по правилам проекта; английский — рабочий перевод.
 
-// icon — имя иконки Material Symbols, задаёт лицо темы вместо порядкового номера
 export const modules = [
-  { id: "tek", num: "I", icon: "account_tree", title: "ТЕК", subtitle: "Происхождение", subtitleEn: "Origin", color: "#F2953C",
-    desc: "Род, жуз, семь предков — откуда идут корни казаха.", descEn: "Clan, zhuz and the seven ancestors — a Kazakh's roots." },
-  { id: "uy", num: "II", icon: "family_restroom", title: "ҮЙ-ІШІ", subtitle: "Семья", subtitleEn: "Family", color: "#7FA8C9",
-    desc: "Дедушки, родители, супруги и дети — ядро казахской семьи.", descEn: "Grandparents, parents, spouses and children." },
-  { id: "tuys", num: "III", icon: "groups", title: "ТУҒАН-ТУЫСҚАН", subtitle: "Родственники", subtitleEn: "Relatives", color: "#A9BBCB",
-    desc: "Родня по отцу, по жене и по матери — три круга родства.", descEn: "Kin by father, by spouse and by mother." },
-  { id: "minez", num: "IV", icon: "psychology", title: "МІНЕЗ", subtitle: "Характер", subtitleEn: "Character", color: "#93AE85",
-    desc: "Черты казахского характера: добродушие, гостеприимство и другие.", descEn: "Traits of the Kazakh character." },
-  { id: "mura", num: "V", icon: "history_edu", title: "МҰРА", subtitle: "Наследие", subtitleEn: "Heritage", color: "#CE7B5B",
-    desc: "Язык, Родина и единство — ценности, оставленные предками.", descEn: "Language, homeland and unity." },
-  { id: "kozkaras", num: "VI", icon: "lightbulb", title: "КӨЗҚАРАС", subtitle: "Мировоззрение", subtitleEn: "Worldview", color: "#7FA8C9",
-    desc: "Отношение к судьбе, вере, богатству и власти.", descEn: "Views on fate, faith, wealth and power." },
-  { id: "jon", num: "VII", icon: "handshake", title: "ЖӨН БІЛУ", subtitle: "Этикет", subtitleEn: "Etiquette", color: "#A9BBCB",
-    desc: "Обычаи, традиции и правила учтивости.", descEn: "Customs, traditions and courtesy." },
-  { id: "uilenu", num: "VIII", icon: "favorite", title: "ҮЙЛЕНУ", subtitle: "Женитьба", subtitleEn: "Marriage", color: "#F2953C",
-    desc: "Сватовство, проводы невесты и свадьба.", descEn: "Matchmaking, seeing off the bride and the wedding." },
-  { id: "jerleu", num: "IX", icon: "local_florist", title: "ЖЕРЛЕУ", subtitle: "Проводы", subtitleEn: "Farewell", color: "#8593A5",
-    desc: "Слова соболезнования и поддержки в трудную минуту.", descEn: "Words of condolence and support." },
-  { id: "bata", num: "X", icon: "volunteer_activism", title: "БАТА-ТІЛЕК", subtitle: "Пожелания", subtitleEn: "Blessings", color: "#F2953C",
-    desc: "Благословения и добрые пожелания на разные случаи.", descEn: "Blessings and good wishes." },
-  { id: "makal", num: "XI", icon: "format_quote", title: "МАҚАЛ", subtitle: "Пословицы", subtitleEn: "Proverbs", color: "#93AE85",
-    desc: "Народная мудрость в пословицах и поговорках.", descEn: "Folk wisdom in proverbs." },
-  { id: "fraze", num: "XII", icon: "translate", title: "ФРАЗЕОЛОГИЗМ", subtitle: "Фразеологизмы", subtitleEn: "Idioms", color: "#7FA8C9",
-    desc: "Устойчивые выражения и их русские эквиваленты.", descEn: "Set expressions and their equivalents." },
-  { id: "attar", num: "XIII", icon: "badge", title: "АТТАР", subtitle: "Имена", subtitleEn: "Names", color: "#CE7B5B",
-    desc: "Имена людей, топонимы и названия вокруг нас.", descEn: "Personal names, place names and terms." },
-  { id: "ru", num: "XIV", icon: "record_voice_over", title: "РУ СӨЗДЕРІ", subtitle: "Слова о родах", subtitleEn: "Clan Sayings", color: "#A9BBCB",
-    desc: "Меткие, добродушные приговорки о родах.", descEn: "Witty, good-natured sayings about clans." },
+  {
+    "id": "tek",
+    "num": "I",
+    "icon": "account_tree",
+    "title": "ТЕК",
+    "subtitle": "Происхождение",
+    "subtitleEn": "Origin",
+    "color": "#F2953C",
+    "desc": "Приветствие, род, жузы и семь предков.",
+    "descEn": "Greetings, clan, zhuz and seven ancestors."
+  },
+  {
+    "id": "otbasy",
+    "num": "II",
+    "icon": "family_restroom",
+    "title": "ОТБАСЫ",
+    "subtitle": "Семья",
+    "subtitleEn": "Family",
+    "color": "#7FA8C9",
+    "desc": "Дедушки, родители, супруги и дети.",
+    "descEn": "Grandparents, parents, spouses and children."
+  },
+  {
+    "id": "minez",
+    "num": "III",
+    "icon": "psychology",
+    "title": "МІНЕЗ",
+    "subtitle": "Характер",
+    "subtitleEn": "Character",
+    "color": "#93AE85",
+    "desc": "Черты характера, гостеприимство, приметы.",
+    "descEn": "Character traits, hospitality, omens."
+  },
+  {
+    "id": "kozkaras",
+    "num": "IV",
+    "icon": "lightbulb",
+    "title": "КӨЗҚАРАС",
+    "subtitle": "Мировоззрение",
+    "subtitleEn": "Worldview",
+    "color": "#C99D7F",
+    "desc": "Отношение к вере, богатству и власти.",
+    "descEn": "Views on faith, wealth and power."
+  },
+  {
+    "id": "mura",
+    "num": "V",
+    "icon": "history_edu",
+    "title": "МҰРА",
+    "subtitle": "Наследие",
+    "subtitleEn": "Heritage",
+    "color": "#8593A5",
+    "desc": "Язык, земля и единство народа.",
+    "descEn": "Language, land and the unity of the people."
+  },
+  {
+    "id": "madeniet",
+    "num": "VI",
+    "icon": "festival",
+    "title": "МӘДЕНИЕТ",
+    "subtitle": "Культура",
+    "subtitleEn": "Culture",
+    "color": "#CE7B5B",
+    "desc": "Обычаи, этикет, семейные и государственные праздники.",
+    "descEn": "Customs, etiquette, family and state holidays."
+  }
 ];
 
 export const lessons = [
-  // ── I. ТЕК ─────────────────────────────
-  { id: 1, module: "tek", icon: "family_history", title: "Жеті ата", ru: "Семь предков", en: "Seven Ancestors", video: null,
-    note: {
-      ru: "Казахи традиционно знают имена своих предков по мужской линии до седьмого колена — это считается признаком воспитанного человека. Поэтому рассказ о себе часто начинается с корней.",
-      en: "Kazakhs traditionally know the names of their ancestors on the male line up to the seventh generation — a sign of a well-raised person. So talking about oneself often starts with one's roots.",
-    },
-    phrases: [
-      { type: "term", kk: "Ата", ru: "дед; также предок, родоначальник", en: "grandfather; also an ancestor, forefather", tr: "ата" },
-      { type: "term", kk: "Баба", ru: "прадед; далёкий предок", en: "great-grandfather; distant ancestor", tr: "баба" },
-      { type: "phrase", kk: "Мен жеті атамды білемін", ru: "Я знаю своих семь предков", en: "I know my seven ancestors", tr: "мен жети атамды билемин" },
-      { type: "phrase", kk: "Сіздің руыңыз қандай?", ru: "Из какого вы рода?", en: "Which clan are you from?", tr: "сиздиң руыңыз кандай" },
-    ] },
-  { id: 2, module: "tek", icon: "hub", title: "Ата тегі", ru: "Свой род", en: "One's Clan", video: null,
-    note: {
-      ru: "У каждого казаха есть род (ру), входящий в один из трёх жузов. Вопрос о роде — обычная часть знакомства.",
-      en: "Every Kazakh belongs to a clan (ru), part of one of the three zhuzes. Asking about clan is a normal part of getting acquainted.",
-    },
-    phrases: [
-      { type: "term", kk: "Ру", ru: "род", en: "clan", tr: "ру" },
-      { type: "term", kk: "Жүз", ru: "жуз — объединение родов", en: "zhuz — a union of clans", tr: "жуз" },
-      { type: "phrase", kk: "Менің руым...", ru: "Мой род...", en: "My clan is...", tr: "мениң руым" },
-      { type: "phrase", kk: "Қазақта үш жүз бар", ru: "У казахов три жуза", en: "The Kazakhs have three zhuzes", tr: "казакта уш жуз бар" },
-    ] },
-
-  // ── II. ҮЙ-ІШІ ─────────────────────────
-  { id: 3, module: "uy", icon: "elderly", title: "Ата-әже", ru: "Дедушка и бабушка", en: "Grandparents", video: null,
-    note: {
-      ru: "Дедушки и бабушки играют большую роль в воспитании; внуков нередко любят сильнее собственных детей.",
-      en: "Grandparents play a big role in upbringing; grandchildren are often loved even more than one's own children.",
-    },
-    phrases: [
-      { type: "term", kk: "Ата", ru: "дедушка", en: "grandfather", tr: "ата" },
-      { type: "term", kk: "Әже", ru: "бабушка", en: "grandmother", tr: "әже" },
-      { type: "phrase", kk: "Атам мен әжем ауылда тұрады", ru: "Дедушка и бабушка живут в ауле", en: "My grandparents live in the village", tr: "атам мен әжем ауылда турады" },
-      { type: "phrase", kk: "Немерелерін жақсы көреді", ru: "Он любит своих внуков", en: "He loves his grandchildren", tr: "немерелерин жаксы кореди" },
-    ] },
-  { id: 4, module: "uy", icon: "supervisor_account", title: "Әке-шеше", ru: "Отец и мать", en: "Father and Mother", video: null,
-    phrases: [
-      { type: "term", kk: "Әке", ru: "отец", en: "father", tr: "әке" },
-      { type: "term", kk: "Шеше / Ана", ru: "мать", en: "mother", tr: "шеше, ана" },
-      { type: "phrase", kk: "Менің әкем дәрігер", ru: "Мой отец врач", en: "My father is a doctor", tr: "мениң әкем дәригер" },
-      { type: "phrase", kk: "Анама көмектесемін", ru: "Я помогаю маме", en: "I help my mother", tr: "анама комектесемин" },
-    ] },
-  { id: 5, module: "uy", icon: "diversity_1", title: "Ерлі-зайыпты", ru: "Супруги", en: "Spouses", video: null,
-    phrases: [
-      { type: "term", kk: "Күйеу", ru: "муж", en: "husband", tr: "куйеу" },
-      { type: "term", kk: "Әйел", ru: "жена", en: "wife", tr: "әйел" },
-      { type: "phrase", kk: "Біз он жыл бірге тұрамыз", ru: "Мы живём вместе десять лет", en: "We've lived together for ten years", tr: "биз он жыл бирге турамыз" },
-      { type: "proverb", kk: "Отбасы — ең маңызды нәрсе", ru: "Семья — самое важное", en: "Family is the most important thing", tr: "отбасы — ең маңызды нәрсе" },
-    ] },
-  { id: 6, module: "uy", icon: "child_care", title: "Ұл-қыз", ru: "Дети", en: "Children", video: null,
-    phrases: [
-      { type: "term", kk: "Ұл", ru: "сын", en: "son", tr: "ул" },
-      { type: "term", kk: "Қыз", ru: "дочь", en: "daughter", tr: "кыз" },
-      { type: "phrase", kk: "Менің екі балам бар", ru: "У меня двое детей", en: "I have two children", tr: "мениң еки балам бар" },
-      { type: "phrase", kk: "Балаларыңыз бар ма?", ru: "У вас есть дети?", en: "Do you have children?", tr: "балаларыңыз бар ма" },
-    ] },
-
-  // ── III. ТУҒАН-ТУЫСҚАН ─────────────────
-  { id: 7, module: "tuys", icon: "groups_2", title: "Өз жұрт", ru: "Свои родичи", en: "Paternal Kin", video: null,
-    note: {
-      ru: "Ближе всех для казаха — родственники по прямой отцовской линии. Братьев различают по возрасту: аға — старший, іні — младший.",
-      en: "Closest of all are relatives on the direct paternal line. Brothers are distinguished by age: aga — older, ini — younger.",
-    },
-    phrases: [
-      { type: "term", kk: "Аға", ru: "старший брат", en: "older brother", tr: "ага" },
-      { type: "term", kk: "Іні", ru: "младший брат", en: "younger brother", tr: "ини" },
-      { type: "phrase", kk: "Бұл менің ағам", ru: "Это мой старший брат", en: "This is my older brother", tr: "бул мениң агам" },
-      { type: "phrase", kk: "Біз жақын туыспыз", ru: "Мы близкие родственники", en: "We are close relatives", tr: "биз жакын туыспыз" },
-    ] },
-  { id: 8, module: "tuys", icon: "link", title: "Қайын жұрт", ru: "Родня жены и мужа", en: "In-laws", video: null,
-    phrases: [
-      { type: "term", kk: "Қайын ата", ru: "тесть; свёкор", en: "father-in-law", tr: "кайын ата" },
-      { type: "term", kk: "Балдыз", ru: "младший брат/сестра жены", en: "wife's younger sibling", tr: "балдыз" },
-      { type: "phrase", kk: "Қайын жұртыма барамын", ru: "Еду к родне жены", en: "I'm going to my wife's relatives", tr: "кайын журтыма барамын" },
-      { type: "phrase", kk: "Келін болып түстім", ru: "Я вошла невесткой в семью", en: "I came into the family as a daughter-in-law", tr: "келин болып тустим" },
-    ] },
-  { id: 9, module: "tuys", icon: "diversity_3", title: "Нағашы жұрт", ru: "Родня матери", en: "Maternal Kin", video: null,
-    note: {
-      ru: "Родня матери (нағашы) — самые тёплые и снисходительные родственники: к ним едут «поребячиться», у них берут «как своё».",
-      en: "The mother's kin (nagashy) are the warmest, most indulgent relatives — the ones you visit to be spoiled.",
-    },
-    phrases: [
-      { type: "term", kk: "Нағашы", ru: "родственник по матери", en: "relative on the mother's side", tr: "нагашы" },
-      { type: "term", kk: "Жиен", ru: "племянник (сын сестры или дочери)", en: "nephew (son of a sister or daughter)", tr: "жиен" },
-      { type: "phrase", kk: "Нағашыма барамын", ru: "Еду к родне матери", en: "I'm going to my mother's relatives", tr: "нагашыма барамын" },
-      { type: "phrase", kk: "Ол менің жиенім", ru: "Он мой племянник (по женской линии)", en: "He is my nephew (female line)", tr: "ол мениң жиеним" },
-    ] },
-
-  // ── IV. МІНЕЗ ──────────────────────────
-  { id: 10, module: "minez", icon: "bolt", title: "Жылқы мінезді", ru: "Своенравный", en: "Free-spirited", video: null,
-    note: {
-      ru: "Казахи сравнивают свой характер с конём: свободолюбивый и работящий, но чувствительный к обиде — душу (көңіл) легко задеть.",
-      en: "Kazakhs compare their character to a horse: freedom-loving and hardworking, but sensitive to offence — the soul (koñil) is easily hurt.",
-    },
-    phrases: [
-      { type: "term", kk: "Мінез", ru: "характер, нрав", en: "character, temperament", tr: "минез" },
-      { type: "term", kk: "Көңіл", ru: "душа, настроение", en: "soul, mood", tr: "коңил" },
-      { type: "phrase", kk: "Ол қайсар адам", ru: "Он упрямый человек", en: "He is a stubborn person", tr: "ол кайсар адам" },
-      { type: "phrase", kk: "Көңіліне тиме", ru: "Не задень его (не обижай)", en: "Don't hurt his feelings", tr: "коңилине тиме" },
-    ] },
-  { id: 11, module: "minez", icon: "sentiment_satisfied", title: "Аққөңіл", ru: "Добродушный", en: "Good-natured", video: null,
-    phrases: [
-      { type: "term", kk: "Аққөңіл", ru: "добродушный, открытый", en: "good-natured, open-hearted", tr: "аккоңил" },
-      { type: "phrase", kk: "Ол өте мейірімді", ru: "Он очень добрый", en: "He is very kind", tr: "ол оте мейиримди" },
-      { type: "proverb", kk: "Жақсылық жерде қалмайды", ru: "Добро не пропадёт даром", en: "Kindness is never lost", tr: "жаксылык жерде калмайды" },
-    ] },
-  { id: 12, module: "minez", icon: "local_cafe", title: "Қонақжай", ru: "Гостеприимный", en: "Hospitable", video: null,
-    note: {
-      ru: "Гостеприимство — главная черта казахов. Гостю рады всегда, для него всегда есть угощение, а лучшее место за столом — почётное (төр).",
-      en: "Hospitality is the Kazakhs' main trait. A guest is always welcome, always fed, and offered the seat of honour (tör).",
-    },
-    phrases: [
-      { type: "term", kk: "Қонақ", ru: "гость", en: "guest", tr: "конак" },
-      { type: "proverb", kk: "Қонақ келсе — құт келеді", ru: "Гость приходит — благодать приходит", en: "When a guest comes, blessing comes", tr: "конак келсе — кут келеди" },
-      { type: "phrase", kk: "Төрге шығыңыз", ru: "Проходите на почётное место", en: "Please take the seat of honour", tr: "торге шыгыңыз" },
-    ] },
-  { id: 13, module: "minez", icon: "auto_awesome", title: "Ырымшыл", ru: "Суеверный", en: "Superstitious", video: null,
-    phrases: [
-      { type: "term", kk: "Ырым", ru: "примета, поверье", en: "omen, superstition", tr: "ырым" },
-      { type: "phrase", kk: "Құдай қаласа", ru: "Если Бог даст", en: "God willing", tr: "кудай каласа" },
-      { type: "phrase", kk: "Көз тимесін", ru: "Чтоб не сглазить", en: "May it not be jinxed", tr: "коз тимесин" },
-    ] },
-  { id: 14, module: "minez", icon: "school", title: "Білімді", ru: "Знающий", en: "Learned", video: null,
-    phrases: [
-      { type: "term", kk: "Білім", ru: "знание, образование", en: "knowledge, education", tr: "билим" },
-      { type: "proverb", kk: "Оқу — білім бұлағы", ru: "Учёба — родник знаний", en: "Study is the spring of knowledge", tr: "оку — билим булагы" },
-      { type: "phrase", kk: "Ол шетелде оқиды", ru: "Он учится за границей", en: "He studies abroad", tr: "ол шетелде окиды" },
-    ] },
-  { id: 15, module: "minez", icon: "diamond", title: "Сегіз қырлы", ru: "Многосторонний", en: "Versatile", video: null,
-    note: {
-      ru: "Идеал казаха — «сегіз қырлы, бір сырлы»: восьмигранный талант и постоянство. Настоящий джигит скромен и разносторонен.",
-      en: "The Kazakh ideal is 'segiz qyrly, bir syrly' — eight-sided talent and steadfastness. A true man is modest and versatile.",
-    },
-    phrases: [
-      { type: "term", kk: "Өнер", ru: "искусство, мастерство", en: "art, skill", tr: "онер" },
-      { type: "phrase", kk: "Ол сегіз қырлы жігіт", ru: "Он разносторонний парень", en: "He is a versatile young man", tr: "ол сегиз кырлы жигит" },
-      { type: "proverb", kk: "Ұлық болсаң, кішік бол", ru: "Если ты велик — будь скромен", en: "If you are great, be humble", tr: "улык болсаң, кишик бол" },
-    ] },
-
-  // ── V. МҰРА ────────────────────────────
-  { id: 16, module: "mura", icon: "language", title: "Тіл", ru: "Язык", en: "Language", video: null,
-    note: {
-      ru: "Язык казахи ценят выше всего: «мы народ, следящий за словом». Красноречие и меткое слово всегда были в почёте.",
-      en: "Kazakhs value language above all: 'we are a people who tend to the word'. Eloquence and a fitting word were always honoured.",
-    },
-    phrases: [
-      { type: "term", kk: "Тіл", ru: "язык", en: "language", tr: "тил" },
-      { type: "phrase", kk: "Қазақ тілі — менің ана тілім", ru: "Казахский — мой родной язык", en: "Kazakh is my native language", tr: "казак тили — мениң ана тилим" },
-      { type: "proverb", kk: "Тіл — халықтың жаны", ru: "Язык — душа народа", en: "Language is the soul of a people", tr: "тил — халыктың жаны" },
-    ] },
-  { id: 17, module: "mura", icon: "landscape", title: "Ел", ru: "Родина", en: "Homeland", video: null,
-    phrases: [
-      { type: "term", kk: "Отан / Ел", ru: "Родина, страна", en: "homeland, country", tr: "отан, ел" },
-      { type: "proverb", kk: "Туған жердей жер болмас", ru: "Нет земли лучше родной", en: "No land is better than one's own", tr: "туган жердей жер болмас" },
-      { type: "phrase", kk: "Отан отбасынан басталады", ru: "Родина начинается с семьи", en: "The homeland begins with the family", tr: "отан отбасынан басталады" },
-    ] },
-  { id: 18, module: "mura", icon: "diversity_2", title: "Бірлік", ru: "Единство", en: "Unity", video: null,
-    phrases: [
-      { type: "term", kk: "Бірлік", ru: "единство", en: "unity", tr: "бирлик" },
-      { type: "proverb", kk: "Бірлік болмай, тірлік болмас", ru: "Без единства нет благополучия", en: "Without unity there is no well-being", tr: "бирлик болмай, тирлик болмас" },
-      { type: "proverb", kk: "Ынтымақ — ырыстың басы", ru: "Согласие — начало достатка", en: "Harmony is the start of prosperity", tr: "ынтымак — ырыстың басы" },
-    ] },
-
-  // ── VI. КӨЗҚАРАС ───────────────────────
-  { id: 19, module: "kozkaras", icon: "hourglass_empty", title: "Жазған", ru: "Судьба", en: "Fate", video: null,
-    note: {
-      ru: "В характере казахов силён фатализм: считается, что каждому предначертана своя судьба. Отсюда обороты «если Бог даст».",
-      en: "Fatalism is strong in the Kazakh character: each person is believed to have a destiny. Hence phrases like 'God willing'.",
-    },
-    phrases: [
-      { type: "term", kk: "Тағдыр", ru: "судьба", en: "fate, destiny", tr: "тагдыр" },
-      { type: "phrase", kk: "Әркімнің өз тағдыры бар", ru: "У каждого своя судьба", en: "Everyone has their own fate", tr: "әркимниң оз тагдыры бар" },
-      { type: "proverb", kk: "Жазмыштан озмыш жоқ", ru: "Судьбы не избежать", en: "You cannot escape destiny", tr: "жазмыштан озмыш жок" },
-    ] },
-  { id: 20, module: "kozkaras", icon: "mosque", title: "Дін", ru: "Вера", en: "Faith", video: null,
-    phrases: [
-      { type: "term", kk: "Иман", ru: "вера", en: "faith", tr: "иман" },
-      { type: "phrase", kk: "Құдайға шүкір", ru: "Слава Богу", en: "Thank God", tr: "кудайга шукир" },
-      { type: "phrase", kk: "Аллаһ жазса", ru: "Если Аллах даст", en: "If Allah wills", tr: "аллаһ жазса" },
-    ] },
-  { id: 21, module: "kozkaras", icon: "savings", title: "Мал", ru: "Богатство", en: "Wealth", video: null,
-    note: {
-      ru: "Богатство кочевника измерялось скотом (мал), но отношение к нему философски спокойное: главное богатство — здоровье.",
-      en: "A nomad's wealth was measured in livestock (mal), yet the attitude to it is calm: the greatest wealth is health.",
-    },
-    phrases: [
-      { type: "term", kk: "Мал", ru: "скот; богатство", en: "livestock; wealth", tr: "мал" },
-      { type: "proverb", kk: "Бірінші байлық — денсаулық", ru: "Первое богатство — здоровье", en: "The first wealth is health", tr: "биринши байлык — денсаулык" },
-      { type: "phrase", kk: "Барыңа шүкір ет", ru: "Будь благодарен за то, что есть", en: "Be thankful for what you have", tr: "барыңа шукир ет" },
-    ] },
-  { id: 22, module: "kozkaras", icon: "gavel", title: "Билік", ru: "Власть", en: "Power", video: null,
-    phrases: [
-      { type: "term", kk: "Билік", ru: "власть", en: "power, authority", tr: "билик" },
-      { type: "phrase", kk: "Әділ би — халық үшін", ru: "Справедливый судья — за народ", en: "A fair judge serves the people", tr: "әдил би — халык ушин" },
-      { type: "proverb", kk: "Балық басынан шіриді", ru: "Рыба гниёт с головы", en: "A fish rots from the head", tr: "балык басынан шириди" },
-    ] },
-
-  // ── VII. ЖӨН БІЛУ ──────────────────────
-  { id: 23, module: "jon", icon: "celebration", title: "Салт-дәстүр", ru: "Обычаи и традиции", en: "Customs and Traditions", video: null,
-    phrases: [
-      { type: "term", kk: "Дәстүр", ru: "традиция", en: "tradition", tr: "дәстур" },
-      { type: "phrase", kk: "Бұл — ежелгі дәстүр", ru: "Это древняя традиция", en: "This is an ancient tradition", tr: "бул — ежелги дәстур" },
-      { type: "phrase", kk: "Салтымызды сақтаймыз", ru: "Мы храним наши обычаи", en: "We preserve our customs", tr: "салтымызды сактаймыз" },
-    ] },
-  { id: 24, module: "jon", icon: "waving_hand", title: "Әдептілік", ru: "Учтивость", en: "Courtesy", video: null,
-    note: {
-      ru: "Основа этикета — приветствие и уважение к старшим. Младший здоровается первым, старшему уступают почётное место.",
-      en: "The basis of etiquette is greeting and respect for elders. The younger greets first; the elder is given the seat of honour.",
-    },
-    phrases: [
-      { type: "term", kk: "Сәлем", ru: "приветствие", en: "greeting", tr: "сәлем" },
-      { type: "phrase", kk: "Ассалаумағалейкум!", ru: "Мир вам! (приветствие)", en: "Peace be upon you! (greeting)", tr: "ассалаумагалейкум" },
-      { type: "phrase", kk: "Үлкенді сыйла", ru: "Уважай старших", en: "Respect your elders", tr: "улкенди сыйла" },
-      { type: "phrase", kk: "Қош келдіңіз!", ru: "Добро пожаловать!", en: "Welcome!", tr: "кош келдиңиз" },
-    ] },
-
-  // ── VIII. ҮЙЛЕНУ ───────────────────────
-  { id: 25, module: "uilenu", icon: "connect_without_contact", title: "Құда түсу", ru: "Сватовство", en: "Matchmaking", video: null,
-    note: {
-      ru: "Свадьбе предшествует сватовство. Породнившиеся семьи становятся сватами (құда) — это уважительные, тёплые отношения на всю жизнь.",
-      en: "A wedding is preceded by matchmaking. The joined families become matchmakers (quda) — a warm, respectful lifelong bond.",
-    },
-    phrases: [
-      { type: "term", kk: "Құда", ru: "сват", en: "matchmaker, in-law", tr: "куда" },
-      { type: "phrase", kk: "Құда болдық", ru: "Мы стали сватами", en: "We have become in-laws", tr: "куда болдык" },
-      { type: "phrase", kk: "Қыз айттыру", ru: "Сватать девушку", en: "To ask for a girl's hand", tr: "кыз айттыру" },
-    ] },
-  { id: 26, module: "uilenu", icon: "luggage", title: "Қыз ұзату", ru: "Проводы невесты", en: "Seeing off the Bride", video: null,
-    phrases: [
-      { type: "term", kk: "Ұзату", ru: "проводы невесты", en: "seeing off the bride", tr: "узату" },
-      { type: "phrase", kk: "Қызымызды ұзатамыз", ru: "Мы провожаем нашу дочь", en: "We are seeing off our daughter", tr: "кызымызды узатамыз" },
-      { type: "phrase", kk: "Бақытты бол!", ru: "Будь счастлива!", en: "Be happy!", tr: "бакытты бол" },
-    ] },
-  { id: 27, module: "uilenu", icon: "cake", title: "Келін түсіру", ru: "Свадьба", en: "Wedding", video: null,
-    phrases: [
-      { type: "term", kk: "Келін", ru: "невестка", en: "daughter-in-law", tr: "келин" },
-      { type: "phrase", kk: "Келін түсірдік", ru: "Мы ввели невестку в дом", en: "We welcomed a daughter-in-law", tr: "келин тусирдик" },
-      { type: "phrase", kk: "Той құтты болсын!", ru: "Поздравляем со свадьбой!", en: "Congratulations on the wedding!", tr: "той кутты болсын" },
-    ] },
-  { id: 28, module: "uilenu", icon: "groups_3", title: "Құдалық", ru: "Визиты сватов", en: "Matchmakers' Visits", video: null,
-    phrases: [
-      { type: "term", kk: "Құдағи", ru: "сватья", en: "female in-law", tr: "кудаги" },
-      { type: "phrase", kk: "Құдаларды күтеміз", ru: "Принимаем сватов", en: "We are hosting the in-laws", tr: "кудаларды кутемиз" },
-      { type: "phrase", kk: "Құда-жекжат болдық", ru: "Мы породнились", en: "We have become related", tr: "куда-жекжат болдык" },
-    ] },
-
-  // ── IX. ЖЕРЛЕУ ─────────────────────────
-  { id: 29, module: "jerleu", icon: "spa", title: "Көңіл айту", ru: "Соболезнование", en: "Condolences", video: null,
-    note: {
-      ru: "В трудную минуту важно правильно поддержать словом. О тяжёлой вести сообщают бережно, а близким говорят слова утешения.",
-      en: "In hard times the right word matters. Heavy news is shared gently, and the bereaved are offered words of comfort.",
-    },
-    phrases: [
-      { type: "term", kk: "Қаза", ru: "кончина, утрата", en: "loss, passing", tr: "каза" },
-      { type: "phrase", kk: "Қайғыңызға ортақпын", ru: "Разделяю ваше горе", en: "I share your grief", tr: "кайгыңызга ортакпын" },
-      { type: "phrase", kk: "Сабыр беріңіз", ru: "Крепитесь (терпения вам)", en: "Stay strong (patience to you)", tr: "сабыр бериңиз" },
-    ] },
-  { id: 30, module: "jerleu", icon: "restaurant", title: "Ас", ru: "Поминки", en: "Memorial Feast", video: null,
-    phrases: [
-      { type: "term", kk: "Ас", ru: "поминальный ас", en: "memorial feast", tr: "ас" },
-      { type: "phrase", kk: "Иманды болсын", ru: "Пусть покоится с миром", en: "May they rest in peace", tr: "иманды болсын" },
-      { type: "phrase", kk: "Артында ізгі іс қалды", ru: "После него осталось доброе дело", en: "A good deed remained after them", tr: "артында изги иш калды" },
-    ] },
-
-  // ── X. БАТА-ТІЛЕК ──────────────────────
-  { id: 31, module: "bata", icon: "front_hand", title: "Бата", ru: "Благословение", en: "Blessing", video: null,
-    note: {
-      ru: "Старшие дают младшим «бата» — благословение перед дорогой или важным делом. В ответ принято сказать «әумин».",
-      en: "Elders give the young a 'bata' — a blessing before a journey or an important task. The reply is 'amin'.",
-    },
-    phrases: [
-      { type: "term", kk: "Бата", ru: "благословение", en: "blessing", tr: "бата" },
-      { type: "phrase", kk: "Бата беріңіз", ru: "Дайте благословение", en: "Please give your blessing", tr: "бата бериңиз" },
-      { type: "phrase", kk: "Жолың болсын!", ru: "Счастливого пути!", en: "Have a good journey!", tr: "жолың болсын" },
-    ] },
-  { id: 32, module: "bata", icon: "star", title: "Тілек", ru: "Пожелания", en: "Wishes", video: null,
-    phrases: [
-      { type: "term", kk: "Тілек", ru: "пожелание", en: "wish", tr: "тилек" },
-      { type: "phrase", kk: "Денсаулық тілеймін", ru: "Желаю здоровья", en: "I wish you health", tr: "денсаулык тилеймин" },
-      { type: "phrase", kk: "Мереке құтты болсын!", ru: "С праздником!", en: "Happy holiday!", tr: "мереке кутты болсын" },
-    ] },
-
-  // ── XI. МАҚАЛ ──────────────────────────
-  { id: 33, module: "makal", icon: "short_text", title: "Тура мақалдар", ru: "Прямые пословицы", en: "Direct Proverbs", video: null,
-    note: {
-      ru: "Часть казахских пословиц совпадает по смыслу и форме с русскими — их легко узнать и запомнить.",
-      en: "Some Kazakh proverbs match Russian ones in both sense and form, making them easy to recognise.",
-    },
-    phrases: [
-      { type: "proverb", kk: "Еңбек түбі — береке", ru: "В основе труда — достаток", en: "Labour is the root of plenty", tr: "еңбек туби — береке" },
-      { type: "proverb", kk: "Жеті рет өлше, бір рет кес", ru: "Семь раз отмерь, один раз отрежь", en: "Measure seven times, cut once", tr: "жети рет олше, бир рет кес" },
-    ] },
-  { id: 34, module: "makal", icon: "psychology_alt", title: "Мағыналы мақалдар", ru: "Смысловые пословицы", en: "Meaningful Proverbs", video: null,
-    phrases: [
-      { type: "proverb", kk: "Асыққан — шайтанның ісі", ru: "Спешка — от лукавого", en: "Haste is the devil's work", tr: "асыккан — шайтанның иши" },
-      { type: "proverb", kk: "Сабыр түбі — сары алтын", ru: "Терпение — чистое золото", en: "Patience is pure gold", tr: "сабыр туби — сары алтын" },
-    ] },
-  { id: 35, module: "makal", icon: "compare_arrows", title: "Аудармалы мақалдар", ru: "Переводные пословицы", en: "Translated Proverbs", video: null,
-    phrases: [
-      { type: "proverb", kk: "Көз қорқақ, қол батыр", ru: "Глаза боятся, руки делают", en: "The eyes fear, the hands do", tr: "коз коркак, кол батыр" },
-      { type: "proverb", kk: "Досың көп болса, жолың кең", ru: "Больше друзей — шире дорога", en: "More friends, a wider road", tr: "досың коп болса, жолың кең" },
-    ] },
-
-  // ── XII. ФРАЗЕОЛОГИЗМ ──────────────────
-  { id: 36, module: "fraze", icon: "text_fields", title: "Тұрақты тіркестер", ru: "Устойчивые выражения", en: "Set Expressions", video: null,
-    note: {
-      ru: "Многие выражения строятся вокруг слова «көңіл» (душа, настроение) — это один из ключевых образов казахского языка.",
-      en: "Many expressions are built around the word 'koñil' (soul, mood) — a key image of the Kazakh language.",
-    },
-    phrases: [
-      { type: "colloc", kk: "Көңіл айту", ru: "выразить соболезнование", en: "to offer condolences", tr: "коңил айту" },
-      { type: "colloc", kk: "Көңіл көтеру", ru: "поднять настроение", en: "to lift the mood", tr: "коңил котеру" },
-      { type: "colloc", kk: "Бас қосу", ru: "собраться вместе", en: "to gather together", tr: "бас косу" },
-    ] },
-  { id: 37, module: "fraze", icon: "chat", title: "Айтқыңыз келсе", ru: "Если хотите сказать", en: "If You Want to Say", video: null,
-    phrases: [
-      { type: "phrase", kk: "Түкке тұрмайды", ru: "Гроша ломаного не стоит", en: "Not worth a penny", tr: "тукке турмайды" },
-      { type: "phrase", kk: "Ештеңе етпейді", ru: "Ничего страшного", en: "It's no big deal", tr: "ештеңе етпейди" },
-      { type: "phrase", kk: "Әрине", ru: "Конечно", en: "Of course", tr: "әрине" },
-    ] },
-
-  // ── XIII. АТТАР ────────────────────────
-  { id: 38, module: "attar", icon: "person", title: "Есімдер", ru: "Имена людей", en: "Personal Names", video: null,
-    note: {
-      ru: "Многие казахские имена несут значение — это пожелание качеств ребёнку: света, счастья, силы.",
-      en: "Many Kazakh names carry meaning — a wish of qualities for the child: light, happiness, strength.",
-    },
-    phrases: [
-      { type: "term", kk: "Есім", ru: "имя", en: "name", tr: "есим" },
-      { type: "term", kk: "Нұр", ru: "свет, сияние — в именах Нұрлан, Нұргүл", en: "light, radiance — in the names Nurlan, Nurgul", tr: "нур" },
-      { type: "phrase", kk: "Балаға ат қою", ru: "Наречение имени ребёнку", en: "Naming a child", tr: "балага ат кою" },
-    ] },
-  { id: 39, module: "attar", icon: "map", title: "Жер атаулары", ru: "Топонимы", en: "Place Names", video: null,
-    phrases: [
-      { type: "term", kk: "Атау", ru: "название", en: "name (of a place/thing)", tr: "атау" },
-      { type: "term", kk: "Алматы", ru: "Алматы — от «алма» (яблоко)", en: "Almaty — from 'alma' (apple)", tr: "алматы" },
-      { type: "term", kk: "Астана", ru: "Астана — «столица»", en: "Astana — 'the capital'", tr: "астана" },
-    ] },
-  { id: 40, module: "attar", icon: "label", title: "Атаулар", ru: "Названия вокруг нас", en: "Everyday Names", video: null,
-    phrases: [
-      { type: "phrase", kk: "Наурыз — көктем айы", ru: "Наурыз — весенний месяц и праздник", en: "Nauryz — a spring month and holiday", tr: "наурыз" },
-      { type: "phrase", kk: "Дүйсенбі — аптаның басы", ru: "Понедельник — начало недели", en: "Monday — the start of the week", tr: "дуйсенби" },
-      { type: "phrase", kk: "Домбыра — ұлттық аспап", ru: "Домбра — национальный инструмент", en: "The dombra — a national instrument", tr: "домбыра" },
-    ] },
-
-  // ── XIV. РУ СӨЗДЕРІ ────────────────────
-  { id: 41, module: "ru", icon: "campaign", title: "Ру туралы сөздер", ru: "Меткие слова о родах", en: "Sayings about Clans", video: null,
-    note: {
-      ru: "Казахи любят добродушно подшучивать над родами — это игровая, тренировочная часть культуры, без настоящей вражды.",
-      en: "Kazakhs enjoy good-natured teasing about clans — a playful part of the culture, with no real enmity.",
-    },
-    phrases: [
-      { type: "phrase", kk: "Қырық рулы қазақпыз", ru: "Мы казахи сорока родов", en: "We are the Kazakhs of forty clans", tr: "кырык рулы казакпыз" },
-      { type: "phrase", kk: "Руың кім?", ru: "Ты из какого рода? (на «ты»)", en: "What's your clan? (informal)", tr: "руың ким" },
-      { type: "phrase", kk: "Біз бір атаның балаларымыз", ru: "Мы дети одного предка", en: "We are children of one ancestor", tr: "биз бир атаның балаларымыз" },
-    ] },
+  {
+    "id": 1,
+    "module": "tek",
+    "icon": "waving_hand",
+    "title": "Сәлем беру, қоштасу",
+    "ru": "Приветствие и прощание",
+    "en": "Greetings & farewells",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Салт",
+        "ru": "обычай, обряд",
+        "en": "custom, rite",
+        "tr": "салт"
+      },
+      {
+        "type": "term",
+        "kk": "Әдеп",
+        "ru": "вежливость, учтивость",
+        "en": "politeness, courtesy",
+        "tr": "әдеп"
+      },
+      {
+        "type": "term",
+        "kk": "Қал",
+        "ru": "родинка, родимое пятно",
+        "en": "birthmark, mole",
+        "tr": "кал"
+      },
+      {
+        "type": "term",
+        "kk": "Хал",
+        "ru": "состояние, самочувствие",
+        "en": "state, condition",
+        "tr": "хал"
+      },
+      {
+        "type": "term",
+        "kk": "Жағдай",
+        "ru": "положение, ситуация",
+        "en": "situation, circumstances",
+        "tr": "жагдай"
+      },
+      {
+        "type": "term",
+        "kk": "Сәт",
+        "ru": "удача, мгновение",
+        "en": "luck; moment",
+        "tr": "сәт"
+      },
+      {
+        "type": "term",
+        "kk": "Күй",
+        "ru": "состояние (физическое)",
+        "en": "physical state; also a kuy tune",
+        "tr": "куй"
+      },
+      {
+        "type": "term",
+        "kk": "Асығу",
+        "ru": "торопиться",
+        "en": "to hurry",
+        "tr": "асыгу"
+      },
+      {
+        "type": "term",
+        "kk": "Өркен",
+        "ru": "побег, потомство",
+        "en": "sprout, offspring",
+        "tr": "оркен"
+      },
+      {
+        "type": "phrase",
+        "kk": "Ер адам",
+        "ru": "мужчина",
+        "en": "man",
+        "tr": "ер адам"
+      },
+      {
+        "type": "term",
+        "kk": "Әйел",
+        "ru": "женщина",
+        "en": "woman",
+        "tr": "әйел"
+      },
+      {
+        "type": "term",
+        "kk": "Мал",
+        "ru": "скот, богатство",
+        "en": "livestock, wealth",
+        "tr": "мал"
+      },
+      {
+        "type": "term",
+        "kk": "Демалыс",
+        "ru": "отдых",
+        "en": "rest, holiday",
+        "tr": "демалыс"
+      },
+      {
+        "type": "term",
+        "kk": "Мақсат",
+        "ru": "цель, намерение",
+        "en": "goal, aim",
+        "tr": "максат"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "module": "tek",
+    "icon": "account_tree",
+    "title": "Жүз-ру, Жеті ата",
+    "ru": "Жузы, род, семь предков",
+    "en": "Zhuz, clan, seven ancestors",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Мерген",
+        "ru": "меткий стрелок, снайпер",
+        "en": "sharpshooter, marksman",
+        "tr": "мерген"
+      },
+      {
+        "type": "term",
+        "kk": "Нағашы",
+        "ru": "родня по линии матери",
+        "en": "maternal kin",
+        "tr": "нагашы"
+      },
+      {
+        "type": "term",
+        "kk": "Бала",
+        "ru": "дитя, ребёнок, сын",
+        "en": "child, kid, son",
+        "tr": "бала"
+      },
+      {
+        "type": "term",
+        "kk": "Найза",
+        "ru": "копьё",
+        "en": "spear",
+        "tr": "найза"
+      },
+      {
+        "type": "term",
+        "kk": "Негіз",
+        "ru": "основа, фундамент",
+        "en": "basis, foundation",
+        "tr": "негиз"
+      },
+      {
+        "type": "term",
+        "kk": "Тамыр",
+        "ru": "корень",
+        "en": "root",
+        "tr": "тамыр"
+      },
+      {
+        "type": "term",
+        "kk": "Бұтақ",
+        "ru": "ветка, сук",
+        "en": "branch",
+        "tr": "бутак"
+      },
+      {
+        "type": "term",
+        "kk": "Ұрпақ",
+        "ru": "поколение, потомство",
+        "en": "generation, offspring",
+        "tr": "урпак"
+      },
+      {
+        "type": "term",
+        "kk": "Асырау",
+        "ru": "воспитывать, содержать",
+        "en": "to raise, to provide for",
+        "tr": "асырау"
+      },
+      {
+        "type": "term",
+        "kk": "Орман",
+        "ru": "лес",
+        "en": "forest",
+        "tr": "орман"
+      },
+      {
+        "type": "term",
+        "kk": "Ұлу",
+        "ru": "выть, завывать",
+        "en": "to howl",
+        "tr": "улу"
+      },
+      {
+        "type": "term",
+        "kk": "Жетесіз",
+        "ru": "незнатный; глупый",
+        "en": "undistinguished; foolish",
+        "tr": "жетесиз"
+      },
+      {
+        "type": "term",
+        "kk": "Кек",
+        "ru": "злоба, месть",
+        "en": "spite, revenge",
+        "tr": "кек"
+      },
+      {
+        "type": "term",
+        "kk": "Нашар",
+        "ru": "плохой, неважный",
+        "en": "bad, poor",
+        "tr": "нашар"
+      },
+      {
+        "type": "term",
+        "kk": "Кәде",
+        "ru": "обычай, обряд; подарок",
+        "en": "custom; ceremonial gift",
+        "tr": "кәде"
+      },
+      {
+        "type": "term",
+        "kk": "Ару",
+        "ru": "миловидная девушка",
+        "en": "a fair maiden",
+        "tr": "ару"
+      },
+      {
+        "type": "term",
+        "kk": "Ашаң",
+        "ru": "худощавый",
+        "en": "lean, thin",
+        "tr": "ашаң"
+      },
+      {
+        "type": "term",
+        "kk": "Босаң",
+        "ru": "слабый, расслабленный",
+        "en": "weak, slack",
+        "tr": "босаң"
+      },
+      {
+        "type": "term",
+        "kk": "Аспан",
+        "ru": "небо",
+        "en": "sky",
+        "tr": "аспан"
+      },
+      {
+        "type": "phrase",
+        "kk": "Жер асты",
+        "ru": "подземный",
+        "en": "underground",
+        "tr": "жер асты"
+      },
+      {
+        "type": "term",
+        "kk": "Ортасы",
+        "ru": "середина",
+        "en": "the middle",
+        "tr": "ортасы"
+      },
+      {
+        "type": "term",
+        "kk": "Қалған",
+        "ru": "оставшийся",
+        "en": "the rest, remaining",
+        "tr": "калган"
+      },
+      {
+        "type": "term",
+        "kk": "Шырағым",
+        "ru": "светоч мой",
+        "en": "my dear (light)",
+        "tr": "шырагым"
+      },
+      {
+        "type": "term",
+        "kk": "Сәулем",
+        "ru": "лучик мой",
+        "en": "my little ray",
+        "tr": "сәулем"
+      },
+      {
+        "type": "term",
+        "kk": "Балақайым",
+        "ru": "детка",
+        "en": "my little one",
+        "tr": "балакайым"
+      },
+      {
+        "type": "term",
+        "kk": "Құлыным",
+        "ru": "жеребёночек мой",
+        "en": "my foal",
+        "tr": "кулыным"
+      },
+      {
+        "type": "term",
+        "kk": "Қарғам",
+        "ru": "птенчик",
+        "en": "my little birdie",
+        "tr": "каргам"
+      },
+      {
+        "type": "term",
+        "kk": "Жаным",
+        "ru": "душенька",
+        "en": "my soul",
+        "tr": "жаным"
+      },
+      {
+        "type": "term",
+        "kk": "Қалқам",
+        "ru": "галчонок",
+        "en": "my darling",
+        "tr": "калкам"
+      },
+      {
+        "type": "term",
+        "kk": "Жарығым",
+        "ru": "свет мой",
+        "en": "my light",
+        "tr": "жарыгым"
+      },
+      {
+        "type": "term",
+        "kk": "Ботам",
+        "ru": "верблюжонок",
+        "en": "my baby camel",
+        "tr": "ботам"
+      },
+      {
+        "type": "term",
+        "kk": "Айналайын",
+        "ru": "милый, родной",
+        "en": "my dear",
+        "tr": "айналайын"
+      },
+      {
+        "type": "term",
+        "kk": "Еркежан",
+        "ru": "баловень",
+        "en": "my sweetheart",
+        "tr": "еркежан"
+      },
+      {
+        "type": "term",
+        "kk": "Еркетай",
+        "ru": "баловник",
+        "en": "my pampered one",
+        "tr": "еркетай"
+      },
+      {
+        "type": "term",
+        "kk": "Кішкентайым",
+        "ru": "маленький мой",
+        "en": "my tiny one",
+        "tr": "кишкентайым"
+      },
+      {
+        "type": "term",
+        "kk": "Тәттім",
+        "ru": "сладость моя",
+        "en": "my sweet",
+        "tr": "тәттим"
+      },
+      {
+        "type": "term",
+        "kk": "Алтыным",
+        "ru": "золотце моё",
+        "en": "my gold",
+        "tr": "алтыным"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "module": "otbasy",
+    "icon": "elderly",
+    "title": "Ата-әже, әке-ана",
+    "ru": "Дедушки, бабушки, родители",
+    "en": "Grandparents & parents",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Тұғыр",
+        "ru": "постамент, пьедестал, основание",
+        "en": "pedestal, foundation",
+        "tr": "тугыр"
+      },
+      {
+        "type": "term",
+        "kk": "Ырыс",
+        "ru": "богатство, изобилие",
+        "en": "abundance, fortune",
+        "tr": "ырыс"
+      },
+      {
+        "type": "term",
+        "kk": "Қылыш",
+        "ru": "сабля",
+        "en": "sabre",
+        "tr": "кылыш"
+      },
+      {
+        "type": "term",
+        "kk": "Түз",
+        "ru": "чужбина, степь",
+        "en": "the steppe; a foreign land",
+        "tr": "туз"
+      },
+      {
+        "type": "term",
+        "kk": "Тыныс",
+        "ru": "дыхание, передышка",
+        "en": "breath, respite",
+        "tr": "тыныс"
+      },
+      {
+        "type": "term",
+        "kk": "Қиямет",
+        "ru": "тяжкие обстоятельства, мучение",
+        "en": "hardship, torment",
+        "tr": "киямет"
+      },
+      {
+        "type": "term",
+        "kk": "Ғұмыр",
+        "ru": "жизнь",
+        "en": "life",
+        "tr": "гумыр"
+      },
+      {
+        "type": "term",
+        "kk": "Табан",
+        "ru": "ступня, стопа",
+        "en": "sole of the foot",
+        "tr": "табан"
+      },
+      {
+        "type": "term",
+        "kk": "Жол",
+        "ru": "дорога, путь",
+        "en": "road, way",
+        "tr": "жол"
+      },
+      {
+        "type": "term",
+        "kk": "Төр",
+        "ru": "почётное место (в доме)",
+        "en": "the place of honour",
+        "tr": "тор"
+      },
+      {
+        "type": "term",
+        "kk": "Көне",
+        "ru": "древний, старый",
+        "en": "ancient, old",
+        "tr": "коне"
+      },
+      {
+        "type": "term",
+        "kk": "Қазына",
+        "ru": "сокровищница, богатство",
+        "en": "treasury, treasure",
+        "tr": "казына"
+      },
+      {
+        "type": "term",
+        "kk": "Өмірлік",
+        "ru": "жизненный, пожизненный",
+        "en": "lifelong",
+        "tr": "омирлик"
+      },
+      {
+        "type": "term",
+        "kk": "Бағу",
+        "ru": "воспитывать, ухаживать",
+        "en": "to raise, to care for",
+        "tr": "багу"
+      },
+      {
+        "type": "term",
+        "kk": "Оқ",
+        "ru": "пуля, стрела",
+        "en": "bullet, arrow",
+        "tr": "ок"
+      },
+      {
+        "type": "term",
+        "kk": "Сыншы",
+        "ru": "знаток, критик",
+        "en": "connoisseur, critic",
+        "tr": "сыншы"
+      },
+      {
+        "type": "term",
+        "kk": "Қадір",
+        "ru": "достоинство, ценность",
+        "en": "worth, dignity",
+        "tr": "кадир"
+      },
+      {
+        "type": "term",
+        "kk": "Азық",
+        "ru": "провиант, продукты",
+        "en": "provisions, food",
+        "tr": "азык"
+      },
+      {
+        "type": "phrase",
+        "kk": "Еріп жүру",
+        "ru": "сопровождать",
+        "en": "to accompany",
+        "tr": "ерип журу"
+      },
+      {
+        "type": "term",
+        "kk": "Жаяу",
+        "ru": "пеший, пешком",
+        "en": "on foot",
+        "tr": "жаяу"
+      },
+      {
+        "type": "term",
+        "kk": "Арқалау",
+        "ru": "нести на спине",
+        "en": "to carry on one's back",
+        "tr": "аркалау"
+      },
+      {
+        "type": "term",
+        "kk": "Қарыз",
+        "ru": "долг",
+        "en": "debt",
+        "tr": "карыз"
+      },
+      {
+        "type": "term",
+        "kk": "Құтылу",
+        "ru": "избавляться, спасаться",
+        "en": "to get rid of, to escape",
+        "tr": "кутылу"
+      },
+      {
+        "type": "term",
+        "kk": "Көңіл",
+        "ru": "настроение; внимание",
+        "en": "mood; attention",
+        "tr": "коңил"
+      },
+      {
+        "type": "term",
+        "kk": "Тақым",
+        "ru": "внутренняя сторона колена",
+        "en": "the inner side of the knee",
+        "tr": "такым"
+      },
+      {
+        "type": "term",
+        "kk": "Кілт",
+        "ru": "ключ",
+        "en": "key",
+        "tr": "килт"
+      },
+      {
+        "type": "term",
+        "kk": "Ақылдасу",
+        "ru": "советоваться",
+        "en": "to consult",
+        "tr": "акылдасу"
+      },
+      {
+        "type": "term",
+        "kk": "Ұят",
+        "ru": "стыд",
+        "en": "shame",
+        "tr": "уят"
+      },
+      {
+        "type": "term",
+        "kk": "Рұқсат",
+        "ru": "разрешение",
+        "en": "permission",
+        "tr": "руксат"
+      },
+      {
+        "type": "term",
+        "kk": "Маза",
+        "ru": "покой",
+        "en": "peace, calm",
+        "tr": "маза"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "module": "otbasy",
+    "icon": "diversity_1",
+    "title": "Ерлі зайыпты, ұл-қыз",
+    "ru": "Супруги, сын и дочь",
+    "en": "Spouses, son & daughter",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Күлкі",
+        "ru": "смех",
+        "en": "laughter",
+        "tr": "кулки"
+      },
+      {
+        "type": "term",
+        "kk": "Ұйқы",
+        "ru": "сон",
+        "en": "sleep",
+        "tr": "уйкы"
+      },
+      {
+        "type": "term",
+        "kk": "Ұстау",
+        "ru": "держать",
+        "en": "to hold",
+        "tr": "устау"
+      },
+      {
+        "type": "term",
+        "kk": "От",
+        "ru": "огонь",
+        "en": "fire",
+        "tr": "от"
+      },
+      {
+        "type": "term",
+        "kk": "Әлем",
+        "ru": "мир, вселенная",
+        "en": "world",
+        "tr": "әлем"
+      },
+      {
+        "type": "term",
+        "kk": "Ақыл",
+        "ru": "ум",
+        "en": "mind, wisdom",
+        "tr": "акыл"
+      },
+      {
+        "type": "term",
+        "kk": "Жұмақ",
+        "ru": "рай",
+        "en": "paradise",
+        "tr": "жумак"
+      },
+      {
+        "type": "term",
+        "kk": "Тозақ",
+        "ru": "ад",
+        "en": "hell",
+        "tr": "тозак"
+      },
+      {
+        "type": "term",
+        "kk": "Құл",
+        "ru": "раб",
+        "en": "slave",
+        "tr": "кул"
+      },
+      {
+        "type": "term",
+        "kk": "Күндес",
+        "ru": "соперница",
+        "en": "rival (in love)",
+        "tr": "кундес"
+      },
+      {
+        "type": "term",
+        "kk": "Мойын",
+        "ru": "шея",
+        "en": "neck",
+        "tr": "мойын"
+      },
+      {
+        "type": "term",
+        "kk": "Керісу",
+        "ru": "спорить, ссориться",
+        "en": "to quarrel",
+        "tr": "керису"
+      },
+      {
+        "type": "term",
+        "kk": "Шала",
+        "ru": "кое-как, наполовину",
+        "en": "half-done, poorly",
+        "tr": "шала"
+      },
+      {
+        "type": "term",
+        "kk": "Құрдас",
+        "ru": "ровесник",
+        "en": "peer, same-age friend",
+        "tr": "курдас"
+      },
+      {
+        "type": "term",
+        "kk": "Аяу",
+        "ru": "жалеть",
+        "en": "to spare, to pity",
+        "tr": "аяу"
+      },
+      {
+        "type": "term",
+        "kk": "Жіңішке",
+        "ru": "узкий, тонкий",
+        "en": "narrow, thin",
+        "tr": "жиңишке"
+      },
+      {
+        "type": "term",
+        "kk": "Тыйым",
+        "ru": "запрет",
+        "en": "prohibition",
+        "tr": "тыйым"
+      },
+      {
+        "type": "term",
+        "kk": "Мұз",
+        "ru": "лёд",
+        "en": "ice",
+        "tr": "муз"
+      },
+      {
+        "type": "term",
+        "kk": "Ащы",
+        "ru": "горький",
+        "en": "bitter",
+        "tr": "ащы"
+      },
+      {
+        "type": "term",
+        "kk": "Қартаю",
+        "ru": "стареть",
+        "en": "to grow old",
+        "tr": "картаю"
+      },
+      {
+        "type": "term",
+        "kk": "Айым",
+        "ru": "луна моя, ненаглядная",
+        "en": "my moon, my beloved",
+        "tr": "айым"
+      },
+      {
+        "type": "term",
+        "kk": "Ажарлым",
+        "ru": "пригожая моя",
+        "en": "my beautiful one",
+        "tr": "ажарлым"
+      },
+      {
+        "type": "term",
+        "kk": "Аққуым",
+        "ru": "лебедь моя",
+        "en": "my swan",
+        "tr": "аккуым"
+      },
+      {
+        "type": "term",
+        "kk": "Ақылдым",
+        "ru": "умница моя",
+        "en": "my clever one",
+        "tr": "акылдым"
+      },
+      {
+        "type": "term",
+        "kk": "Ардағым",
+        "ru": "почтенная моя",
+        "en": "my cherished one",
+        "tr": "ардагым"
+      },
+      {
+        "type": "term",
+        "kk": "Аруым",
+        "ru": "прелесть моя",
+        "en": "my fair one",
+        "tr": "аруым"
+      },
+      {
+        "type": "term",
+        "kk": "Асылым",
+        "ru": "дорогая моя",
+        "en": "my precious",
+        "tr": "асылым"
+      },
+      {
+        "type": "phrase",
+        "kk": "Ашық аспаным",
+        "ru": "ясное небо моё",
+        "en": "my clear sky",
+        "tr": "ашык аспаным"
+      },
+      {
+        "type": "term",
+        "kk": "Аяулым",
+        "ru": "милая моя",
+        "en": "my darling one",
+        "tr": "аяулым"
+      },
+      {
+        "type": "term",
+        "kk": "Әнім",
+        "ru": "песня моя",
+        "en": "my song",
+        "tr": "әним"
+      },
+      {
+        "type": "term",
+        "kk": "Әсемім",
+        "ru": "изящная моя",
+        "en": "my graceful one",
+        "tr": "әсемим"
+      },
+      {
+        "type": "term",
+        "kk": "Әуенім",
+        "ru": "мелодия моя",
+        "en": "my melody",
+        "tr": "әуеним"
+      },
+      {
+        "type": "term",
+        "kk": "Бағым",
+        "ru": "удача моя",
+        "en": "my fortune",
+        "tr": "багым"
+      },
+      {
+        "type": "term",
+        "kk": "Байлығым",
+        "ru": "богатство моё",
+        "en": "my wealth",
+        "tr": "байлыгым"
+      },
+      {
+        "type": "term",
+        "kk": "Бақытым",
+        "ru": "счастье моё",
+        "en": "my happiness",
+        "tr": "бакытым"
+      },
+      {
+        "type": "term",
+        "kk": "Берекем",
+        "ru": "изобилие моё",
+        "en": "my abundance",
+        "tr": "берекем"
+      },
+      {
+        "type": "term",
+        "kk": "Бұлағым",
+        "ru": "родник мой",
+        "en": "my spring",
+        "tr": "булагым"
+      },
+      {
+        "type": "term",
+        "kk": "Гүлім",
+        "ru": "цветочек мой",
+        "en": "my flower",
+        "tr": "гулим"
+      },
+      {
+        "type": "term",
+        "kk": "Ғашығым",
+        "ru": "возлюбленная моя",
+        "en": "my darling love",
+        "tr": "гашыгым"
+      },
+      {
+        "type": "term",
+        "kk": "Елігім",
+        "ru": "косуля моя",
+        "en": "my roe deer",
+        "tr": "елигим"
+      },
+      {
+        "type": "term",
+        "kk": "Еркем",
+        "ru": "голубушка моя",
+        "en": "my pet",
+        "tr": "еркем"
+      },
+      {
+        "type": "term",
+        "kk": "Жазым",
+        "ru": "лето моё",
+        "en": "my summer",
+        "tr": "жазым"
+      },
+      {
+        "type": "term",
+        "kk": "Жақұтым",
+        "ru": "сапфир мой",
+        "en": "my sapphire",
+        "tr": "жакутым"
+      },
+      {
+        "type": "term",
+        "kk": "Жартым",
+        "ru": "половинка моя",
+        "en": "my other half",
+        "tr": "жартым"
+      },
+      {
+        "type": "term",
+        "kk": "Жалғызым",
+        "ru": "единственная моя",
+        "en": "my only one",
+        "tr": "жалгызым"
+      },
+      {
+        "type": "term",
+        "kk": "Жүрегім",
+        "ru": "сердечко моё",
+        "en": "my heart",
+        "tr": "журегим"
+      },
+      {
+        "type": "term",
+        "kk": "Ләззатым",
+        "ru": "наслаждение моё",
+        "en": "my delight",
+        "tr": "ләззатым"
+      },
+      {
+        "type": "term",
+        "kk": "Маралым",
+        "ru": "марал мой",
+        "en": "my maral deer",
+        "tr": "маралым"
+      },
+      {
+        "type": "term",
+        "kk": "Махаббатым",
+        "ru": "любовь моя",
+        "en": "my love",
+        "tr": "махаббатым"
+      },
+      {
+        "type": "term",
+        "kk": "Мерекем",
+        "ru": "праздник мой",
+        "en": "my celebration",
+        "tr": "мерекем"
+      },
+      {
+        "type": "term",
+        "kk": "Нәзігім",
+        "ru": "нежная моя",
+        "en": "my tender one",
+        "tr": "нәзигим"
+      },
+      {
+        "type": "term",
+        "kk": "Нұрым",
+        "ru": "сияние моё",
+        "en": "my radiance",
+        "tr": "нурым"
+      },
+      {
+        "type": "term",
+        "kk": "Періштем",
+        "ru": "ангел мой",
+        "en": "my angel",
+        "tr": "периштем"
+      },
+      {
+        "type": "term",
+        "kk": "Сәнім",
+        "ru": "украшение моё",
+        "en": "my adornment",
+        "tr": "сәним"
+      },
+      {
+        "type": "term",
+        "kk": "Сүйіктім",
+        "ru": "любимая моя",
+        "en": "my beloved",
+        "tr": "суйиктим"
+      },
+      {
+        "type": "term",
+        "kk": "Сұлуым",
+        "ru": "красавица моя",
+        "en": "my beauty",
+        "tr": "сулуым"
+      },
+      {
+        "type": "term",
+        "kk": "Тілегенім",
+        "ru": "желанная моя",
+        "en": "my longed-for one",
+        "tr": "тилегеним"
+      },
+      {
+        "type": "term",
+        "kk": "Шабытым",
+        "ru": "муза моя",
+        "en": "my muse",
+        "tr": "шабытым"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "module": "tek",
+    "icon": "groups",
+    "title": "Өз жұрт, қайын жұрт, нағашы жұрт",
+    "ru": "Своя, свойская и материнская родня",
+    "en": "Kin by father, spouse, mother",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Жат",
+        "ru": "чужой, чужак",
+        "en": "stranger, alien",
+        "tr": "жат"
+      },
+      {
+        "type": "term",
+        "kk": "Кіндік",
+        "ru": "пуповина, пупок",
+        "en": "umbilical cord, navel",
+        "tr": "киндик"
+      },
+      {
+        "type": "term",
+        "kk": "Кесу",
+        "ru": "резать, отрезать",
+        "en": "to cut",
+        "tr": "кесу"
+      },
+      {
+        "type": "term",
+        "kk": "Өлім",
+        "ru": "смерть",
+        "en": "death",
+        "tr": "олим"
+      },
+      {
+        "type": "term",
+        "kk": "Дұшпан",
+        "ru": "враг",
+        "en": "enemy",
+        "tr": "душпан"
+      },
+      {
+        "type": "term",
+        "kk": "Сырт",
+        "ru": "внешняя сторона",
+        "en": "the outside",
+        "tr": "сырт"
+      },
+      {
+        "type": "term",
+        "kk": "У",
+        "ru": "яд",
+        "en": "poison",
+        "tr": "у"
+      },
+      {
+        "type": "term",
+        "kk": "Жақын",
+        "ru": "близкий, рядом",
+        "en": "near, close",
+        "tr": "жакын"
+      },
+      {
+        "type": "term",
+        "kk": "Келін",
+        "ru": "невестка",
+        "en": "daughter-in-law",
+        "tr": "келин"
+      },
+      {
+        "type": "term",
+        "kk": "Төсек",
+        "ru": "постель",
+        "en": "bed",
+        "tr": "тосек"
+      },
+      {
+        "type": "term",
+        "kk": "Түйе",
+        "ru": "верблюд",
+        "en": "camel",
+        "tr": "туйе"
+      },
+      {
+        "type": "term",
+        "kk": "Жауыздық",
+        "ru": "злодейство",
+        "en": "villainy",
+        "tr": "жауыздык"
+      },
+      {
+        "type": "term",
+        "kk": "Тірі",
+        "ru": "живой",
+        "en": "alive",
+        "tr": "тири"
+      },
+      {
+        "type": "term",
+        "kk": "Өкпелеу",
+        "ru": "обижаться",
+        "en": "to take offence",
+        "tr": "окпелеу"
+      },
+      {
+        "type": "term",
+        "kk": "Қуану",
+        "ru": "радоваться",
+        "en": "to rejoice",
+        "tr": "куану"
+      },
+      {
+        "type": "term",
+        "kk": "Ес",
+        "ru": "ум, разум",
+        "en": "mind, reason",
+        "tr": "ес"
+      },
+      {
+        "type": "term",
+        "kk": "Шебер",
+        "ru": "мастер, умелец",
+        "en": "master, craftsman",
+        "tr": "шебер"
+      },
+      {
+        "type": "term",
+        "kk": "Ағаш",
+        "ru": "дерево, древесина",
+        "en": "tree, wood",
+        "tr": "агаш"
+      },
+      {
+        "type": "term",
+        "kk": "Қалтырау",
+        "ru": "дрожь, дрожание",
+        "en": "trembling",
+        "tr": "калтырау"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "module": "minez",
+    "icon": "volunteer_activism",
+    "title": "Аққөңіл, қонақжай",
+    "ru": "Добродушие, гостеприимство",
+    "en": "Kindness & hospitality",
+    "video": null,
+    "phrases": [
+      {
+        "type": "phrase",
+        "kk": "Көңіл айту",
+        "ru": "высказать соболезнования",
+        "en": "to offer condolences",
+        "tr": "коңил айту"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңіл аудару",
+        "ru": "привлечь внимание",
+        "en": "to draw attention",
+        "tr": "коңил аудару"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңіл басылу",
+        "ru": "успокоиться",
+        "en": "to calm down",
+        "tr": "коңил басылу"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңіл білдіру",
+        "ru": "дать понять",
+        "en": "to make one's feelings known",
+        "tr": "коңил билдиру"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңіл жазу",
+        "ru": "развлекаться",
+        "en": "to unwind",
+        "tr": "коңил жазу"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңіл көтеру",
+        "ru": "поднять настроение",
+        "en": "to lift the spirits",
+        "tr": "коңил котеру"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңіл сұрау",
+        "ru": "справляться о самочувствии",
+        "en": "to ask after someone",
+        "tr": "коңил сурау"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңіл тою",
+        "ru": "полностью удовлетвориться",
+        "en": "to be fully content",
+        "tr": "коңил тою"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілге түсу",
+        "ru": "вспомнить о чём-то",
+        "en": "to come to mind",
+        "tr": "коңилге тусу"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілдес болу",
+        "ru": "быть в любовных отношениях",
+        "en": "to be romantically involved",
+        "tr": "коңилдес болу"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілді болу",
+        "ru": "быть в хорошем настроении",
+        "en": "to be cheerful",
+        "tr": "коңилди болу"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілі босау",
+        "ru": "расчувствоваться",
+        "en": "to be moved",
+        "tr": "коңили босау"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілі жай",
+        "ru": "умиротворённый",
+        "en": "serene",
+        "tr": "коңили жай"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілі жақын",
+        "ru": "чувствующие симпатию",
+        "en": "feeling mutual warmth",
+        "tr": "коңили жакын"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілі жарасу",
+        "ru": "находить общий язык",
+        "en": "to get along",
+        "tr": "коңили жарасу"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілі қалу",
+        "ru": "обидеться",
+        "en": "to be hurt",
+        "tr": "коңили калу"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілі көтеріңкі",
+        "ru": "в приподнятом настроении",
+        "en": "in high spirits",
+        "tr": "коңили котериңки"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілі тоқ",
+        "ru": "беззаботный, довольный",
+        "en": "content, at ease",
+        "tr": "коңили ток"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілі түзу",
+        "ru": "доброжелательный",
+        "en": "well-disposed",
+        "tr": "коңили тузу"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілі түсу",
+        "ru": "упасть духом",
+        "en": "to grow downcast",
+        "tr": "коңили тусу"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілін қимау",
+        "ru": "посчитаться с чувствами",
+        "en": "to spare someone's feelings",
+        "tr": "коңилин кимау"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңіліндегі ойы",
+        "ru": "заветное желание",
+        "en": "a cherished wish",
+        "tr": "коңилиндеги ойы"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңіліне алу",
+        "ru": "принять близко к сердцу",
+        "en": "to take to heart",
+        "tr": "коңилине алу"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңіліне жағу",
+        "ru": "прийтись по душе",
+        "en": "to please",
+        "tr": "коңилине жагу"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңіліне қарау",
+        "ru": "побояться обидеть",
+        "en": "to be considerate",
+        "tr": "коңилине карау"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілінен шығу",
+        "ru": "получиться как хотелось",
+        "en": "to turn out as wished",
+        "tr": "коңилинен шыгу"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көңілмен қарау",
+        "ru": "отнестись доброжелательно",
+        "en": "to treat kindly",
+        "tr": "коңилмен карау"
+      },
+      {
+        "type": "term",
+        "kk": "Көлік",
+        "ru": "транспорт",
+        "en": "transport",
+        "tr": "колик"
+      },
+      {
+        "type": "term",
+        "kk": "Байрақ",
+        "ru": "знамя, флаг",
+        "en": "banner, flag",
+        "tr": "байрак"
+      },
+      {
+        "type": "term",
+        "kk": "Үйір",
+        "ru": "косяк (табун)",
+        "en": "herd",
+        "tr": "уйир"
+      },
+      {
+        "type": "term",
+        "kk": "Сауу",
+        "ru": "доить",
+        "en": "to milk",
+        "tr": "сауу"
+      },
+      {
+        "type": "term",
+        "kk": "Адасу",
+        "ru": "блуждать, заблудиться",
+        "en": "to wander, to get lost",
+        "tr": "адасу"
+      },
+      {
+        "type": "term",
+        "kk": "Орамал",
+        "ru": "платок",
+        "en": "kerchief, shawl",
+        "tr": "орамал"
+      },
+      {
+        "type": "term",
+        "kk": "Кебу",
+        "ru": "сохнуть, высыхать",
+        "en": "to dry",
+        "tr": "кебу"
+      },
+      {
+        "type": "term",
+        "kk": "Айып",
+        "ru": "вина, проступок",
+        "en": "fault, offence",
+        "tr": "айып"
+      },
+      {
+        "type": "term",
+        "kk": "Ежелден",
+        "ru": "испокон веков",
+        "en": "from time immemorial",
+        "tr": "ежелден"
+      },
+      {
+        "type": "term",
+        "kk": "Тұяқ",
+        "ru": "копыто",
+        "en": "hoof",
+        "tr": "туяк"
+      },
+      {
+        "type": "term",
+        "kk": "Шақыру",
+        "ru": "звать, приглашать",
+        "en": "to call, to invite",
+        "tr": "шакыру"
+      },
+      {
+        "type": "term",
+        "kk": "Егіз",
+        "ru": "двойня",
+        "en": "twins",
+        "tr": "егиз"
+      },
+      {
+        "type": "term",
+        "kk": "Уыс",
+        "ru": "горсть",
+        "en": "handful",
+        "tr": "уыс"
+      },
+      {
+        "type": "term",
+        "kk": "Мықты",
+        "ru": "сильный, мощный",
+        "en": "strong",
+        "tr": "мыкты"
+      },
+      {
+        "type": "term",
+        "kk": "Көсем",
+        "ru": "вождь",
+        "en": "leader, chief",
+        "tr": "косем"
+      },
+      {
+        "type": "term",
+        "kk": "Білім",
+        "ru": "знание",
+        "en": "knowledge",
+        "tr": "билим"
+      },
+      {
+        "type": "term",
+        "kk": "Надан",
+        "ru": "невежда",
+        "en": "ignoramus",
+        "tr": "надан"
+      },
+      {
+        "type": "term",
+        "kk": "Көр",
+        "ru": "могила",
+        "en": "grave",
+        "tr": "кор"
+      },
+      {
+        "type": "term",
+        "kk": "Еңкею",
+        "ru": "наклоняться",
+        "en": "to bend, to stoop",
+        "tr": "еңкею"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "module": "minez",
+    "icon": "psychology_alt",
+    "title": "Ырымшыл, «8 қырлы, 1 сырлы»",
+    "ru": "Приметы и черты характера",
+    "en": "Omens & character traits",
+    "video": null,
+    "phrases": [
+      {
+        "type": "phrase",
+        "kk": "Адамгершілігі мол",
+        "ru": "человечный",
+        "en": "humane",
+        "tr": "адамгершилиги мол"
+      },
+      {
+        "type": "term",
+        "kk": "Ақкөңіл",
+        "ru": "добродушный",
+        "en": "kind-hearted",
+        "tr": "аккоңил"
+      },
+      {
+        "type": "term",
+        "kk": "Аңқау",
+        "ru": "простодушный",
+        "en": "naive, guileless",
+        "tr": "аңкау"
+      },
+      {
+        "type": "term",
+        "kk": "Балажан",
+        "ru": "чадолюбивый",
+        "en": "fond of children",
+        "tr": "балажан"
+      },
+      {
+        "type": "term",
+        "kk": "Бауырмал",
+        "ru": "болеющий за родню",
+        "en": "devoted to kin",
+        "tr": "бауырмал"
+      },
+      {
+        "type": "term",
+        "kk": "Еліктегіш",
+        "ru": "увлекающийся",
+        "en": "impressionable",
+        "tr": "еликтегиш"
+      },
+      {
+        "type": "phrase",
+        "kk": "Жауынгерлік мінезді",
+        "ru": "воинственный",
+        "en": "warlike",
+        "tr": "жауынгерлик минезди"
+      },
+      {
+        "type": "term",
+        "kk": "Жомарт",
+        "ru": "щедрый",
+        "en": "generous",
+        "tr": "жомарт"
+      },
+      {
+        "type": "phrase",
+        "kk": "Жылқы мінезді",
+        "ru": "своенравный",
+        "en": "spirited, wilful",
+        "tr": "жылкы минезди"
+      },
+      {
+        "type": "term",
+        "kk": "Кеңпейіл",
+        "ru": "великодушный",
+        "en": "magnanimous",
+        "tr": "кеңпейил"
+      },
+      {
+        "type": "term",
+        "kk": "Кешірімшіл",
+        "ru": "снисходительный",
+        "en": "forgiving",
+        "tr": "кеширимшил"
+      },
+      {
+        "type": "term",
+        "kk": "Кішіпейіл",
+        "ru": "скромный",
+        "en": "humble",
+        "tr": "кишипейил"
+      },
+      {
+        "type": "phrase",
+        "kk": "Қасқыр мінезді",
+        "ru": "бесстрашный",
+        "en": "fearless",
+        "tr": "каскыр минезди"
+      },
+      {
+        "type": "phrase",
+        "kk": "Қой мінезді",
+        "ru": "спокойный",
+        "en": "placid",
+        "tr": "кой минезди"
+      },
+      {
+        "type": "term",
+        "kk": "Қонақжай",
+        "ru": "гостеприимный",
+        "en": "hospitable",
+        "tr": "конакжай"
+      },
+      {
+        "type": "term",
+        "kk": "Қызба",
+        "ru": "вспыльчивый",
+        "en": "hot-tempered",
+        "tr": "кызба"
+      },
+      {
+        "type": "term",
+        "kk": "Мейірімді",
+        "ru": "добрый",
+        "en": "kind",
+        "tr": "мейиримди"
+      },
+      {
+        "type": "term",
+        "kk": "Момын",
+        "ru": "смирный",
+        "en": "meek",
+        "tr": "момын"
+      },
+      {
+        "type": "term",
+        "kk": "Өкпешіл",
+        "ru": "обидчивый",
+        "en": "touchy",
+        "tr": "окпешил"
+      },
+      {
+        "type": "term",
+        "kk": "Сабырлы",
+        "ru": "сдержанный",
+        "en": "composed",
+        "tr": "сабырлы"
+      },
+      {
+        "type": "term",
+        "kk": "Салмақты",
+        "ru": "солидный, степенный",
+        "en": "dignified",
+        "tr": "салмакты"
+      },
+      {
+        "type": "term",
+        "kk": "Сыпайы",
+        "ru": "учтивый",
+        "en": "courteous",
+        "tr": "сыпайы"
+      },
+      {
+        "type": "term",
+        "kk": "Шүкіршіл",
+        "ru": "благодарный судьбе",
+        "en": "content, thankful",
+        "tr": "шукиршил"
+      },
+      {
+        "type": "term",
+        "kk": "Шыдамды",
+        "ru": "терпеливый",
+        "en": "patient",
+        "tr": "шыдамды"
+      },
+      {
+        "type": "term",
+        "kk": "Ырымшыл",
+        "ru": "суеверный",
+        "en": "superstitious",
+        "tr": "ырымшыл"
+      },
+      {
+        "type": "term",
+        "kk": "Түйреуіш",
+        "ru": "булавка",
+        "en": "pin",
+        "tr": "туйреуиш"
+      },
+      {
+        "type": "term",
+        "kk": "Күйе",
+        "ru": "сажа",
+        "en": "soot",
+        "tr": "куйе"
+      },
+      {
+        "type": "term",
+        "kk": "Тұмар",
+        "ru": "амулет",
+        "en": "amulet",
+        "tr": "тумар"
+      },
+      {
+        "type": "term",
+        "kk": "Сейсенбі",
+        "ru": "вторник",
+        "en": "Tuesday",
+        "tr": "сейсенби"
+      },
+      {
+        "type": "term",
+        "kk": "Сәрсенбі",
+        "ru": "среда",
+        "en": "Wednesday",
+        "tr": "сәрсенби"
+      },
+      {
+        "type": "term",
+        "kk": "Бейуақ",
+        "ru": "сумерки; недобрый час",
+        "en": "dusk; an ill hour",
+        "tr": "бейуак"
+      },
+      {
+        "type": "term",
+        "kk": "Мақтау",
+        "ru": "хвалить",
+        "en": "to praise",
+        "tr": "мактау"
+      },
+      {
+        "type": "term",
+        "kk": "Жамандау",
+        "ru": "хулить, порочить",
+        "en": "to speak ill of",
+        "tr": "жамандау"
+      },
+      {
+        "type": "term",
+        "kk": "Ажалды",
+        "ru": "обречённый на смерть",
+        "en": "doomed to die",
+        "tr": "ажалды"
+      },
+      {
+        "type": "term",
+        "kk": "Бақ",
+        "ru": "удача",
+        "en": "fortune",
+        "tr": "бак"
+      },
+      {
+        "type": "term",
+        "kk": "Бап",
+        "ru": "подготовленность, форма",
+        "en": "readiness, form",
+        "tr": "бап"
+      },
+      {
+        "type": "term",
+        "kk": "Бұйыру",
+        "ru": "быть предназначенным",
+        "en": "to be fated",
+        "tr": "буйыру"
+      },
+      {
+        "type": "term",
+        "kk": "Қуу",
+        "ru": "догонять, преследовать",
+        "en": "to chase",
+        "tr": "куу"
+      },
+      {
+        "type": "term",
+        "kk": "Пешене",
+        "ru": "судьба, участь",
+        "en": "fate, destiny",
+        "tr": "пешене"
+      },
+      {
+        "type": "term",
+        "kk": "Кеуде",
+        "ru": "грудь",
+        "en": "chest",
+        "tr": "кеуде"
+      },
+      {
+        "type": "term",
+        "kk": "Белбеу",
+        "ru": "пояс",
+        "en": "belt",
+        "tr": "белбеу"
+      },
+      {
+        "type": "term",
+        "kk": "Қырлы",
+        "ru": "гранёный",
+        "en": "faceted",
+        "tr": "кырлы"
+      },
+      {
+        "type": "term",
+        "kk": "Олжа",
+        "ru": "добыча, трофей",
+        "en": "spoils, trophy",
+        "tr": "олжа"
+      },
+      {
+        "type": "term",
+        "kk": "Таңдай",
+        "ru": "нёбо",
+        "en": "palate",
+        "tr": "таңдай"
+      },
+      {
+        "type": "term",
+        "kk": "Шалқаю",
+        "ru": "зазнаваться, важничать",
+        "en": "to give oneself airs",
+        "tr": "шалкаю"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "module": "kozkaras",
+    "icon": "mosque",
+    "title": "Дінге көзқарас",
+    "ru": "Отношение к вере",
+    "en": "Views on faith",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Мұса",
+        "ru": "Моисей",
+        "en": "Moses",
+        "tr": "муса"
+      },
+      {
+        "type": "term",
+        "kk": "Ибраһим",
+        "ru": "Авраам",
+        "en": "Abraham",
+        "tr": "ибрахим"
+      },
+      {
+        "type": "term",
+        "kk": "Жақып",
+        "ru": "Иаков",
+        "en": "Jacob",
+        "tr": "жакып"
+      },
+      {
+        "type": "term",
+        "kk": "Ілияс",
+        "ru": "Илия",
+        "en": "Elijah",
+        "tr": "илияс"
+      },
+      {
+        "type": "term",
+        "kk": "Жүсіп",
+        "ru": "Иосиф",
+        "en": "Joseph",
+        "tr": "жусип"
+      },
+      {
+        "type": "term",
+        "kk": "Жақия",
+        "ru": "Иоанн",
+        "en": "John",
+        "tr": "жакия"
+      },
+      {
+        "type": "term",
+        "kk": "Сүлеймен",
+        "ru": "Соломон",
+        "en": "Solomon",
+        "tr": "сулеймен"
+      },
+      {
+        "type": "term",
+        "kk": "Дәуіт",
+        "ru": "Давид",
+        "en": "David",
+        "tr": "дәуит"
+      },
+      {
+        "type": "term",
+        "kk": "Ысқақ",
+        "ru": "Исаак",
+        "en": "Isaac",
+        "tr": "ыскак"
+      },
+      {
+        "type": "term",
+        "kk": "Иса",
+        "ru": "Иисус",
+        "en": "Jesus",
+        "tr": "иса"
+      },
+      {
+        "type": "term",
+        "kk": "Қабыл",
+        "ru": "Каин",
+        "en": "Cain",
+        "tr": "кабыл"
+      },
+      {
+        "type": "term",
+        "kk": "Әбіл",
+        "ru": "Авель",
+        "en": "Abel",
+        "tr": "әбил"
+      },
+      {
+        "type": "term",
+        "kk": "Аюп",
+        "ru": "Иов",
+        "en": "Job",
+        "tr": "аюп"
+      },
+      {
+        "type": "term",
+        "kk": "Идрис",
+        "ru": "Енох",
+        "en": "Enoch",
+        "tr": "идрис"
+      },
+      {
+        "type": "term",
+        "kk": "Смағұл",
+        "ru": "Исмаил",
+        "en": "Ishmael",
+        "tr": "смагул"
+      },
+      {
+        "type": "term",
+        "kk": "Жүніс",
+        "ru": "Иона",
+        "en": "Jonah",
+        "tr": "жунис"
+      },
+      {
+        "type": "term",
+        "kk": "Адал",
+        "ru": "дозволенный, честный",
+        "en": "permitted, honest (halal)",
+        "tr": "адал"
+      },
+      {
+        "type": "term",
+        "kk": "Арам",
+        "ru": "недозволенный",
+        "en": "forbidden (haram)",
+        "tr": "арам"
+      },
+      {
+        "type": "term",
+        "kk": "Сауал",
+        "ru": "вопрос",
+        "en": "question",
+        "tr": "сауал"
+      },
+      {
+        "type": "term",
+        "kk": "Жауап",
+        "ru": "ответ",
+        "en": "answer",
+        "tr": "жауап"
+      },
+      {
+        "type": "term",
+        "kk": "Қате",
+        "ru": "ошибка, неправильно",
+        "en": "mistake, wrong",
+        "tr": "кате"
+      },
+      {
+        "type": "term",
+        "kk": "Ахуал",
+        "ru": "обстоятельства",
+        "en": "circumstances",
+        "tr": "ахуал"
+      },
+      {
+        "type": "term",
+        "kk": "Нафақа",
+        "ru": "расход, траты",
+        "en": "expenses",
+        "tr": "нафака"
+      },
+      {
+        "type": "term",
+        "kk": "Пайда",
+        "ru": "польза, выгода, прибыль",
+        "en": "benefit, profit",
+        "tr": "пайда"
+      },
+      {
+        "type": "term",
+        "kk": "Мәдени",
+        "ru": "культурный, цивилизованный",
+        "en": "cultured, civilised",
+        "tr": "мәдени"
+      },
+      {
+        "type": "term",
+        "kk": "Ақиқат",
+        "ru": "истина, правда",
+        "en": "truth, reality",
+        "tr": "акикат"
+      },
+      {
+        "type": "term",
+        "kk": "Адалсыну",
+        "ru": "лицемерить, прикидываться честным",
+        "en": "to feign honesty",
+        "tr": "адалсыну"
+      },
+      {
+        "type": "term",
+        "kk": "Күдер",
+        "ru": "надежда, упования",
+        "en": "hope",
+        "tr": "кудер"
+      },
+      {
+        "type": "term",
+        "kk": "Бүйір",
+        "ru": "бок",
+        "en": "side, flank",
+        "tr": "буйир"
+      },
+      {
+        "type": "term",
+        "kk": "Жаға",
+        "ru": "берег, побережье",
+        "en": "shore",
+        "tr": "жага"
+      },
+      {
+        "type": "term",
+        "kk": "Періште",
+        "ru": "ангел",
+        "en": "angel",
+        "tr": "периште"
+      },
+      {
+        "type": "term",
+        "kk": "Шалыну",
+        "ru": "быть услышанным, замеченным",
+        "en": "to be caught (by ear/eye)",
+        "tr": "шалыну"
+      },
+      {
+        "type": "term",
+        "kk": "Зират",
+        "ru": "кладбище",
+        "en": "cemetery",
+        "tr": "зират"
+      },
+      {
+        "type": "term",
+        "kk": "Зиярат",
+        "ru": "паломничество",
+        "en": "pilgrimage",
+        "tr": "зиярат"
+      },
+      {
+        "type": "term",
+        "kk": "Жарылқау",
+        "ru": "благодетельствовать",
+        "en": "to bless with plenty",
+        "tr": "жарылкау"
+      },
+      {
+        "type": "term",
+        "kk": "Куә",
+        "ru": "свидетель, очевидец",
+        "en": "witness",
+        "tr": "куә"
+      },
+      {
+        "type": "term",
+        "kk": "Қуат",
+        "ru": "мощь, сила",
+        "en": "power, strength",
+        "tr": "куат"
+      },
+      {
+        "type": "term",
+        "kk": "Аруақ",
+        "ru": "дух предков",
+        "en": "ancestral spirit",
+        "tr": "аруак"
+      },
+      {
+        "type": "term",
+        "kk": "Шүберек",
+        "ru": "тряпка",
+        "en": "rag",
+        "tr": "шуберек"
+      },
+      {
+        "type": "term",
+        "kk": "Құрбан",
+        "ru": "жертва",
+        "en": "sacrifice, victim",
+        "tr": "курбан"
+      },
+      {
+        "type": "term",
+        "kk": "Тірек",
+        "ru": "опора, подпорка",
+        "en": "support, prop",
+        "tr": "тирек"
+      },
+      {
+        "type": "term",
+        "kk": "Қаһар",
+        "ru": "гнев",
+        "en": "wrath",
+        "tr": "кахар"
+      },
+      {
+        "type": "term",
+        "kk": "Сақал",
+        "ru": "борода",
+        "en": "beard",
+        "tr": "сакал"
+      },
+      {
+        "type": "term",
+        "kk": "Жайғастыру",
+        "ru": "расставлять по местам, налаживать",
+        "en": "to arrange, to settle",
+        "tr": "жайгастыру"
+      },
+      {
+        "type": "term",
+        "kk": "Мүйіз",
+        "ru": "рог, рога",
+        "en": "horn",
+        "tr": "муйиз"
+      },
+      {
+        "type": "term",
+        "kk": "Таңба",
+        "ru": "метка, клеймо",
+        "en": "mark, brand",
+        "tr": "таңба"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "module": "kozkaras",
+    "icon": "paid",
+    "title": "Байлыққа, билікке",
+    "ru": "О богатстве и власти",
+    "en": "On wealth & power",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Қанағат",
+        "ru": "удовлетворение, довольство",
+        "en": "contentment",
+        "tr": "канагат"
+      },
+      {
+        "type": "term",
+        "kk": "Шүкір",
+        "ru": "благодарность (Богу)",
+        "en": "gratitude (to God)",
+        "tr": "шукир"
+      },
+      {
+        "type": "term",
+        "kk": "Ысқыру",
+        "ru": "свистеть",
+        "en": "to whistle",
+        "tr": "ыскыру"
+      },
+      {
+        "type": "term",
+        "kk": "Сабыр",
+        "ru": "терпение",
+        "en": "patience",
+        "tr": "сабыр"
+      },
+      {
+        "type": "term",
+        "kk": "Үзілу",
+        "ru": "обрываться, рваться",
+        "en": "to break off, to snap",
+        "tr": "узилу"
+      },
+      {
+        "type": "term",
+        "kk": "Кедейлік",
+        "ru": "бедность",
+        "en": "poverty",
+        "tr": "кедейлик"
+      },
+      {
+        "type": "term",
+        "kk": "Қайыршы",
+        "ru": "нищий, попрошайка",
+        "en": "beggar",
+        "tr": "кайыршы"
+      },
+      {
+        "type": "term",
+        "kk": "Толқын",
+        "ru": "волна",
+        "en": "wave",
+        "tr": "толкын"
+      },
+      {
+        "type": "term",
+        "kk": "Қалта",
+        "ru": "карман",
+        "en": "pocket",
+        "tr": "калта"
+      },
+      {
+        "type": "term",
+        "kk": "Семіздік",
+        "ru": "упитанность, ожирение",
+        "en": "fatness",
+        "tr": "семиздик"
+      },
+      {
+        "type": "term",
+        "kk": "Дәулет",
+        "ru": "богатство, состояние",
+        "en": "wealth, fortune",
+        "tr": "дәулет"
+      },
+      {
+        "type": "term",
+        "kk": "Қисық",
+        "ru": "кривой, перекошенный",
+        "en": "crooked",
+        "tr": "кисык"
+      },
+      {
+        "type": "term",
+        "kk": "Қаңғыру",
+        "ru": "бродить, скитаться",
+        "en": "to wander, to roam",
+        "tr": "каңгыру"
+      },
+      {
+        "type": "term",
+        "kk": "Сылтау",
+        "ru": "предлог, отговорка",
+        "en": "pretext, excuse",
+        "tr": "сылтау"
+      },
+      {
+        "type": "term",
+        "kk": "Парыз",
+        "ru": "долг, обязанность",
+        "en": "duty, obligation",
+        "tr": "парыз"
+      },
+      {
+        "type": "term",
+        "kk": "Сенімсіз",
+        "ru": "ненадёжный",
+        "en": "unreliable",
+        "tr": "сенимсиз"
+      },
+      {
+        "type": "term",
+        "kk": "Шәкірт",
+        "ru": "ученик, последователь",
+        "en": "pupil, disciple",
+        "tr": "шәкирт"
+      },
+      {
+        "type": "term",
+        "kk": "Шіру",
+        "ru": "гнить, разлагаться",
+        "en": "to rot",
+        "tr": "ширу"
+      },
+      {
+        "type": "term",
+        "kk": "Кеме",
+        "ru": "судно, корабль",
+        "en": "ship",
+        "tr": "кеме"
+      },
+      {
+        "type": "term",
+        "kk": "Әулие",
+        "ru": "святой",
+        "en": "saint, holy",
+        "tr": "әулие"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "module": "mura",
+    "icon": "translate",
+    "title": "Тіл",
+    "ru": "Язык",
+    "en": "Language",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Ар",
+        "ru": "совесть, честь",
+        "en": "conscience, honour",
+        "tr": "ар"
+      },
+      {
+        "type": "term",
+        "kk": "Еңбектеу",
+        "ru": "ползать",
+        "en": "to crawl",
+        "tr": "еңбектеу"
+      },
+      {
+        "type": "term",
+        "kk": "Жамау",
+        "ru": "латать",
+        "en": "to patch",
+        "tr": "жамау"
+      },
+      {
+        "type": "term",
+        "kk": "Есті",
+        "ru": "разумный, рассудительный",
+        "en": "sensible",
+        "tr": "ести"
+      },
+      {
+        "type": "term",
+        "kk": "Жүйелі",
+        "ru": "дельный, обоснованный",
+        "en": "coherent, well-reasoned",
+        "tr": "жуйели"
+      },
+      {
+        "type": "term",
+        "kk": "Аңдамай",
+        "ru": "безрассудно, необдуманно",
+        "en": "rashly",
+        "tr": "аңдамай"
+      },
+      {
+        "type": "phrase",
+        "kk": "Тобықтай түйіні",
+        "ru": "суть, основное содержание",
+        "en": "the crux, the gist",
+        "tr": "тобыктай туйини"
+      },
+      {
+        "type": "term",
+        "kk": "Мін",
+        "ru": "недостаток, дефект",
+        "en": "flaw, defect",
+        "tr": "мин"
+      },
+      {
+        "type": "term",
+        "kk": "Жару",
+        "ru": "раскалывать, разбивать",
+        "en": "to split, to break open",
+        "tr": "жару"
+      },
+      {
+        "type": "term",
+        "kk": "Бел",
+        "ru": "поясница, талия",
+        "en": "lower back, waist",
+        "tr": "бел"
+      },
+      {
+        "type": "term",
+        "kk": "Төбет",
+        "ru": "пёс",
+        "en": "big dog",
+        "tr": "тобет"
+      },
+      {
+        "type": "term",
+        "kk": "Біз",
+        "ru": "шило",
+        "en": "awl",
+        "tr": "биз"
+      },
+      {
+        "type": "term",
+        "kk": "Мыс",
+        "ru": "медь",
+        "en": "copper",
+        "tr": "мыс"
+      },
+      {
+        "type": "term",
+        "kk": "Қайрау",
+        "ru": "точить, оттачивать",
+        "en": "to sharpen",
+        "tr": "кайрау"
+      },
+      {
+        "type": "term",
+        "kk": "Жиек",
+        "ru": "берег; край",
+        "en": "edge, shore",
+        "tr": "жиек"
+      },
+      {
+        "type": "term",
+        "kk": "Тиек",
+        "ru": "засов",
+        "en": "latch",
+        "tr": "тиек"
+      },
+      {
+        "type": "term",
+        "kk": "Айғақ",
+        "ru": "доказательство",
+        "en": "evidence, proof",
+        "tr": "айгак"
+      },
+      {
+        "type": "term",
+        "kk": "Мәртебе",
+        "ru": "авторитет, престиж",
+        "en": "status, prestige",
+        "tr": "мәртебе"
+      },
+      {
+        "type": "term",
+        "kk": "Сүріну",
+        "ru": "спотыкаться",
+        "en": "to stumble",
+        "tr": "сурину"
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "module": "mura",
+    "icon": "public",
+    "title": "Жер, бірлік",
+    "ru": "Земля и единство",
+    "en": "Land & unity",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Дүрілдеу",
+        "ru": "греметь, гудеть",
+        "en": "to rumble, to boom",
+        "tr": "дурилдеу"
+      },
+      {
+        "type": "term",
+        "kk": "Жәндік",
+        "ru": "насекомое",
+        "en": "insect",
+        "tr": "жәндик"
+      },
+      {
+        "type": "term",
+        "kk": "Сыбырлау",
+        "ru": "шептать",
+        "en": "to whisper",
+        "tr": "сыбырлау"
+      },
+      {
+        "type": "term",
+        "kk": "Байтақ",
+        "ru": "необъятный",
+        "en": "vast, boundless",
+        "tr": "байтак"
+      },
+      {
+        "type": "term",
+        "kk": "Тулау",
+        "ru": "брыкаться, вставать на дыбы",
+        "en": "to rear, to buck",
+        "tr": "тулау"
+      },
+      {
+        "type": "term",
+        "kk": "Сақшы",
+        "ru": "сторож, страж",
+        "en": "guard, sentry",
+        "tr": "сакшы"
+      },
+      {
+        "type": "term",
+        "kk": "Дана",
+        "ru": "мудрец, мудрый",
+        "en": "sage, wise",
+        "tr": "дана"
+      },
+      {
+        "type": "term",
+        "kk": "Жұдырық",
+        "ru": "кулак",
+        "en": "fist",
+        "tr": "жудырык"
+      },
+      {
+        "type": "term",
+        "kk": "Көму",
+        "ru": "закапывать, зарывать",
+        "en": "to bury",
+        "tr": "кому"
+      },
+      {
+        "type": "term",
+        "kk": "Бірігу",
+        "ru": "объединяться",
+        "en": "to unite",
+        "tr": "биригу"
+      },
+      {
+        "type": "term",
+        "kk": "Қайғы",
+        "ru": "горе",
+        "en": "grief",
+        "tr": "кайгы"
+      },
+      {
+        "type": "term",
+        "kk": "Қуаныш",
+        "ru": "радость",
+        "en": "joy",
+        "tr": "куаныш"
+      },
+      {
+        "type": "term",
+        "kk": "Ынтымақ",
+        "ru": "согласие, единство",
+        "en": "concord, unity",
+        "tr": "ынтымак"
+      },
+      {
+        "type": "term",
+        "kk": "Ұрыс",
+        "ru": "ругань, ссора",
+        "en": "quarrel",
+        "tr": "урыс"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "module": "madeniet",
+    "icon": "local_activity",
+    "title": "Салт-дәстүрлер",
+    "ru": "Обычаи и традиции",
+    "en": "Customs & traditions",
+    "video": null,
+    "phrases": [
+      {
+        "type": "proverb",
+        "kk": "Өмірің ұзақ болсын!",
+        "ru": "Пусть жизнь твоя будет долгой!",
+        "en": "May your life be long!",
+        "tr": "омириң узак болсын!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Үбірлі-шүбірлі бол!",
+        "ru": "Многочисленного потомства тебе!",
+        "en": "May you have many descendants!",
+        "tr": "убирли-шубирли бол!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Бабаңның аруағы қолдасын!",
+        "ru": "Пусть хранит дух предков!",
+        "en": "May the ancestors' spirit protect you!",
+        "tr": "бабаңның аруагы колдасын!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Тапқыр шешен бол!",
+        "ru": "Будь находчивым красноречивым!",
+        "en": "Be witty and eloquent!",
+        "tr": "тапкыр шешен бол!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Әділетті, адал ұл бол!",
+        "ru": "Будь справедливым, честным сыном!",
+        "en": "Be a just and honest son!",
+        "tr": "әдилетти, адал ул бол!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Оттан да, оқтан да сескенбейтін батыр бол!",
+        "ru": "Будь батыром, не боящимся ни огня, ни пули!",
+        "en": "Be a hero who fears neither fire nor bullet!",
+        "tr": "оттан да, октан да сескенбейтин батыр бол!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Денсаулығың зор, ер болып өс!",
+        "ru": "Расти здоровым, стань мужчиной!",
+        "en": "Grow healthy, grow into a man!",
+        "tr": "денсаулыгың зор, ер болып ос!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Балалық шағың бақытты болсын!",
+        "ru": "Пусть детство твоё будет счастливым!",
+        "en": "May your childhood be happy!",
+        "tr": "балалык шагың бакытты болсын!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Қажырлы, еңбексүйгіш бол!",
+        "ru": "Будь упорным и трудолюбивым!",
+        "en": "Be diligent and hard-working!",
+        "tr": "кажырлы, еңбексуйгиш бол!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Ұлтың мен тіліңді сүйіп өс!",
+        "ru": "Расти, любя народ и язык!",
+        "en": "Grow up loving your people and language!",
+        "tr": "ултың мен тилиңди суйип ос!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Мейірімді, рақымды бол!",
+        "ru": "Будь добрым и милосердным!",
+        "en": "Be kind and merciful!",
+        "tr": "мейиримди, ракымды бол!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Мәдениетті, кішіпейіл бол!",
+        "ru": "Будь культурным и скромным!",
+        "en": "Be cultured and humble!",
+        "tr": "мәдениетти, кишипейил бол!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Білімді, оқымысты бол!",
+        "ru": "Будь знающим и образованным!",
+        "en": "Be learned and educated!",
+        "tr": "билимди, окымысты бол!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Ақылды, білікті бол!",
+        "ru": "Будь умным и умелым!",
+        "en": "Be wise and capable!",
+        "tr": "акылды, биликти бол!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Досың көп, дұшпаның аз болсын!",
+        "ru": "Пусть друзей будет много, врагов мало!",
+        "en": "May you have many friends and few foes!",
+        "tr": "досың коп, душпаның аз болсын!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Ата салтыңды сақтай біл!",
+        "ru": "Умей хранить обычаи предков!",
+        "en": "Keep the customs of your forebears!",
+        "tr": "ата салтыңды сактай бил!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Ынтымақ, бірліктің жақтаушысы бол!",
+        "ru": "Будь поборником согласия и единства!",
+        "en": "Stand for concord and unity!",
+        "tr": "ынтымак, бирликтиң жактаушысы бол!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Кеңпейіл, қонақжай бол!",
+        "ru": "Будь великодушным и гостеприимным!",
+        "en": "Be magnanimous and hospitable!",
+        "tr": "кеңпейил, конакжай бол!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Сабырлы, кешірімді бол!",
+        "ru": "Будь сдержанным и снисходительным!",
+        "en": "Be composed and forgiving!",
+        "tr": "сабырлы, кеширимди бол!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Менмен, мақтаншақ болма!",
+        "ru": "Не будь высокомерным и хвастливым!",
+        "en": "Do not be arrogant or boastful!",
+        "tr": "менмен, мактаншак болма!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Күншіл, қызғаншақ болма!",
+        "ru": "Не будь завистливым!",
+        "en": "Do not be envious!",
+        "tr": "куншил, кызганшак болма!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Өнерлі бол!",
+        "ru": "Будь искусным, талантливым!",
+        "en": "Be talented and skilful!",
+        "tr": "онерли бол!"
+      },
+      {
+        "type": "proverb",
+        "kk": "Жүрегің кең жігіт бол!",
+        "ru": "Будь великодушным джигитом!",
+        "en": "Be a big-hearted young man!",
+        "tr": "журегиң кең жигит бол!"
+      },
+      {
+        "type": "phrase",
+        "kk": "Аяғы ауыр",
+        "ru": "беременная",
+        "en": "pregnant",
+        "tr": "аягы ауыр"
+      },
+      {
+        "type": "term",
+        "kk": "Бөрі",
+        "ru": "волк",
+        "en": "wolf",
+        "tr": "бори"
+      },
+      {
+        "type": "term",
+        "kk": "Сұңқар",
+        "ru": "сокол",
+        "en": "falcon",
+        "tr": "суңкар"
+      },
+      {
+        "type": "term",
+        "kk": "Дүние",
+        "ru": "вселенная, мир",
+        "en": "the world, universe",
+        "tr": "дуние"
+      },
+      {
+        "type": "term",
+        "kk": "Кемпір",
+        "ru": "старуха",
+        "en": "old woman",
+        "tr": "кемпир"
+      },
+      {
+        "type": "term",
+        "kk": "Қалау",
+        "ru": "желать, выбирать",
+        "en": "to wish, to choose",
+        "tr": "калау"
+      },
+      {
+        "type": "term",
+        "kk": "Қақсау",
+        "ru": "много болтать",
+        "en": "to prattle",
+        "tr": "каксау"
+      },
+      {
+        "type": "term",
+        "kk": "Ынжық",
+        "ru": "мямля, недотёпа",
+        "en": "a spineless person",
+        "tr": "ынжык"
+      },
+      {
+        "type": "term",
+        "kk": "Беку",
+        "ru": "окрепнуть",
+        "en": "to grow strong",
+        "tr": "беку"
+      },
+      {
+        "type": "term",
+        "kk": "Балау",
+        "ru": "приравнивать, считать",
+        "en": "to regard as",
+        "tr": "балау"
+      },
+      {
+        "type": "term",
+        "kk": "Марқаю",
+        "ru": "возвышаться, воспрянуть",
+        "en": "to be uplifted",
+        "tr": "маркаю"
+      },
+      {
+        "type": "term",
+        "kk": "Қанжар",
+        "ru": "кинжал",
+        "en": "dagger",
+        "tr": "канжар"
+      },
+      {
+        "type": "term",
+        "kk": "Қаншырдай",
+        "ru": "исхудавший, худощавый",
+        "en": "gaunt, lean",
+        "tr": "каншырдай"
+      },
+      {
+        "type": "term",
+        "kk": "Нәресте",
+        "ru": "младенец, дитя",
+        "en": "infant, baby",
+        "tr": "нәресте"
+      },
+      {
+        "type": "term",
+        "kk": "Ұлықтау",
+        "ru": "оказывать почести",
+        "en": "to honour",
+        "tr": "улыктау"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көз тігу",
+        "ru": "устремить взор",
+        "en": "to fix one's gaze",
+        "tr": "коз тигу"
+      },
+      {
+        "type": "term",
+        "kk": "Сапар",
+        "ru": "поездка",
+        "en": "journey",
+        "tr": "сапар"
+      },
+      {
+        "type": "term",
+        "kk": "Міндет",
+        "ru": "задача, обязанность",
+        "en": "task, duty",
+        "tr": "миндет"
+      },
+      {
+        "type": "term",
+        "kk": "Сіңіру",
+        "ru": "впитывать, усваивать",
+        "en": "to absorb",
+        "tr": "сиңиру"
+      },
+      {
+        "type": "term",
+        "kk": "Айтулы",
+        "ru": "известный, прославленный",
+        "en": "renowned",
+        "tr": "айтулы"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "module": "madeniet",
+    "icon": "handshake",
+    "title": "Әдептілік",
+    "ru": "Этикет, вежливость",
+    "en": "Etiquette & politeness",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Апат",
+        "ru": "бедствие, крушение",
+        "en": "disaster",
+        "tr": "апат"
+      },
+      {
+        "type": "term",
+        "kk": "Қиын",
+        "ru": "сложный, трудный",
+        "en": "difficult",
+        "tr": "киын"
+      },
+      {
+        "type": "term",
+        "kk": "Марқұм",
+        "ru": "покойный, умерший",
+        "en": "the deceased",
+        "tr": "маркум"
+      },
+      {
+        "type": "term",
+        "kk": "Қуыс",
+        "ru": "пустота, щель",
+        "en": "hollow, cavity",
+        "tr": "куыс"
+      },
+      {
+        "type": "term",
+        "kk": "Қалжың",
+        "ru": "шутка",
+        "en": "joke",
+        "tr": "калжың"
+      },
+      {
+        "type": "term",
+        "kk": "Итаяқ",
+        "ru": "собачья миска",
+        "en": "dog's bowl",
+        "tr": "итаяк"
+      },
+      {
+        "type": "term",
+        "kk": "Құдайы",
+        "ru": "жертвоприношение",
+        "en": "offering, sacrifice",
+        "tr": "кудайы"
+      },
+      {
+        "type": "term",
+        "kk": "Сау",
+        "ru": "здоровый",
+        "en": "healthy",
+        "tr": "сау"
+      },
+      {
+        "type": "term",
+        "kk": "Дерт",
+        "ru": "недуг, болезнь",
+        "en": "ailment",
+        "tr": "дерт"
+      },
+      {
+        "type": "term",
+        "kk": "Жүйрік",
+        "ru": "быстрый; скакун",
+        "en": "swift; a racer",
+        "tr": "жуйрик"
+      },
+      {
+        "type": "term",
+        "kk": "Игілік",
+        "ru": "благо",
+        "en": "good, benefit",
+        "tr": "игилик"
+      },
+      {
+        "type": "term",
+        "kk": "Түкіру",
+        "ru": "плевать",
+        "en": "to spit",
+        "tr": "тукиру"
+      },
+      {
+        "type": "term",
+        "kk": "Серпу",
+        "ru": "хлопать (дверью)",
+        "en": "to slam",
+        "tr": "серпу"
+      },
+      {
+        "type": "term",
+        "kk": "Құрдас",
+        "ru": "ровесник",
+        "en": "peer",
+        "tr": "курдас"
+      },
+      {
+        "type": "term",
+        "kk": "Мүсәпір",
+        "ru": "беспомощный, нуждающийся",
+        "en": "helpless, destitute",
+        "tr": "мусәпир"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "module": "madeniet",
+    "icon": "local_florist",
+    "title": "Қаза",
+    "ru": "Проводы, соболезнования",
+    "en": "Farewell & condolence",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Жарқыл",
+        "ru": "блеск",
+        "en": "glitter, flash",
+        "tr": "жаркыл"
+      },
+      {
+        "type": "term",
+        "kk": "Алдау",
+        "ru": "врать, обманывать",
+        "en": "to lie, to deceive",
+        "tr": "алдау"
+      },
+      {
+        "type": "term",
+        "kk": "Өсиет",
+        "ru": "завещание, наказ",
+        "en": "testament, bequest",
+        "tr": "осиет"
+      },
+      {
+        "type": "term",
+        "kk": "Түбінде",
+        "ru": "в итоге, в конце",
+        "en": "in the end",
+        "tr": "тубинде"
+      },
+      {
+        "type": "term",
+        "kk": "Алашақ",
+        "ru": "долг (к получению)",
+        "en": "debt owed to one",
+        "tr": "алашак"
+      },
+      {
+        "type": "term",
+        "kk": "Хабар",
+        "ru": "весть",
+        "en": "news, tidings",
+        "tr": "хабар"
+      },
+      {
+        "type": "term",
+        "kk": "Жаратқан",
+        "ru": "Создатель, Бог",
+        "en": "the Creator, God",
+        "tr": "жараткан"
+      },
+      {
+        "type": "term",
+        "kk": "Жарату",
+        "ru": "создавать, сотворить",
+        "en": "to create",
+        "tr": "жарату"
+      },
+      {
+        "type": "term",
+        "kk": "Белгі",
+        "ru": "знак",
+        "en": "sign",
+        "tr": "белги"
+      },
+      {
+        "type": "term",
+        "kk": "Шешу",
+        "ru": "решать",
+        "en": "to solve, to decide",
+        "tr": "шешу"
+      },
+      {
+        "type": "term",
+        "kk": "Тосқауыл",
+        "ru": "препятствие",
+        "en": "obstacle",
+        "tr": "тоскауыл"
+      },
+      {
+        "type": "phrase",
+        "kk": "Ақтық сапар",
+        "ru": "последний путь",
+        "en": "the final journey",
+        "tr": "актык сапар"
+      },
+      {
+        "type": "term",
+        "kk": "Пенде",
+        "ru": "человек, смертный",
+        "en": "a mortal, human being",
+        "tr": "пенде"
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "module": "madeniet",
+    "icon": "restaurant",
+    "title": "Ас",
+    "ru": "Поминальное угощение",
+    "en": "Memorial meal",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Құрсақ",
+        "ru": "утроба",
+        "en": "womb",
+        "tr": "курсак"
+      },
+      {
+        "type": "term",
+        "kk": "Қайғыру",
+        "ru": "горевать, переживать",
+        "en": "to grieve",
+        "tr": "кайгыру"
+      },
+      {
+        "type": "term",
+        "kk": "Үзу",
+        "ru": "терять (надежду)",
+        "en": "to lose (hope)",
+        "tr": "узу"
+      },
+      {
+        "type": "term",
+        "kk": "Хабарласу",
+        "ru": "обмениваться вестями, созваниваться",
+        "en": "to keep in touch",
+        "tr": "хабарласу"
+      },
+      {
+        "type": "term",
+        "kk": "Байқау",
+        "ru": "замечать",
+        "en": "to notice",
+        "tr": "байкау"
+      },
+      {
+        "type": "term",
+        "kk": "Толқу",
+        "ru": "волноваться, переживать",
+        "en": "to be agitated",
+        "tr": "толку"
+      },
+      {
+        "type": "term",
+        "kk": "Тебірену",
+        "ru": "быть растроганным",
+        "en": "to be moved, touched",
+        "tr": "тебирену"
+      },
+      {
+        "type": "term",
+        "kk": "Садақа",
+        "ru": "милостыня, подаяние",
+        "en": "alms",
+        "tr": "садака"
+      },
+      {
+        "type": "term",
+        "kk": "Мейрамхана",
+        "ru": "ресторан",
+        "en": "restaurant",
+        "tr": "мейрамхана"
+      },
+      {
+        "type": "term",
+        "kk": "Ықтимал",
+        "ru": "вероятно, возможно",
+        "en": "probable, possible",
+        "tr": "ыктимал"
+      },
+      {
+        "type": "phrase",
+        "kk": "Өмірден озу",
+        "ru": "уйти из жизни",
+        "en": "to pass away",
+        "tr": "омирден озу"
+      },
+      {
+        "type": "term",
+        "kk": "Баяғы",
+        "ru": "прежний, тот же",
+        "en": "former, the same as before",
+        "tr": "баягы"
+      },
+      {
+        "type": "term",
+        "kk": "Айқайлау",
+        "ru": "кричать",
+        "en": "to shout",
+        "tr": "айкайлау"
+      },
+      {
+        "type": "term",
+        "kk": "Жанталасу",
+        "ru": "спешка, суета",
+        "en": "frantic haste",
+        "tr": "жанталасу"
+      },
+      {
+        "type": "term",
+        "kk": "Жалаңаш",
+        "ru": "голый, нагой",
+        "en": "naked",
+        "tr": "жалаңаш"
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "module": "madeniet",
+    "icon": "favorite",
+    "title": "Үйлену, құда түсу",
+    "ru": "Женитьба и сватовство",
+    "en": "Marriage & matchmaking",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Алмасу",
+        "ru": "чередоваться, меняться",
+        "en": "to alternate, to swap",
+        "tr": "алмасу"
+      },
+      {
+        "type": "term",
+        "kk": "Қия",
+        "ru": "чужбина, далёкий край",
+        "en": "a far-off land",
+        "tr": "кия"
+      },
+      {
+        "type": "term",
+        "kk": "Бойдақ",
+        "ru": "холостяк",
+        "en": "bachelor",
+        "tr": "бойдак"
+      },
+      {
+        "type": "term",
+        "kk": "Көрікті",
+        "ru": "красивый",
+        "en": "beautiful",
+        "tr": "корикти"
+      },
+      {
+        "type": "term",
+        "kk": "Таз",
+        "ru": "плешь",
+        "en": "baldness",
+        "tr": "таз"
+      },
+      {
+        "type": "term",
+        "kk": "Аққұба",
+        "ru": "светлокожий",
+        "en": "fair-skinned",
+        "tr": "аккуба"
+      },
+      {
+        "type": "term",
+        "kk": "Жолығу",
+        "ru": "видеться, встретиться",
+        "en": "to meet",
+        "tr": "жолыгу"
+      },
+      {
+        "type": "term",
+        "kk": "Әуелден",
+        "ru": "с самого начала",
+        "en": "from the very start",
+        "tr": "әуелден"
+      },
+      {
+        "type": "term",
+        "kk": "Төскей",
+        "ru": "горный склон",
+        "en": "mountain slope",
+        "tr": "тоскей"
+      },
+      {
+        "type": "term",
+        "kk": "Жаңғырту",
+        "ru": "обновить",
+        "en": "to renew",
+        "tr": "жаңгырту"
+      },
+      {
+        "type": "term",
+        "kk": "Құндылық",
+        "ru": "ценность",
+        "en": "value",
+        "tr": "кундылык"
+      },
+      {
+        "type": "term",
+        "kk": "Қайтейін",
+        "ru": "что делать, как быть",
+        "en": "what am I to do",
+        "tr": "кайтейин"
+      },
+      {
+        "type": "term",
+        "kk": "Дәнекер",
+        "ru": "посредник",
+        "en": "intermediary",
+        "tr": "дәнекер"
+      },
+      {
+        "type": "term",
+        "kk": "Зорға",
+        "ru": "еле-еле, с трудом",
+        "en": "barely, with difficulty",
+        "tr": "зорга"
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "module": "madeniet",
+    "icon": "celebration",
+    "title": "Тойлар, құдалық",
+    "ru": "Праздники и сватовство",
+    "en": "Feasts & in-law ties",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Ұйысу",
+        "ru": "путаться, сбиваться",
+        "en": "to get tangled",
+        "tr": "уйысу"
+      },
+      {
+        "type": "term",
+        "kk": "Бірдей",
+        "ru": "одинаково",
+        "en": "alike, equally",
+        "tr": "бирдей"
+      },
+      {
+        "type": "term",
+        "kk": "Сіңу",
+        "ru": "впитываться, всасываться",
+        "en": "to soak in",
+        "tr": "сиңу"
+      },
+      {
+        "type": "term",
+        "kk": "Қауым",
+        "ru": "общество, сообщество",
+        "en": "society, gathering",
+        "tr": "кауым"
+      },
+      {
+        "type": "term",
+        "kk": "Жағымды",
+        "ru": "приятный",
+        "en": "pleasant",
+        "tr": "жагымды"
+      },
+      {
+        "type": "term",
+        "kk": "Айбарлы",
+        "ru": "грозный",
+        "en": "imposing, formidable",
+        "tr": "айбарлы"
+      },
+      {
+        "type": "term",
+        "kk": "Қалаулы",
+        "ru": "избранный, желанный",
+        "en": "chosen, favoured",
+        "tr": "калаулы"
+      },
+      {
+        "type": "term",
+        "kk": "Елеулі",
+        "ru": "достойный уважения",
+        "en": "notable, esteemed",
+        "tr": "елеули"
+      },
+      {
+        "type": "term",
+        "kk": "Ұласу",
+        "ru": "непрерывно следовать, продолжаться",
+        "en": "to continue on and on",
+        "tr": "уласу"
+      },
+      {
+        "type": "term",
+        "kk": "Қолдау",
+        "ru": "поддержка",
+        "en": "support",
+        "tr": "колдау"
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "module": "madeniet",
+    "icon": "emoji_people",
+    "title": "Қонақ күту",
+    "ru": "Приём гостей",
+    "en": "Receiving guests",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Шолақ",
+        "ru": "короткий",
+        "en": "short",
+        "tr": "шолак"
+      },
+      {
+        "type": "term",
+        "kk": "Таусылу",
+        "ru": "кончаться",
+        "en": "to run out",
+        "tr": "таусылу"
+      },
+      {
+        "type": "phrase",
+        "kk": "Зар болу",
+        "ru": "нуждаться",
+        "en": "to be in need",
+        "tr": "зар болу"
+      },
+      {
+        "type": "term",
+        "kk": "Зыту",
+        "ru": "убежать, удрать",
+        "en": "to bolt, to dash off",
+        "tr": "зыту"
+      },
+      {
+        "type": "phrase",
+        "kk": "Құр қол",
+        "ru": "с пустыми руками",
+        "en": "empty-handed",
+        "tr": "кур кол"
+      },
+      {
+        "type": "term",
+        "kk": "Сарқыт",
+        "ru": "гостинцы с застолья",
+        "en": "food gifts from a feast",
+        "tr": "саркыт"
+      },
+      {
+        "type": "term",
+        "kk": "Сыйлы",
+        "ru": "уважаемый, почётный",
+        "en": "respected",
+        "tr": "сыйлы"
+      },
+      {
+        "type": "phrase",
+        "kk": "Орын беру",
+        "ru": "уступать место",
+        "en": "to give up one's seat",
+        "tr": "орын беру"
+      },
+      {
+        "type": "term",
+        "kk": "Білінбеу",
+        "ru": "быть незаметным",
+        "en": "to go unnoticed",
+        "tr": "билинбеу"
+      },
+      {
+        "type": "term",
+        "kk": "Таныстыру",
+        "ru": "знакомить",
+        "en": "to introduce",
+        "tr": "таныстыру"
+      },
+      {
+        "type": "term",
+        "kk": "Ұғу",
+        "ru": "понимать, уяснять",
+        "en": "to grasp, to understand",
+        "tr": "угу"
+      },
+      {
+        "type": "term",
+        "kk": "Тақылдау",
+        "ru": "говорить чётко и быстро",
+        "en": "to speak briskly",
+        "tr": "такылдау"
+      },
+      {
+        "type": "term",
+        "kk": "Баянды",
+        "ru": "прочный, стабильный",
+        "en": "lasting, stable",
+        "tr": "баянды"
+      },
+      {
+        "type": "term",
+        "kk": "Күлімдеу",
+        "ru": "улыбаться",
+        "en": "to smile",
+        "tr": "кулимдеу"
+      },
+      {
+        "type": "term",
+        "kk": "Билеу",
+        "ru": "управлять",
+        "en": "to rule",
+        "tr": "билеу"
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "module": "madeniet",
+    "icon": "cake",
+    "title": "Отбасылық мерекелер",
+    "ru": "Семейные праздники",
+    "en": "Family celebrations",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Нық",
+        "ru": "крепкий, устойчивый",
+        "en": "firm, steady",
+        "tr": "нык"
+      },
+      {
+        "type": "term",
+        "kk": "Бағалы",
+        "ru": "ценный",
+        "en": "valuable",
+        "tr": "багалы"
+      },
+      {
+        "type": "term",
+        "kk": "Қажымас",
+        "ru": "неутомимый",
+        "en": "tireless",
+        "tr": "кажымас"
+      },
+      {
+        "type": "term",
+        "kk": "Аңсаған",
+        "ru": "желанный, заветный",
+        "en": "longed-for",
+        "tr": "аңсаган"
+      },
+      {
+        "type": "term",
+        "kk": "Шыны",
+        "ru": "стекло; подлинный",
+        "en": "glass; genuine",
+        "tr": "шыны"
+      },
+      {
+        "type": "term",
+        "kk": "Төзімді",
+        "ru": "стойкий, выносливый",
+        "en": "enduring, resilient",
+        "tr": "тозимди"
+      },
+      {
+        "type": "term",
+        "kk": "Қарқын",
+        "ru": "темп",
+        "en": "pace, tempo",
+        "tr": "каркын"
+      },
+      {
+        "type": "term",
+        "kk": "Тамаша",
+        "ru": "замечательный",
+        "en": "wonderful",
+        "tr": "тамаша"
+      },
+      {
+        "type": "term",
+        "kk": "Жетелеу",
+        "ru": "вести (за собой)",
+        "en": "to lead",
+        "tr": "жетелеу"
+      },
+      {
+        "type": "term",
+        "kk": "Қатыгездік",
+        "ru": "жестокость",
+        "en": "cruelty",
+        "tr": "катыгездик"
+      },
+      {
+        "type": "term",
+        "kk": "Атаққұмарлық",
+        "ru": "честолюбие, тщеславие",
+        "en": "ambition, vanity",
+        "tr": "атаккумарлык"
+      },
+      {
+        "type": "term",
+        "kk": "Күллі",
+        "ru": "весь, всё",
+        "en": "all, the whole",
+        "tr": "кулли"
+      },
+      {
+        "type": "term",
+        "kk": "Ұлық",
+        "ru": "великий",
+        "en": "great",
+        "tr": "улык"
+      },
+      {
+        "type": "term",
+        "kk": "Ауыртпалық",
+        "ru": "невзгоды, трудности",
+        "en": "hardship, burden",
+        "tr": "ауыртпалык"
+      },
+      {
+        "type": "term",
+        "kk": "Сарқылу",
+        "ru": "иссякать, исчерпаться",
+        "en": "to run dry, to be exhausted",
+        "tr": "саркылу"
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "module": "madeniet",
+    "icon": "flag",
+    "title": "Мемлекеттік мерекелер",
+    "ru": "Государственные праздники",
+    "en": "State holidays",
+    "video": null,
+    "phrases": [
+      {
+        "type": "term",
+        "kk": "Дәлелдеу",
+        "ru": "доказывать, аргументировать",
+        "en": "to prove, to argue",
+        "tr": "дәлелдеу"
+      },
+      {
+        "type": "term",
+        "kk": "Уайым-қайғы",
+        "ru": "печаль, уныние",
+        "en": "sorrow, gloom",
+        "tr": "уайым-кайгы"
+      },
+      {
+        "type": "term",
+        "kk": "Тұтастық",
+        "ru": "единство, целостность",
+        "en": "unity, integrity",
+        "tr": "тутастык"
+      },
+      {
+        "type": "term",
+        "kk": "Шынайы",
+        "ru": "истинный, искренний",
+        "en": "genuine, sincere",
+        "tr": "шынайы"
+      },
+      {
+        "type": "term",
+        "kk": "Қорған",
+        "ru": "опора, защита",
+        "en": "stronghold, protection",
+        "tr": "корган"
+      },
+      {
+        "type": "term",
+        "kk": "Ерік-жігер",
+        "ru": "сила воли",
+        "en": "willpower",
+        "tr": "ерик-жигер"
+      },
+      {
+        "type": "term",
+        "kk": "Қайырымдылық",
+        "ru": "милосердие, доброта",
+        "en": "charity, kindness",
+        "tr": "кайырымдылык"
+      },
+      {
+        "type": "term",
+        "kk": "Ену",
+        "ru": "входить",
+        "en": "to enter",
+        "tr": "ену"
+      },
+      {
+        "type": "term",
+        "kk": "Бәле-жала",
+        "ru": "беда, несчастье",
+        "en": "misfortune, calamity",
+        "tr": "бәле-жала"
+      },
+      {
+        "type": "term",
+        "kk": "Ерекше",
+        "ru": "особенный",
+        "en": "special",
+        "tr": "ерекше"
+      },
+      {
+        "type": "term",
+        "kk": "Ілгері",
+        "ru": "вперёд, впереди",
+        "en": "forward, ahead",
+        "tr": "илгери"
+      },
+      {
+        "type": "term",
+        "kk": "Айбынды",
+        "ru": "величавый, доблестный",
+        "en": "majestic, valiant",
+        "tr": "айбынды"
+      },
+      {
+        "type": "phrase",
+        "kk": "Тағзым ету",
+        "ru": "поклониться",
+        "en": "to bow, to pay homage",
+        "tr": "тагзым ету"
+      },
+      {
+        "type": "phrase",
+        "kk": "Көздің жауын алу",
+        "ru": "притягивать взор",
+        "en": "to catch the eye",
+        "tr": "коздиң жауын алу"
+      },
+      {
+        "type": "term",
+        "kk": "Лайықты",
+        "ru": "достойный",
+        "en": "worthy",
+        "tr": "лайыкты"
+      },
+      {
+        "type": "term",
+        "kk": "Қоғамдастық",
+        "ru": "сообщество",
+        "en": "community",
+        "tr": "когамдастык"
+      },
+      {
+        "type": "term",
+        "kk": "Желбіреу",
+        "ru": "развеваться, реять",
+        "en": "to flutter, to wave",
+        "tr": "желбиреу"
+      },
+      {
+        "type": "term",
+        "kk": "Аянбай",
+        "ru": "не жалея сил",
+        "en": "sparing no effort",
+        "tr": "аянбай"
+      },
+      {
+        "type": "term",
+        "kk": "Рухани",
+        "ru": "духовный",
+        "en": "spiritual",
+        "tr": "рухани"
+      }
+    ]
+  }
 ];
 
 export function lessonsByModule(moduleId) {
@@ -409,7 +3854,6 @@ export const allPhrases = lessons.flatMap((l) =>
 
 // Фразы, которые пользователь уже видел: из сданных уроков и из тех,
 // что он начал проходить (по ним уже есть записи в SRS).
-// Практика и квиз не должны подсовывать фразы из ещё закрытых уроков.
 export function openPhrases(progress = {}) {
   const done = progress.done || {};
   const srs = progress.srs || {};
@@ -419,6 +3863,5 @@ export function openPhrases(progress = {}) {
     if (!Number.isNaN(id)) seenLesson.add(id);
   }
   const open = allPhrases.filter((p) => done[p.lessonId] || seenLesson.has(p.lessonId));
-  // Пока ничего не пройдено — даём первый урок, чтобы практика не была пустой
   return open.length ? open : allPhrases.filter((p) => p.lessonId === lessons[0].id);
 }
