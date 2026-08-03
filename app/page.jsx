@@ -283,7 +283,7 @@ export default function App() {
           <Course progress={progress} doneCount={doneCountN} onOpenModule={openModule} onOpen={openLesson} goPractice={() => setTab("practice")} />
         )}
         {tab === "module" && activeModule && (
-          <ModuleView module={activeModule} progress={progress} onOpen={openLesson} onBack={() => setTab("course")} />
+          <ModuleView module={activeModule} progress={progress} onOpen={openLesson} onBack={() => setTab("course")} onExam={recordExam} />
         )}
         {tab === "lesson" && activeLesson && (
           <LessonView
@@ -293,7 +293,6 @@ export default function App() {
             dialogDone={!!(progress.dialogs && progress.dialogs[activeLesson.id])}
             review={review}
             onPassed={() => markDone(activeLesson.id)}
-            onExam={recordExam}
             onDialogComplete={() => markDialogDone(activeLesson.id)}
             onOpen={openLesson}
             onBack={() => setTab("course")}
@@ -455,11 +454,19 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice }) {
 
 // ────────────────────── Страница темы ──────────────────────
 
-function ModuleView({ module: m, progress, onOpen, onBack }) {
+function ModuleView({ module: m, progress, onOpen, onBack, onExam }) {
   const { lang, t } = useLang();
   const items = lessonsByModule(m.id);
   const mDone = items.filter((l) => progress.done[l.id]).length;
   const mPct = Math.round((mDone / items.length) * 100);
+
+  // Экзамен темы: вопросы всех пройденных уроков (по 5 на урок)
+  const [showExam, setShowExam] = useState(false);
+  const examQuestions = items.filter((l) => progress.done[l.id]).flatMap((l) => TESTS[l.id] || []);
+  const examResult = (progress.exams || {})[m.id];
+  if (showExam && examQuestions.length) {
+    return <ModuleExam module={m} questions={examQuestions} onRecord={onExam} onBack={() => setShowExam(false)} />;
+  }
 
   // Состав темы: сколько фраз, какого типа, есть ли диалоги и заметки
   const phraseTotal = items.reduce((a, l) => a + l.phrases.length, 0);
@@ -535,6 +542,23 @@ function ModuleView({ module: m, progress, onOpen, onBack }) {
           );
         })}
       </div>
+
+      <div className="module-exam-cta">
+        <button
+          className="btn primary"
+          style={{ width: "100%" }}
+          disabled={!examQuestions.length}
+          onClick={() => setShowExam(true)}
+        >
+          <Icon name="quiz" style={{ fontSize: 18, verticalAlign: "-0.2em" }} />{" "}
+          {t.module_exam}{examQuestions.length ? ` · ${examQuestions.length} ${lang === "en" ? "questions" : "вопр."}` : ""}
+        </button>
+        <p className="module-exam-hint">
+          {examResult
+            ? `${examResult.passed ? "✓ " : ""}${lang === "en" ? "Best" : "Лучший"}: ${examResult.score}/${examResult.total}`
+            : (examQuestions.length ? t.module_exam_hint : t.module_exam_locked)}
+        </p>
+      </div>
     </>
   );
 }
@@ -562,8 +586,8 @@ function StepBar({ stage }) {
   );
 }
 
-function LessonView({ lesson, done, dialogDone, review, onPassed, onExam, onDialogComplete, onOpen, onBack }) {
-  const { lang } = useLang();
+function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComplete, onOpen, onBack }) {
+  const { lang, t } = useLang();
   const mod = modules.find((m) => m.id === lesson.module);
   const dialog = dialogForLesson(lesson.id);
   const nextLesson = lessons.find((l) => l.id === lesson.id + 1) || null;
@@ -588,14 +612,29 @@ function LessonView({ lesson, done, dialogDone, review, onPassed, onExam, onDial
     return (<>{header}<StudyTrainer lesson={lesson} onDone={() => setStage("practice")} /></>);
   }
   if (stage === "practice") {
-    return (<>{header}<LessonPractice lesson={lesson} review={review} onDone={() => setStage("quiz")} /></>);
+    return (<>{header}<LessonPractice lesson={lesson} review={review} onDone={() => { onPassed(); setStage("complete"); }} /></>);
   }
-  const Exam = TESTS[lesson.id] ? LessonTest : LessonQuiz;
+  // Экзамен теперь общий по теме (см. ModuleExam на экране темы). Урок завершается после практики.
   return (
     <>
       {header}
-      <Exam lesson={lesson} review={review} onPassed={onPassed} onExam={onExam} onBack={() => setStage("practice")}
-        nextLesson={nextLesson} onOpen={onOpen} dialog={dialog} dialogDone={dialogDone} onDialog={() => setStage("dialog")} />
+      <div className="result">
+        <Mascot className="mascot-big" src={MASCOT.leap} alt="Irbis" />
+        <h2 style={{ color: "var(--heading)", margin: "10px 0 6px" }}>{t.lesson_done_h}</h2>
+        <p>{lang === "en" ? "+50 m of altitude. The theme exam awaits on the topic screen." : "+50 м высоты. Экзамен темы ждёт на экране темы."}</p>
+        {dialog && !dialogDone && (
+          <button className="btn ghost" style={{ width: "100%", marginBottom: 10 }} onClick={() => setStage("dialog")}>
+            <Icon name="forum" /> {t.pass_dialog}
+          </button>
+        )}
+        {nextLesson ? (
+          <button className="btn primary" style={{ width: "100%" }} onClick={() => onOpen(nextLesson)}>
+            {lang === "en" ? "Lesson" : "Урок"} {nextLesson.id}: {nextLesson.title} →
+          </button>
+        ) : (
+          <button className="btn primary" style={{ width: "100%" }} onClick={onBack}>{t.to_topics}</button>
+        )}
+      </div>
     </>
   );
 }
@@ -725,93 +764,89 @@ function makeLessonQuestions(lesson) {
   });
 }
 
-// Реальный тест урока (курс sitkaz.kz): все вопросы сразу, без мгновенной проверки.
-// Ответил на все → «Завершить тест» → результат с разбором. Порог сдачи: >50% (3 из 5).
-function LessonTest({ lesson, onPassed, onExam, onBack, nextLesson, onOpen, dialog, dialogDone, onDialog }) {
+// Экзамен темы (курс sitkaz.kz): объединяет вопросы всех пройденных уроков темы
+// (по 5 на урок), все вопросы сразу, без мгновенной проверки. Порог сдачи: >50%.
+function ModuleExam({ module: m, questions, onRecord, onBack }) {
   const { lang, t } = useLang();
-  const test = TESTS[lesson.id];
-  const [answers, setAnswers] = useState(() => test.map(() => []));
+  const [answers, setAnswers] = useState(() => questions.map(() => []));
   const [done, setDone] = useState(false);
-  const need = Math.floor(test.length / 2) + 1;
+  const need = Math.floor(questions.length / 2) + 1;
 
   const isRight = (qi) => {
-    const c = [...test[qi][2]].sort((a, b) => a - b);
+    const c = [...questions[qi][2]].sort((a, b) => a - b);
     const p = [...answers[qi]].sort((a, b) => a - b);
     return c.length === p.length && c.every((v, k) => v === p[k]);
   };
-  const score = test.reduce((s, _, qi) => s + (isRight(qi) ? 1 : 0), 0);
+  const score = questions.reduce((s, _, qi) => s + (isRight(qi) ? 1 : 0), 0);
   const allAnswered = answers.every((a) => a.length > 0);
 
   const toggle = (qi, idx) => {
     if (done) return;
-    const multi = test[qi][2].length > 1;
+    const multi = questions[qi][2].length > 1;
     setAnswers((prev) => prev.map((a, k) =>
       k !== qi ? a : (multi ? (a.includes(idx) ? a.filter((x) => x !== idx) : [...a, idx]) : [idx])));
   };
   const submit = () => {
     const passed = score >= need;
     setDone(true);
-    if (passed) onPassed();
-    if (onExam) onExam(lesson.id, score, test.length, passed);
+    onRecord(m.id, score, questions.length, passed);
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  const restart = () => { setAnswers(test.map(() => [])); setDone(false); };
+  const restart = () => { setAnswers(questions.map(() => [])); setDone(false); };
 
   const passed = score >= need;
   return (
-    <div className="lesson-test">
-      {done && (
-        <div className={"exam-result " + (passed ? "ok" : "bad")}>
-          {passed && <Mascot className="mascot-big" src={MASCOT.leap} alt="Irbis" />}
-          <div className="score">{score} / {test.length}</div>
-          <p>{passed
-            ? (lang === "en" ? `Керемет! Test passed! +50 m of altitude.` : `Керемет! Тест сдан! +50 м высоты.`)
-            : t.exam_fail(need, test.length)}</p>
-        </div>
-      )}
-
-      {test.map((q, qi) => {
-        const [text, options, correct] = q;
-        const multi = correct.length > 1;
-        return (
-          <div key={qi} className="test-q">
-            <div className="test-q-title">
-              {qi + 1}. {text}
-              {multi && !done && <span className="test-multi"> · {t.test_multi}</span>}
-            </div>
-            {options.map((opt, idx) => {
-              const sel = answers[qi].includes(idx);
-              if (done) {
-                const cls = correct.includes(idx) ? "quiz-opt correct" : (sel ? "quiz-opt wrong" : "quiz-opt dim");
-                return <div key={idx} className={cls}>{opt}</div>;
-              }
-              return (
-                <button key={idx} className={"quiz-opt" + (sel ? " picked" : "")} onClick={() => toggle(qi, idx)}>
-                  {opt}
-                </button>
-              );
-            })}
+    <>
+      <button className="back" onClick={onBack}><Icon name="arrow_back" style={{ fontSize: 18 }} /> {t.to_topics}</button>
+      <div className="section-title">{t.module_exam} · {m.title}</div>
+      <div className="lesson-test">
+        {done && (
+          <div className={"exam-result " + (passed ? "ok" : "bad")}>
+            {passed && <Mascot className="mascot-big" src={MASCOT.leap} alt="Irbis" />}
+            <div className="score">{score} / {questions.length}</div>
+            <p>{passed
+              ? (lang === "en" ? `Керемет! Theme exam passed!` : `Керемет! Экзамен темы сдан!`)
+              : t.exam_fail(need, questions.length)}</p>
           </div>
-        );
-      })}
+        )}
 
-      {!done ? (
-        <button className="btn primary" style={{ width: "100%", marginTop: 4 }} disabled={!allAnswered} onClick={submit}>
-          {t.test_finish}
-        </button>
-      ) : (
-        <div className="flash-controls">
-          {!passed && <button className="btn ghost" onClick={onBack}>{t.to_phrases}</button>}
-          {!passed && <button className="btn primary" onClick={restart}>{t.once_more}</button>}
-          {passed && dialog && !dialogDone && (
-            <button className="btn ghost" onClick={onDialog}><Icon name="forum" /> {t.pass_dialog}</button>
-          )}
-          {passed && (nextLesson
-            ? <button className="btn primary" onClick={() => onOpen(nextLesson)}>{lang === "en" ? "Lesson" : "Урок"} {nextLesson.id} →</button>
-            : <button className="btn primary" onClick={onBack}>{t.to_topics}</button>)}
-        </div>
-      )}
-    </div>
+        {questions.map((q, qi) => {
+          const [text, options, correct] = q;
+          const multi = correct.length > 1;
+          return (
+            <div key={qi} className="test-q">
+              <div className="test-q-title">
+                {qi + 1}. {text}
+                {multi && !done && <span className="test-multi"> · {t.test_multi}</span>}
+              </div>
+              {options.map((opt, idx) => {
+                const sel = answers[qi].includes(idx);
+                if (done) {
+                  const cls = correct.includes(idx) ? "quiz-opt correct" : (sel ? "quiz-opt wrong" : "quiz-opt dim");
+                  return <div key={idx} className={cls}>{opt}</div>;
+                }
+                return (
+                  <button key={idx} className={"quiz-opt" + (sel ? " picked" : "")} onClick={() => toggle(qi, idx)}>
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+          );
+        })}
+
+        {!done ? (
+          <button className="btn primary" style={{ width: "100%", marginTop: 4 }} disabled={!allAnswered} onClick={submit}>
+            {t.test_finish}
+          </button>
+        ) : (
+          <div className="flash-controls">
+            {!passed && <button className="btn primary" onClick={restart}>{t.once_more}</button>}
+            <button className="btn primary" onClick={onBack}>{t.to_topics}</button>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -1356,7 +1391,7 @@ function Stats({ progress, doneCount, setGoal }) {
   const inWork = Object.keys(progress.srs).length;
   const lv = levelInfo(progress.xp || 0);
   const unit = lang === "en" ? "m" : "м";
-  const examsPassed = Object.values(progress.exams || {}).filter((e) => e.passed).length;
+  const examsPassed = modules.filter((mm) => (progress.exams || {})[mm.id] && progress.exams[mm.id].passed).length;
 
   return (
     <>
@@ -1400,7 +1435,7 @@ function Stats({ progress, doneCount, setGoal }) {
         <div className="stat"><div className="num">{pct}%</div><div className="lbl">{t.st_course}</div></div>
       </div>
       <div className="stat-row">
-        <div className="stat"><div className="num">{examsPassed}/{total}</div><div className="lbl">{t.st_exams}</div></div>
+        <div className="stat"><div className="num">{examsPassed}/{modules.length}</div><div className="lbl">{t.st_exams}</div></div>
         <div className="stat"><div className="num">{progress.quizzes || 0}</div><div className="lbl">{t.st_quizzes}</div></div>
         <div className="stat"><div className="num">{progress.bestScore || 0}/10</div><div className="lbl">{t.st_best}</div></div>
       </div>

@@ -532,6 +532,11 @@ body::before {
 .exam-result.bad .score { background: var(--coral); box-shadow: 0 16px 40px rgba(232, 136, 124, 0.35), 0 0 0 8px var(--bg), 0 0 0 10px var(--card-border); }
 .exam-result p { color: var(--muted); margin: 12px 0 4px; }
 
+/* ── Экзамен темы (кнопка на экране темы) ── */
+.module-exam-cta { margin-top: 18px; }
+.module-exam-cta .btn:disabled { opacity: .5; cursor: default; }
+.module-exam-hint { text-align: center; color: var(--muted); font-size: 12px; margin-top: 8px; }
+
 /* ── Нижняя навигация (плавающая пилюля) ── */
 .nav {
   position: fixed; bottom: 0; left: 0; right: 0;
