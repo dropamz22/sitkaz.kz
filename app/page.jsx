@@ -6,6 +6,7 @@ import { dialogForLesson } from "../data/dialogs";
 import { MASCOT } from "../data/mascot";
 import { IRBIS_CHEERS } from "../data/irbis";
 import { TESTS } from "../data/tests";
+import { EXAMPLES } from "../data/examples";
 import {
   phraseId, shuffle, gradeSrs, dueCount, learnedCount,
   buildDeck, registerActivity, displayStreak, doneToday,
@@ -649,7 +650,6 @@ function StudyTrainer({ lesson, onDone }) {
   const { lang, t } = useLang();
   const [showNote, setShowNote] = useState(!!lesson.note);
   const [i, setI] = useState(0);
-  const [revealed, setRevealed] = useState(false);
   const totalN = lesson.phrases.length;
   const p = lesson.phrases[i];
 
@@ -671,7 +671,7 @@ function StudyTrainer({ lesson, onDone }) {
 
   const next = () => {
     if (i + 1 >= totalN) { onDone(); return; }
-    setI(i + 1); setRevealed(false);
+    setI(i + 1);
   };
 
   return (
@@ -685,10 +685,12 @@ function StudyTrainer({ lesson, onDone }) {
         <div className={"type-badge type-" + (p.type || "phrase")}>{typeLabel(p.type, t)}</div>
         <div className="study-kk">{p.kk}</div>
         <div className="study-tr">[{p.tr}] <Icon name="volume_up" style={{ fontSize: 16 }} /></div>
-        {revealed ? (
-          <div className="study-ru">{P(p, lang)}</div>
-        ) : (
-          <button className="study-reveal" onClick={(e) => { e.stopPropagation(); setRevealed(true); }}>{t.show_translation}</button>
+        <div className="study-ru">{P(p, lang)}</div>
+        {EXAMPLES[p.kk] && (
+          <div className="study-example">
+            <span className="study-example-kk">{EXAMPLES[p.kk][0]}</span>
+            <span className="study-example-ru">{EXAMPLES[p.kk][1]}</span>
+          </div>
         )}
       </div>
 

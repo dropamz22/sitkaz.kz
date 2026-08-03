@@ -993,6 +993,16 @@ body::before {
 }
 .study-reveal:active { transform: scale(0.95); }
 
+/* ── Пример применения слова ── */
+.study-example {
+  display: flex; flex-direction: column; gap: 3px;
+  margin-top: 12px; padding: 10px 16px;
+  background: var(--ice); border-radius: 16px;
+  animation: cardIn .25s ease;
+}
+.study-example-kk { font-size: 15px; font-weight: 700; color: var(--heading); }
+.study-example-ru { font-size: 13px; color: var(--muted); }
+
 /* ── Аудирование: барс в наушниках ── */
 .listen-btn {
   position: relative;
