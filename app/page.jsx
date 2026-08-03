@@ -5,6 +5,7 @@ import { modules, lessons, lessonsByModule, allPhrases, openPhrases } from "../d
 import { dialogForLesson } from "../data/dialogs";
 import { MASCOT } from "../data/mascot";
 import { IRBIS_CHEERS } from "../data/irbis";
+import { TESTS } from "../data/tests";
 import {
   phraseId, shuffle, gradeSrs, dueCount, learnedCount,
   buildDeck, registerActivity, displayStreak, doneToday,
@@ -579,10 +580,11 @@ function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComple
   if (stage === "practice") {
     return (<>{header}<LessonPractice lesson={lesson} review={review} onDone={() => setStage("quiz")} /></>);
   }
+  const Exam = TESTS[lesson.id] ? LessonTest : LessonQuiz;
   return (
     <>
       {header}
-      <LessonQuiz lesson={lesson} review={review} onPassed={onPassed} onBack={() => setStage("practice")}
+      <Exam lesson={lesson} review={review} onPassed={onPassed} onBack={() => setStage("practice")}
         nextLesson={nextLesson} onOpen={onOpen} dialog={dialog} dialogDone={dialogDone} onDialog={() => setStage("dialog")} />
     </>
   );
@@ -711,6 +713,107 @@ function makeLessonQuestions(lesson) {
     const wrong = shuffle(allPhrases.filter((x) => x.kk !== w.kk)).slice(0, 3);
     return { type, word: w, options: shuffle([w, ...wrong]) };
   });
+}
+
+// Реальный тест урока (курс sitkaz.kz): 5 вопросов, одиночный/множественный выбор.
+// Порог сдачи — больше половины (как на сайте): 3 из 5.
+function LessonTest({ lesson, onPassed, onBack, nextLesson, onOpen, dialog, dialogDone, onDialog }) {
+  const { lang, t } = useLang();
+  const test = TESTS[lesson.id];
+  const [i, setI] = useState(0);
+  const [picked, setPicked] = useState([]);
+  const [revealed, setRevealed] = useState(false);
+  const [score, setScore] = useState(0);
+  const [done, setDone] = useState(false);
+
+  const [text, options, correct] = test[i];
+  const multi = correct.length > 1;
+  const need = Math.floor(test.length / 2) + 1;
+
+  const toggle = (idx) => {
+    if (revealed) return;
+    setPicked((p) => multi ? (p.includes(idx) ? p.filter((x) => x !== idx) : [...p, idx]) : [idx]);
+  };
+  const isRight = () => {
+    const c = [...correct].sort((a, b) => a - b), p = [...picked].sort((a, b) => a - b);
+    return c.length === p.length && c.every((v, k) => v === p[k]);
+  };
+  const check = () => { if (!picked.length) return; if (isRight()) setScore((s) => s + 1); setRevealed(true); };
+  const next = () => {
+    if (i + 1 >= test.length) { if (score >= need) onPassed(); setDone(true); return; }
+    setI(i + 1); setPicked([]); setRevealed(false);
+  };
+  const restart = () => { setI(0); setPicked([]); setRevealed(false); setScore(0); setDone(false); };
+
+  if (done) {
+    const passed = score >= need;
+    return (
+      <div className="result">
+        {passed && <Mascot className="mascot-big" src={MASCOT.leap} alt="Irbis" />}
+        <div className="score">{score} / {test.length}</div>
+        {passed ? (
+          <>
+            <p>{lang === "en"
+              ? `Керемет! Test "${lesson.en}" passed! +50 m of altitude.${nextLesson ? " The next camp is open." : " That was the summit of the course!"}`
+              : `Керемет! Тест «${lesson.ru}» сдан! +50 м высоты.${nextLesson ? " Следующий лагерь открыт." : " Это была вершина курса!"}`}</p>
+            {dialog && !dialogDone && (
+              <button className="btn ghost" style={{ width: "100%", marginBottom: 10 }} onClick={onDialog}>
+                <Icon name="forum" /> {t.pass_dialog}
+              </button>
+            )}
+            {nextLesson ? (
+              <button className="btn primary" style={{ width: "100%" }} onClick={() => onOpen(nextLesson)}>
+                {lang === "en" ? "Lesson" : "Урок"} {nextLesson.id}: {nextLesson.title} →
+              </button>
+            ) : (
+              <button className="btn primary" style={{ width: "100%" }} onClick={onBack}>{t.to_topics}</button>
+            )}
+          </>
+        ) : (
+          <>
+            <p>{t.exam_fail(need, test.length)}</p>
+            <div className="flash-controls">
+              <button className="btn ghost" onClick={onBack}>{t.to_phrases}</button>
+              <button className="btn primary" onClick={restart}>{t.once_more}</button>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="quiz-progress">{t.exam} · {t.question.toLowerCase()} {i + 1} {t.of} {test.length} · {t.correct}: {score}</div>
+      <div className="quiz-q" style={{ fontSize: 19 }}>{text}</div>
+      {multi && <div className="quiz-sub">{t.test_multi}</div>}
+      {options.map((opt, idx) => {
+        let cls = "quiz-opt";
+        if (revealed) {
+          if (correct.includes(idx)) cls += " correct";
+          else if (picked.includes(idx)) cls += " wrong";
+          else cls += " dim";
+        }
+        const sel = !revealed && picked.includes(idx);
+        return (
+          <button
+            key={idx}
+            className={cls}
+            disabled={revealed}
+            style={sel ? { borderColor: "var(--amber)", background: "var(--amber-soft)" } : undefined}
+            onClick={() => toggle(idx)}
+          >
+            {opt}
+          </button>
+        );
+      })}
+      {!revealed ? (
+        <button className="btn primary" style={{ width: "100%", marginTop: 8 }} disabled={!picked.length} onClick={check}>{t.test_check}</button>
+      ) : (
+        <button className="btn primary" style={{ width: "100%", marginTop: 8 }} onClick={next}>{t.cont}</button>
+      )}
+    </>
+  );
 }
 
 function LessonQuiz({ lesson, review, onPassed, onBack, nextLesson, onOpen, dialog, dialogDone, onDialog }) {
