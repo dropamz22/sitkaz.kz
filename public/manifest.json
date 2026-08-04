@@ -1,12 +1,14 @@
 {
   "name": "sitkaz.kz — Ситуативный казахский",
   "short_name": "sitkaz",
-  "description": "Курс разговорного казахского языка: 14 модулей, 41 урок.",
+  "description": "Курс разговорного казахского языка: 6 тем, 20 уроков.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f7f9ff",
   "theme_color": "#F2953C",
   "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
     { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }
   ]
 }

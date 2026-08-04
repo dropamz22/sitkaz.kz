@@ -18,6 +18,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ru">
       <head>
+        {/* Иконка на главный экран (iOS Safari / PWA) */}
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         {/* Telegram Mini App SDK — приложение работает и внутри Telegram, и в браузере */}
         <script src="https://telegram.org/js/telegram-web-app.js" async />
         {/* Шрифты дизайн-системы: Quicksand + Nunito Sans + Material Symbols */}
