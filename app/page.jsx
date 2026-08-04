@@ -1381,6 +1381,33 @@ function AssembleQ({ q, onAnswer }) {
 
 // ────────────────────────── Прогресс ──────────────────────────
 
+// Кнопка «Добавить на главный экран» — только в Telegram, где это поддерживается
+function AddToHomeButton() {
+  const { t } = useLang();
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const tg = typeof window !== "undefined" && window.Telegram && window.Telegram.WebApp;
+    if (!tg || typeof tg.addToHomeScreen !== "function") return;
+    try {
+      if (typeof tg.checkHomeScreenStatus === "function") {
+        tg.checkHomeScreenStatus((status) => {
+          const s = typeof status === "string" ? status : (status && status.status);
+          setShow(s !== "added" && s !== "unsupported");
+        });
+      } else {
+        setShow(true);
+      }
+    } catch { setShow(true); }
+  }, []);
+  if (!show) return null;
+  const add = () => { try { window.Telegram.WebApp.addToHomeScreen(); } catch {} };
+  return (
+    <button className="btn secondary" style={{ width: "100%", marginTop: 12 }} onClick={add}>
+      <Icon name="add_to_home_screen" style={{ fontSize: 18, verticalAlign: "-0.2em" }} /> {t.add_home}
+    </button>
+  );
+}
+
 function Stats({ progress, doneCount, setGoal }) {
   const { lang, t } = useLang();
   const total = lessons.length;
@@ -1462,6 +1489,8 @@ function Stats({ progress, doneCount, setGoal }) {
         <p>{t.keep_going_sub}</p>
         <div className="progress-bar"><div style={{ width: `${pct}%` }} /></div>
       </div>
+
+      <AddToHomeButton />
     </>
   );
 }
