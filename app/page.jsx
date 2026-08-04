@@ -269,7 +269,7 @@ export default function App() {
         </div>
 
         <div className="brand">
-          <div className="logo">Қ</div>
+          <img className="logo" src="/icon-192.png" alt="sitkaz" />
           <div>
             <h1>sitkaz.kz</h1>
             <span>{t.tagline}</span>
