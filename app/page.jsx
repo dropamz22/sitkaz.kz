@@ -6,7 +6,6 @@ import { dialogForLesson } from "../data/dialogs";
 import { MASCOT } from "../data/mascot";
 import { IRBIS_CHEERS } from "../data/irbis";
 import { TESTS } from "../data/tests";
-import { EXAMPLES } from "../data/examples";
 import {
   phraseId, shuffle, gradeSrs, dueCount, learnedCount,
   buildDeck, registerActivity, displayStreak, doneToday,
@@ -686,12 +685,6 @@ function StudyTrainer({ lesson, onDone }) {
         <div className="study-kk">{p.kk}</div>
         <div className="study-tr">[{p.tr}] <Icon name="volume_up" style={{ fontSize: 16 }} /></div>
         <div className="study-ru">{P(p, lang)}</div>
-        {EXAMPLES[p.kk] && (
-          <div className="study-example">
-            <span className="study-example-kk">{EXAMPLES[p.kk][0]}</span>
-            <span className="study-example-ru">{EXAMPLES[p.kk][1]}</span>
-          </div>
-        )}
       </div>
 
       <button className="btn primary" style={{ width: "100%", marginTop: 6 }} onClick={next}>
