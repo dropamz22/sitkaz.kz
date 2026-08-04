@@ -1385,6 +1385,7 @@ function AssembleQ({ q, onAnswer }) {
 function AddToHomeButton() {
   const { t } = useLang();
   const [show, setShow] = useState(false);
+  const [hint, setHint] = useState(false);
   useEffect(() => {
     const tg = typeof window !== "undefined" && window.Telegram && window.Telegram.WebApp;
     if (!tg || typeof tg.addToHomeScreen !== "function") return;
@@ -1400,11 +1401,18 @@ function AddToHomeButton() {
     } catch { setShow(true); }
   }, []);
   if (!show) return null;
-  const add = () => { try { window.Telegram.WebApp.addToHomeScreen(); } catch {} };
+  const add = () => {
+    try { window.Telegram.WebApp.addToHomeScreen(); } catch {}
+    // На iOS Telegram часто ничего не делает (известный баг) — показываем запасной путь
+    setHint(true);
+  };
   return (
-    <button className="btn secondary" style={{ width: "100%", marginTop: 12 }} onClick={add}>
-      <Icon name="add_to_home_screen" style={{ fontSize: 18, verticalAlign: "-0.2em" }} /> {t.add_home}
-    </button>
+    <>
+      <button className="btn secondary" style={{ width: "100%", marginTop: 12 }} onClick={add}>
+        <Icon name="add_to_home_screen" style={{ fontSize: 18, verticalAlign: "-0.2em" }} /> {t.add_home}
+      </button>
+      {hint && <p className="module-exam-hint">{t.add_home_hint}</p>}
+    </>
   );
 }
 
