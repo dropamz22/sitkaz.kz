@@ -8,7 +8,7 @@ import { IRBIS_CHEERS } from "../data/irbis";
 import { TESTS } from "../data/tests";
 import {
   phraseId, shuffle, gradeSrs, dueCount, learnedCount,
-  buildDeck, registerActivity, displayStreak, doneToday, freezeStatus,
+  buildDeck, registerActivity, displayStreak, doneToday, freezeStatus, bumpDay,
 } from "../lib/srs";
 import { XP, levelInfo, ACHIEVEMENTS } from "../lib/game";
 import { speak, loadVoice, setVoice as saveVoice } from "../lib/audio";
@@ -21,7 +21,7 @@ import {
 
 const EMPTY = {
   done: {}, quizzes: 0, bestScore: 0, dialogs: {}, xp: 0, achv: {},
-  srs: {}, streak: { count: 0, last: null, todayCount: 0, freeze: null }, goal: 10,
+  srs: {}, streak: { count: 0, last: null, todayCount: 0, freeze: null }, goal: 10, days: {},
   onboarded: false, reason: null, exams: {},
 };
 
@@ -180,6 +180,7 @@ export default function App() {
       xp: (prev.xp || 0) + (known ? XP.correct : 0),
       srs: gradeSrs(prev.srs, phraseId(phrase), known),
       streak: known ? registerActivity(prev.streak) : prev.streak,
+      days: known ? bumpDay(prev.days) : prev.days,
     }));
   };
 
@@ -192,7 +193,7 @@ export default function App() {
   const markDialogDone = (lessonId) => {
     update((prev) =>
       prev.dialogs && prev.dialogs[lessonId] ? prev
-        : { ...prev, dialogs: { ...(prev.dialogs || {}), [lessonId]: true }, xp: (prev.xp || 0) + XP.dialog, streak: registerActivity(prev.streak) });
+        : { ...prev, dialogs: { ...(prev.dialogs || {}), [lessonId]: true }, xp: (prev.xp || 0) + XP.dialog, streak: registerActivity(prev.streak), days: bumpDay(prev.days) });
   };
 
   // Итог экзамена урока: сохраняем лучший результат (для статистики в профиле)
@@ -1433,6 +1434,45 @@ function AddToHomeButton() {
   );
 }
 
+// Тепловая карта активности: последние недели по дням (в стиле GitHub).
+const CAL_WEEKS = 13;
+const calColor = (c) => c === 0 ? "#E8EEF4" : c < 3 ? "#F7C99A" : c < 8 ? "#F2953C" : "#D9781F";
+
+function ActivityCalendar({ days }) {
+  const { t } = useLang();
+  const today = new Date();
+  const dow = (today.getDay() + 6) % 7; // 0 = понедельник
+  const cols = [];
+  for (let col = 0; col < CAL_WEEKS; col++) {
+    const cells = [];
+    for (let row = 0; row < 7; row++) {
+      const offset = (col - (CAL_WEEKS - 1)) * 7 + (row - dow);
+      if (offset > 0) { cells.push(null); continue; } // будущие дни этой недели
+      const d = new Date(today.getTime() + offset * 86400000);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      cells.push({ key, c: (days && days[key]) || 0 });
+    }
+    cols.push(cells);
+  }
+  return (
+    <>
+      <div className="section-title" style={{ marginTop: 18 }}>{t.cal_title}</div>
+      <div style={{ display: "flex", gap: 3, justifyContent: "center", padding: "2px 0 6px" }}>
+        {cols.map((cells, ci) => (
+          <div key={ci} style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            {cells.map((cell, ri) => (
+              <div key={ri} title={cell ? `${cell.key}: ${cell.c}` : ""} style={{
+                width: 12, height: 12, borderRadius: 3,
+                background: cell ? calColor(cell.c) : "transparent",
+              }} />
+            ))}
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
 function Stats({ progress, doneCount, setGoal, voice, setVoice }) {
   const { lang, t } = useLang();
   const total = lessons.length;
@@ -1511,6 +1551,8 @@ function Stats({ progress, doneCount, setGoal, voice, setVoice }) {
         <div className="stat"><div className="num">{progress.quizzes || 0}</div><div className="lbl">{t.st_quizzes}</div></div>
         <div className="stat"><div className="num">{progress.bestScore || 0}/10</div><div className="lbl">{t.st_best}</div></div>
       </div>
+
+      <ActivityCalendar days={progress.days} />
 
       <div className="section-title" style={{ marginTop: 18 }}>{t.achievements} · {Object.keys(progress.achv || {}).length}/{ACHIEVEMENTS.length}</div>
       <div className="achv-grid">
