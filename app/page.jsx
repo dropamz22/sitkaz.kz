@@ -160,6 +160,13 @@ export default function App() {
     return () => window.removeEventListener("pagehide", flush);
   }, []);
 
+  // Service worker: офлайн-кэш озвучки и картинок (быстрее и работает без сети)
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    }
+  }, []);
+
   const setLang = (l) => { setLangState(l); saveLang(l); };
   const changeVoice = (v) => { saveVoice(v); setVoiceState(v); };
 
