@@ -8,7 +8,7 @@ import { IRBIS_CHEERS } from "../data/irbis";
 import { TESTS } from "../data/tests";
 import {
   phraseId, shuffle, gradeSrs, dueCount, learnedCount,
-  buildDeck, registerActivity, displayStreak, doneToday,
+  buildDeck, registerActivity, displayStreak, doneToday, freezeStatus,
 } from "../lib/srs";
 import { XP, levelInfo, ACHIEVEMENTS } from "../lib/game";
 import { speak, loadVoice, setVoice as saveVoice } from "../lib/audio";
@@ -21,7 +21,7 @@ import {
 
 const EMPTY = {
   done: {}, quizzes: 0, bestScore: 0, dialogs: {}, xp: 0, achv: {},
-  srs: {}, streak: { count: 0, last: null, todayCount: 0 }, goal: 10,
+  srs: {}, streak: { count: 0, last: null, todayCount: 0, freeze: null }, goal: 10,
   onboarded: false, reason: null, exams: {},
 };
 
@@ -1442,6 +1442,7 @@ function Stats({ progress, doneCount, setGoal, voice, setVoice }) {
   const goal = progress.goal || 10;
   const due = dueCount(progress.srs);
   const learned = learnedCount(progress.srs);
+  const fz = freezeStatus(progress.streak);
   const inWork = Object.keys(progress.srs).length;
   const lv = levelInfo(progress.xp || 0);
   const unit = lang === "en" ? "m" : "м";
@@ -1468,10 +1469,14 @@ function Stats({ progress, doneCount, setGoal, voice, setVoice }) {
         </p>
       </div>
 
-      <div className="stat-row" style={{ marginBottom: 12 }}>
+      <div className="stat-row" style={{ marginBottom: 4 }}>
         <div className="stat"><div className="num"><Icon name="local_fire_department" filled style={{ fontSize: 20, color: "var(--amber)" }} /> {streak}</div><div className="lbl">{daysWord(streak, t, lang)} {t.st_days}</div></div>
         <div className="stat"><div className="num">{today}/{goal}</div><div className="lbl">{t.st_today}</div></div>
       </div>
+      <p style={{ textAlign: "center", fontSize: 12, color: "var(--muted)", marginBottom: 12, opacity: fz.ready ? 1 : 0.7 }}>
+        <Icon name="ac_unit" filled={fz.ready} style={{ fontSize: 14, verticalAlign: "-0.2em", color: fz.ready ? "var(--amber)" : "var(--faint)" }} />{" "}
+        {fz.ready ? t.freeze_ready : t.freeze_used}
+      </p>
 
       <div className="goal-picker">
         <span className="goal-picker-label">{t.goal_change}</span>
