@@ -24,6 +24,14 @@
   --coral: #E8887C;
   --coral-bg: #FCE8E6;
 
+  /* Поверхности, которые раньше были захардкожены — чтобы темнели вместе с темой */
+  --hero-bg: rgba(253, 255, 255, 0.85);
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --nav-border: rgba(234, 242, 249, 0.9);
+  --chip-bg: #d0e2f3;
+  --soft: rgba(253, 255, 255, 0.7);
+  --avatar-bg: var(--card);
+
   --radius: 32px;
   --pill: 999px;
   --shadow: 0 20px 40px rgba(51, 71, 92, 0.06);
@@ -54,6 +62,12 @@ html[data-theme="dark"] {
 
   --amber-soft: #3a2a1c;
   --coral-bg: #3a2320;
+  --hero-bg: rgba(24, 34, 46, 0.85);
+  --nav-bg: rgba(18, 26, 36, 0.95);
+  --nav-border: #24313f;
+  --chip-bg: #24313f;
+  --soft: rgba(24, 34, 46, 0.6);
+  --avatar-bg: #e9eef5;
 
   --shadow: 0 20px 40px rgba(0, 0, 0, 0.40);
   --shadow-big: 0 30px 60px -12px rgba(0, 0, 0, 0.55);
@@ -190,7 +204,7 @@ html[data-theme="dark"] body::before { background: rgba(38, 53, 68, 0.30); }
 /* ── Hero-камушек ── */
 .hero {
   position: relative;
-  background: rgba(253, 255, 255, 0.85);
+  background: var(--hero-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 2px solid var(--card-border);
@@ -224,7 +238,7 @@ html[data-theme="dark"] body::before { background: rgba(38, 53, 68, 0.30); }
   width: 64px; height: 64px;
   border-radius: 50%;
   object-fit: contain;
-  background: var(--card);
+  background: var(--avatar-bg);
   border: 2px solid var(--amber-soft);
   padding: 3px;
   animation: floatSoft 4s ease-in-out infinite;
@@ -596,10 +610,10 @@ html[data-theme="dark"] body::before { background: rgba(38, 53, 68, 0.30); }
 /* ── Нижняя навигация (плавающая пилюля) ── */
 .nav {
   position: fixed; bottom: 0; left: 0; right: 0;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--nav-bg);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-top: 2px solid rgba(234, 242, 249, 0.9);
+  border-top: 2px solid var(--nav-border);
   border-radius: 28px 28px 0 0;
   box-shadow: 0 -8px 32px rgba(51, 71, 92, 0.1);
   display: flex; justify-content: space-around; align-items: center;
@@ -679,7 +693,7 @@ html[data-theme="dark"] body::before { background: rgba(38, 53, 68, 0.30); }
   width: 96px; height: 96px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid var(--card);
+  border: 4px solid var(--avatar-bg);
   box-shadow: var(--shadow);
 }
 .level-ring .lvl-badge {
@@ -813,12 +827,12 @@ html[data-theme="dark"] body::before { background: rgba(38, 53, 68, 0.30); }
 /* ── Стрик, цель, повторения ── */
 .chips-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; position: relative; }
 .chip {
-  background: #d0e2f3;
+  background: var(--chip-bg);
   border: none;
-  border-radius: var(--pill); padding: 8px 14px; font-size: 13px; font-weight: 600; color: #536573;
+  border-radius: var(--pill); padding: 8px 14px; font-size: 13px; font-weight: 600; color: var(--muted);
   white-space: nowrap;
 }
-.chip b { color: #061d30; font-weight: 700; }
+.chip b { color: var(--heading); font-weight: 700; }
 
 /* Стрик — самый «горячий» показатель, выделяем отдельно от нейтральных чипов */
 .chip-streak {
@@ -1064,7 +1078,7 @@ html[data-theme="dark"] body::before { background: rgba(38, 53, 68, 0.30); }
   position: relative;
   display: grid; place-items: center; margin: 18px auto 8px;
   width: 160px; height: 160px; border-radius: 50%;
-  background: var(--card);
+  background: var(--avatar-bg);
   border: 4px solid var(--ice);
   cursor: pointer;
   box-shadow: var(--shadow-big);
@@ -1104,7 +1118,7 @@ html[data-theme="dark"] body::before { background: rgba(38, 53, 68, 0.30); }
 /* ── «Собери фразу» ── */
 .assemble-line {
   min-height: 64px;
-  background: rgba(253, 255, 255, 0.7);
+  background: var(--soft);
   border: 2px dashed var(--faint);
   border-radius: 28px; padding: 14px; display: flex; flex-wrap: wrap; gap: 8px;
   margin: 16px 0 14px; justify-content: center;
