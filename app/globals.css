@@ -36,6 +36,48 @@
   --tg-top: 0px;
 }
 
+/* ── Тёмная тема ──
+   Переопределяем только палитру — компоненты используют переменные, поэтому
+   темнеют сами. Янтарь и коралл (акценты) оставляем яркими. */
+html[data-theme="dark"] {
+  --bg: #0f1720;
+  --card: #18222e;
+  --card-border: #24313f;
+  --ice: #1e2a38;
+  --ice-deep: #263544;
+  --sky: #2d4155;
+
+  --text: #cdd8e3;
+  --heading: #eaf2fb;
+  --muted: #9db0c2;
+  --faint: #6b7f92;
+
+  --amber-soft: #3a2a1c;
+  --coral-bg: #3a2320;
+
+  --shadow: 0 20px 40px rgba(0, 0, 0, 0.40);
+  --shadow-big: 0 30px 60px -12px rgba(0, 0, 0, 0.55);
+}
+/* «Авто» — тёмная палитра только когда система в тёмном режиме */
+@media (prefers-color-scheme: dark) {
+  html[data-theme="auto"] {
+    --bg: #0f1720;
+    --card: #18222e;
+    --card-border: #24313f;
+    --ice: #1e2a38;
+    --ice-deep: #263544;
+    --sky: #2d4155;
+    --text: #cdd8e3;
+    --heading: #eaf2fb;
+    --muted: #9db0c2;
+    --faint: #6b7f92;
+    --amber-soft: #3a2a1c;
+    --coral-bg: #3a2320;
+    --shadow: 0 20px 40px rgba(0, 0, 0, 0.40);
+    --shadow-big: 0 30px 60px -12px rgba(0, 0, 0, 0.55);
+  }
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
 html, body {
@@ -62,6 +104,22 @@ body::before {
   filter: blur(12px);
   pointer-events: none;
   z-index: 0;
+}
+
+/* Тёмная тема: гасим светлые радиальные блики и осветляем «холмы» под фон */
+html[data-theme="dark"], html[data-theme="dark"] body {
+  background-image:
+    radial-gradient(at 0% 0%, #16212e 0%, transparent 50%),
+    radial-gradient(at 100% 0%, #131d29 0%, transparent 50%);
+}
+html[data-theme="dark"] body::before { background: rgba(38, 53, 68, 0.30); }
+@media (prefers-color-scheme: dark) {
+  html[data-theme="auto"], html[data-theme="auto"] body {
+    background-image:
+      radial-gradient(at 0% 0%, #16212e 0%, transparent 50%),
+      radial-gradient(at 100% 0%, #131d29 0%, transparent 50%);
+  }
+  html[data-theme="auto"] body::before { background: rgba(38, 53, 68, 0.30); }
 }
 
 .app {
@@ -166,7 +224,7 @@ body::before {
   width: 64px; height: 64px;
   border-radius: 50%;
   object-fit: contain;
-  background: #fff;
+  background: var(--card);
   border: 2px solid var(--amber-soft);
   padding: 3px;
   animation: floatSoft 4s ease-in-out infinite;
@@ -190,7 +248,7 @@ body::before {
   margin-right: 12px;
   transform: translateY(-50%);
   width: max-content; max-width: 210px;
-  background: #fff;
+  background: var(--card);
   border: 2px solid var(--amber-soft);
   border-radius: 16px;
   padding: 8px 12px;
@@ -438,7 +496,7 @@ body::before {
 }
 .q-type {
   text-align: center; color: var(--text); font-size: 14px; font-weight: 600;
-  background: var(--ice-deep); border: 2px solid #fff;
+  background: var(--ice-deep); border: 2px solid var(--card);
   border-radius: var(--pill); padding: 8px 20px;
   width: fit-content; margin: 10px auto 6px;
   box-shadow: var(--shadow);
@@ -488,7 +546,7 @@ body::before {
 .answer-fb.ok .answer-fb-head { color: #a05a12; }
 .answer-fb.bad .answer-fb-head { color: #b5432e; }
 .answer-fb-correct {
-  background: #fff;
+  background: var(--card);
   border-radius: 16px;
   padding: 12px 14px;
   margin-bottom: 12px;
@@ -621,7 +679,7 @@ body::before {
   width: 96px; height: 96px;
   border-radius: 50%;
   object-fit: cover;
-  border: 4px solid #fff;
+  border: 4px solid var(--card);
   box-shadow: var(--shadow);
 }
 .level-ring .lvl-badge {
@@ -710,7 +768,7 @@ body::before {
 .module-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .m-stat {
   display: inline-flex; align-items: center; gap: 6px;
-  background: color-mix(in srgb, var(--m-color, var(--amber)) 13%, #fff);
+  background: color-mix(in srgb, var(--m-color, var(--amber)) 13%, var(--card));
   color: #3f5162;
   border-radius: var(--pill);
   padding: 7px 13px;
@@ -879,7 +937,7 @@ body::before {
   transition: background .2s ease, color .2s ease;
 }
 .mode-switch button.on {
-  background: #fff;
+  background: var(--card);
   color: var(--amber);
   box-shadow: var(--shadow);
 }
@@ -1006,7 +1064,7 @@ body::before {
   position: relative;
   display: grid; place-items: center; margin: 18px auto 8px;
   width: 160px; height: 160px; border-radius: 50%;
-  background: #fff;
+  background: var(--card);
   border: 4px solid var(--ice);
   cursor: pointer;
   box-shadow: var(--shadow-big);
@@ -1092,7 +1150,7 @@ body::before {
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--ice-deep);
-  background: #fff;
+  background: var(--card);
   flex-shrink: 0;
 }
 .bubble {
@@ -1123,7 +1181,7 @@ body::before {
   pointer-events: none;
 }
 .toast {
-  background: #fff;
+  background: var(--card);
   border: 2px solid var(--amber-soft);
   color: var(--heading); border-radius: var(--pill); padding: 11px 20px;
   font-size: 14px; font-weight: 700;

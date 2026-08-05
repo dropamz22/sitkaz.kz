@@ -18,6 +18,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ru">
       <head>
+        {/* Тема выставляется до первой отрисовки — без мигания светлым */}
+        <script dangerouslySetInnerHTML={{ __html: "try{var t=localStorage.getItem('sitkaz_theme');if(t!=='dark'&&t!=='auto')t='light';document.documentElement.setAttribute('data-theme',t);}catch(e){}" }} />
         {/* Иконка на главный экран (iOS Safari / PWA) */}
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         {/* Telegram Mini App SDK — приложение работает и внутри Telegram, и в браузере */}

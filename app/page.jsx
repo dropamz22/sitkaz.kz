@@ -77,6 +77,7 @@ export default function App() {
   const [progress, setProgress] = useState(EMPTY);
   const [lang, setLangState] = useState("ru");
   const [voice, setVoiceState] = useState("aigul");
+  const [theme, setThemeState] = useState("light");
   const [showLocalNotice, setShowLocalNotice] = useState(false);
   const [tgUser, setTgUser] = useState(null);
   const [hydrated, setHydrated] = useState(false);
@@ -87,6 +88,9 @@ export default function App() {
     let cancelled = false;
     let lng = loadLang();
     setVoiceState(loadVoice());
+    if (typeof document !== "undefined") {
+      setThemeState(document.documentElement.getAttribute("data-theme") || "light");
+    }
     const tg = typeof window !== "undefined" && window.Telegram && window.Telegram.WebApp;
     if (tg) {
       try {
@@ -184,6 +188,14 @@ export default function App() {
 
   const setLang = (l) => { setLangState(l); saveLang(l); };
   const changeVoice = (v) => { saveVoice(v); setVoiceState(v); };
+  // Тема: перебор Светлая → Тёмная → Авто
+  const THEME_ORDER = ["light", "dark", "auto"];
+  const cycleTheme = () => {
+    const next = THEME_ORDER[(THEME_ORDER.indexOf(theme) + 1) % THEME_ORDER.length];
+    setThemeState(next);
+    try { localStorage.setItem("sitkaz_theme", next); } catch {}
+    if (typeof document !== "undefined") document.documentElement.setAttribute("data-theme", next);
+  };
 
   const update = (fn) => {
     setProgress((prev) => {
@@ -324,10 +336,21 @@ export default function App() {
             <button className={lang === "ru" ? "on" : ""} onClick={() => setLang("ru")}>RU</button>
             <button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>EN</button>
           </div>
+          <button
+            className="theme-toggle"
+            onClick={cycleTheme}
+            aria-label={lang === "en" ? "Theme" : "Тема"}
+            title={theme === "dark" ? (lang === "en" ? "Dark" : "Тёмная") : theme === "auto" ? (lang === "en" ? "Auto" : "Авто") : (lang === "en" ? "Light" : "Светлая")}
+            style={{ marginLeft: 6, border: "none", background: "var(--ice)", color: "var(--muted)", borderRadius: "var(--pill)", width: 34, height: 34, display: "grid", placeItems: "center", cursor: "pointer", flexShrink: 0 }}
+          >
+            <span className="msi" style={{ fontSize: 18 }}>
+              {theme === "dark" ? "dark_mode" : theme === "auto" ? "brightness_auto" : "light_mode"}
+            </span>
+          </button>
         </div>
 
         {showLocalNotice && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#EAF2F9", color: "var(--muted)", borderRadius: 12, padding: "10px 12px", marginBottom: 12, fontSize: 13, lineHeight: 1.35 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--ice)", color: "var(--muted)", borderRadius: 12, padding: "10px 12px", marginBottom: 12, fontSize: 13, lineHeight: 1.35 }}>
             <Icon name="info" filled style={{ fontSize: 18, color: "var(--amber)", flexShrink: 0 }} />
             <span style={{ flex: 1 }}>{t.local_notice}</span>
             <button onClick={dismissLocalNotice} aria-label="OK" style={{ background: "none", border: 0, cursor: "pointer", color: "var(--muted)", display: "flex", flexShrink: 0 }}>
@@ -426,7 +449,7 @@ function Course({ progress, doneCount, onOpenModule, onOpen, goPractice }) {
           </div>
           <div className="goal-ring">
             <svg width="96" height="96" viewBox="0 0 96 96">
-              <circle cx="48" cy="48" r="42" fill="transparent" stroke="#EAF2F9" strokeWidth="6" />
+              <circle cx="48" cy="48" r="42" fill="transparent" stroke="var(--ice)" strokeWidth="6" />
               <circle cx="48" cy="48" r="42" fill="transparent" stroke="#F2953C" strokeWidth="6" strokeLinecap="round"
                 strokeDasharray="264" strokeDashoffset={264 - 264 * Math.min(1, today / goal)}
                 style={{ transition: "stroke-dashoffset .6s ease" }} />
@@ -580,7 +603,7 @@ function ModuleView({ module: m, progress, onOpen, onBack, onExam }) {
               <div className="lesson-row">
                 <div
                   className={"lesson-icon" + (progress.done[l.id] ? " is-done" : "")}
-                  style={unlocked ? { color: m.color, background: `color-mix(in srgb, ${m.color} 14%, #fff)` } : undefined}
+                  style={unlocked ? { color: m.color, background: `color-mix(in srgb, ${m.color} 14%, var(--card))` } : undefined}
                 >
                   {progress.done[l.id]
                     ? <Icon name="check" filled />
@@ -1474,7 +1497,7 @@ function AddToHomeButton() {
 
 // Тепловая карта активности: последние недели по дням (в стиле GitHub).
 const CAL_WEEKS = 13;
-const calColor = (c) => c === 0 ? "#E8EEF4" : c < 3 ? "#F7C99A" : c < 8 ? "#F2953C" : "#D9781F";
+const calColor = (c) => c === 0 ? "var(--ice)" : c < 3 ? "#F7C99A" : c < 8 ? "#F2953C" : "#D9781F";
 
 function ActivityCalendar({ days }) {
   const { t } = useLang();
@@ -1534,7 +1557,7 @@ function Stats({ progress, doneCount, setGoal, voice, setVoice, resetProgress })
       <div className="level-card">
         <div className="level-ring">
           <svg width="128" height="128" viewBox="0 0 128 128">
-            <circle cx="64" cy="64" r="58" fill="transparent" stroke="#D9EAFF" strokeWidth="6" />
+            <circle cx="64" cy="64" r="58" fill="transparent" stroke="var(--ice)" strokeWidth="6" />
             <circle cx="64" cy="64" r="58" fill="transparent" stroke="#F2953C" strokeWidth="6" strokeLinecap="round"
               strokeDasharray="364" strokeDashoffset={364 - 364 * (lv.pct / 100)} style={{ transition: "stroke-dashoffset .8s ease" }} />
           </svg>
