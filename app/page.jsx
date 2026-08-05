@@ -16,7 +16,7 @@ import { loadLang, saveLang, dict, tr as trBase } from "../lib/i18n";
 import Onboarding, { REASONS } from "./onboarding";
 import {
   loadProgress as loadStored, saveProgress as saveStored,
-  flushProgress, mergeProgress, cloudAvailable,
+  flushProgress, mergeProgress, cloudAvailable, loadLocalFast,
 } from "../lib/storage";
 
 const EMPTY = {
@@ -107,29 +107,44 @@ export default function App() {
       if (u) setTgUser(u);
     }
 
-    // Прогресс приезжает из облака Telegram (или из localStorage вне Telegram)
-    (async () => {
-      const { progress: loaded } = await loadStored(EMPTY);
-      // Прогресс старого формата подмешиваем, чтобы ничего не потерялось
-      const withLegacy = mergeProgress(loaded, legacyProgress());
-      const final = { ...EMPTY, ...withLegacy, streak: { ...EMPTY.streak, ...(withLegacy.streak || {}) } };
+    // Приводим прогресс к полной форме и решаем судьбу экрана знакомства
+    const shape = (p) => {
+      const final = { ...EMPTY, ...p, streak: { ...EMPTY.streak, ...(p.streak || {}) } };
       // Кто уже учится — знакомство не показываем: отметки о нём нет только
       // потому, что человек начал заниматься до появления этого экрана.
       if (!final.onboarded && (Object.keys(final.done).length || Object.keys(final.srs).length || final.xp)) {
         final.onboarded = true;
       }
-      if (cancelled) return;
+      return final;
+    };
 
-      const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
-      // Язык интерфейса берём из Telegram, но только при самом первом запуске —
-      // выбор пользователя в переключателе всегда важнее.
-      if (u && !final.onboarded && !localStorage.getItem("sitkaz_lang") && u.language_code) {
-        lng = u.language_code.startsWith("en") ? "en" : "ru";
+    // 1) Мгновенный старт: рисуем интерфейс сразу из локального прогресса,
+    //    не дожидаясь сети. Возвращающийся пользователь видит всё без заминки.
+    const localMerged = mergeProgress(loadLocalFast(EMPTY), legacyProgress());
+    const firstUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+    // Язык интерфейса берём из Telegram, но только при самом первом запуске —
+    // выбор пользователя в переключателе всегда важнее.
+    if (firstUser && !(localMerged && localMerged.onboarded)
+        && !localStorage.getItem("sitkaz_lang") && firstUser.language_code) {
+      lng = firstUser.language_code.startsWith("en") ? "en" : "ru";
+    }
+    const localFinal = shape(localMerged || EMPTY);
+    progressRef.current = localFinal;
+    setProgress(localFinal);
+    setLangState(lng);
+    setHydrated(true);
+
+    // 2) В фоне подтягиваем облако Telegram / сервер и мягко доливаем —
+    //    не теряя то, что человек успел наиграть за это время.
+    (async () => {
+      const { progress: loaded } = await loadStored(EMPTY);
+      if (cancelled) return;
+      const merged = mergeProgress(mergeProgress(loaded, legacyProgress()), progressRef.current);
+      const final = shape(merged);
+      if (JSON.stringify(final) !== JSON.stringify(progressRef.current)) {
+        progressRef.current = final;
+        setProgress(final);
       }
-      progressRef.current = final;
-      setProgress(final);
-      setLangState(lng);
-      setHydrated(true);
     })();
 
     return () => { cancelled = true; };
