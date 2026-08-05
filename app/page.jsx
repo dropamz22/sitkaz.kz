@@ -11,7 +11,7 @@ import {
   buildDeck, registerActivity, displayStreak, doneToday,
 } from "../lib/srs";
 import { XP, levelInfo, ACHIEVEMENTS } from "../lib/game";
-import { speak } from "../lib/audio";
+import { speak, loadVoice, setVoice as saveVoice } from "../lib/audio";
 import { loadLang, saveLang, dict, tr as trBase } from "../lib/i18n";
 import Onboarding, { REASONS } from "./onboarding";
 import {
@@ -76,6 +76,7 @@ export default function App() {
   const [activeModule, setActiveModule] = useState(null);
   const [progress, setProgress] = useState(EMPTY);
   const [lang, setLangState] = useState("ru");
+  const [voice, setVoiceState] = useState("aigul");
   const [tgUser, setTgUser] = useState(null);
   const [hydrated, setHydrated] = useState(false);
   const progressRef = useRef(EMPTY); // актуальный прогресс для записи при закрытии
@@ -84,6 +85,7 @@ export default function App() {
   useEffect(() => {
     let cancelled = false;
     let lng = loadLang();
+    setVoiceState(loadVoice());
     const tg = typeof window !== "undefined" && window.Telegram && window.Telegram.WebApp;
     if (tg) {
       try {
@@ -159,6 +161,7 @@ export default function App() {
   }, []);
 
   const setLang = (l) => { setLangState(l); saveLang(l); };
+  const changeVoice = (v) => { saveVoice(v); setVoiceState(v); };
 
   const update = (fn) => {
     setProgress((prev) => {
@@ -315,7 +318,8 @@ export default function App() {
         )}
         {tab === "practice" && <PracticeHub progress={progress} review={review} update={update} />}
         {tab === "stats" && (
-          <Stats progress={progress} doneCount={doneCountN} setGoal={(g) => update((p) => ({ ...p, goal: g }))} />
+          <Stats progress={progress} doneCount={doneCountN} setGoal={(g) => update((p) => ({ ...p, goal: g }))}
+            voice={voice} setVoice={changeVoice} />
         )}
 
         <nav className="nav">
@@ -1424,7 +1428,7 @@ function AddToHomeButton() {
   );
 }
 
-function Stats({ progress, doneCount, setGoal }) {
+function Stats({ progress, doneCount, setGoal, voice, setVoice }) {
   const { lang, t } = useLang();
   const total = lessons.length;
   const pct = Math.round((doneCount / total) * 100);
@@ -1468,6 +1472,19 @@ function Stats({ progress, doneCount, setGoal }) {
         <span className="goal-picker-label">{t.goal_change}</span>
         {[5, 10, 20].map((g) => (
           <button key={g} className={goal === g ? "on" : ""} onClick={() => setGoal(g)}>{g}</button>
+        ))}
+      </div>
+
+      <div className="goal-picker">
+        <span className="goal-picker-label">{t.voice_label}</span>
+        {[["aigul", t.voice_aigul], ["daulet", t.voice_daulet]].map(([v, label]) => (
+          <button
+            key={v}
+            className={voice === v ? "on" : ""}
+            onClick={() => { setVoice(v); if (allPhrases[0]) speak(allPhrases[0].kk); }}
+          >
+            {label}
+          </button>
         ))}
       </div>
       <div className="stat-row" style={{ marginBottom: 12 }}>

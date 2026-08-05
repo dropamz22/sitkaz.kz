@@ -99,7 +99,10 @@ async function main() {
   const list = [...phrases].filter(Boolean);
   console.log(`Фраз к озвучке: ${list.length}. Голос: ${VOICE}, регион: ${REGION}\n`);
 
-  const outDir = path.join(ROOT, "public/audio");
+  // Daulet кладём в подпапку public/audio/daulet/ с теми же именами файлов.
+  // Aigul (по умолчанию) — в public/audio/. Карта AUDIO общая для обоих голосов.
+  const isDaulet = /daulet/i.test(VOICE);
+  const outDir = isDaulet ? path.join(ROOT, "public/audio/daulet") : path.join(ROOT, "public/audio");
   fs.mkdirSync(outDir, { recursive: true });
 
   const manifest = {};
@@ -124,13 +127,17 @@ async function main() {
     }
   }
 
-  const js =
-    `// Автогенерация scripts/gen-audio-azure.mjs — не редактировать вручную.\n` +
-    `export const AUDIO = ${JSON.stringify(manifest, null, 2)};\n`;
-  fs.writeFileSync(path.join(ROOT, "data/audioManifest.js"), js);
+  // Карту имён пишем только для основного голоса (Aigul): у Daulet имена те же.
+  if (!isDaulet) {
+    const js =
+      `// Автогенерация scripts/gen-audio-azure.mjs — не редактировать вручную.\n` +
+      `export const AUDIO = ${JSON.stringify(manifest, null, 2)};\n`;
+    fs.writeFileSync(path.join(ROOT, "data/audioManifest.js"), js);
+  }
 
   console.log(`\n\nГотово: ${done} озвучено (${skipped} уже были), ${failed} с ошибкой.`);
-  console.log(`Файлы: public/audio/  ·  карта: data/audioManifest.js`);
+  console.log(`Файлы: ${isDaulet ? "public/audio/daulet/" : "public/audio/"}` +
+    `${isDaulet ? "  (карта не менялась — имена общие с Aigul)" : "  ·  карта: data/audioManifest.js"}`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
