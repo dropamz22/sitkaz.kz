@@ -611,6 +611,9 @@ function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComple
   const dialog = dialogForLesson(lesson.id);
   const nextLesson = lessons.find((l) => l.id === lesson.id + 1) || null;
   const [stage, setStage] = useState("study");
+  // Был ли урок пройден ДО этого захода: если да — высота больше не начисляется,
+  // значит и обещать «+50 м» на экране результата не нужно.
+  const [wasDone] = useState(done);
 
   const header = (
     <>
@@ -640,7 +643,9 @@ function LessonView({ lesson, done, dialogDone, review, onPassed, onDialogComple
       <div className="result">
         <Mascot className="mascot-big" src={MASCOT.leap} alt="Irbis" />
         <h2 style={{ color: "var(--heading)", margin: "10px 0 6px" }}>{t.lesson_done_h}</h2>
-        <p>{lang === "en" ? "+50 m of altitude. The theme exam awaits on the topic screen." : "+50 м высоты. Экзамен темы ждёт на экране темы."}</p>
+        <p>{wasDone
+          ? (lang === "en" ? "Lesson reviewed. The theme exam awaits on the topic screen." : "Урок повторён. Экзамен темы ждёт на экране темы.")
+          : (lang === "en" ? "+50 m of altitude. The theme exam awaits on the topic screen." : "+50 м высоты. Экзамен темы ждёт на экране темы.")}</p>
         {dialog && !dialogDone && (
           <button className="btn ghost" style={{ width: "100%", marginBottom: 10 }} onClick={() => setStage("dialog")}>
             <Icon name="forum" /> {t.pass_dialog}
