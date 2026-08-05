@@ -16,7 +16,7 @@ import { loadLang, saveLang, dict, tr as trBase } from "../lib/i18n";
 import Onboarding, { REASONS } from "./onboarding";
 import {
   loadProgress as loadStored, saveProgress as saveStored,
-  flushProgress, mergeProgress, cloudAvailable, loadLocalFast,
+  flushProgress, mergeProgress, cloudAvailable, loadLocalFast, serverAvailable,
 } from "../lib/storage";
 
 const EMPTY = {
@@ -77,6 +77,7 @@ export default function App() {
   const [progress, setProgress] = useState(EMPTY);
   const [lang, setLangState] = useState("ru");
   const [voice, setVoiceState] = useState("aigul");
+  const [showLocalNotice, setShowLocalNotice] = useState(false);
   const [tgUser, setTgUser] = useState(null);
   const [hydrated, setHydrated] = useState(false);
   const progressRef = useRef(EMPTY); // актуальный прогресс для записи при закрытии
@@ -166,6 +167,20 @@ export default function App() {
       navigator.serviceWorker.register("/sw.js").catch(() => {});
     }
   }, []);
+
+  // Вне Telegram (нет ни сервера, ни облака) прогресс живёт только в этом
+  // браузере — один раз мягко предупреждаем об этом.
+  useEffect(() => {
+    try {
+      if (!serverAvailable() && !cloudAvailable() && !localStorage.getItem("sitkaz_local_notice")) {
+        setShowLocalNotice(true);
+      }
+    } catch {}
+  }, []);
+  const dismissLocalNotice = () => {
+    try { localStorage.setItem("sitkaz_local_notice", "1"); } catch {}
+    setShowLocalNotice(false);
+  };
 
   const setLang = (l) => { setLangState(l); saveLang(l); };
   const changeVoice = (v) => { saveVoice(v); setVoiceState(v); };
@@ -304,6 +319,16 @@ export default function App() {
             <button className={lang === "en" ? "on" : ""} onClick={() => setLang("en")}>EN</button>
           </div>
         </div>
+
+        {showLocalNotice && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#EAF2F9", color: "var(--muted)", borderRadius: 12, padding: "10px 12px", marginBottom: 12, fontSize: 13, lineHeight: 1.35 }}>
+            <Icon name="info" filled style={{ fontSize: 18, color: "var(--amber)", flexShrink: 0 }} />
+            <span style={{ flex: 1 }}>{t.local_notice}</span>
+            <button onClick={dismissLocalNotice} aria-label="OK" style={{ background: "none", border: 0, cursor: "pointer", color: "var(--muted)", display: "flex", flexShrink: 0 }}>
+              <Icon name="close" style={{ fontSize: 18 }} />
+            </button>
+          </div>
+        )}
 
         {tab === "course" && (
           <Course progress={progress} doneCount={doneCountN} onOpenModule={openModule} onOpen={openLesson} goPractice={() => setTab("practice")} />
