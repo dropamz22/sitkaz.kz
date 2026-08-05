@@ -76,18 +76,7 @@ export async function GET(request) {
 
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) return json({ ok: false, reason: "bot_not_configured" }, 503);
-  if (!dbConfigured()) {
-    // Диагностика: показываем только наличие переменных (true/false), без значений.
-    return json({
-      ok: false,
-      reason: "db_not_configured",
-      env: {
-        SUPABASE_URL: !!process.env.SUPABASE_URL,
-        SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-        CRON_SECRET: !!process.env.CRON_SECRET,
-      },
-    }, 503);
-  }
+  if (!dbConfigured()) return json({ ok: false, reason: "db_not_configured" }, 503);
 
   const url = process.env.APP_URL || "https://sitkaz.kz";
   const now = Date.now();
