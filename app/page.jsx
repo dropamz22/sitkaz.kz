@@ -273,6 +273,12 @@ export default function App() {
     update((p) => ({ ...p, onboarded: true, reason, goal }));
   };
 
+  // Сброс прогресса обучения. Человека не выкидываем на знакомство и сохраняем
+  // его цель/причину — обнуляются только уроки, карточки, серия, достижения.
+  const resetProgress = () => {
+    update((p) => ({ ...EMPTY, onboarded: true, goal: p.goal || 10, reason: p.reason || null }));
+  };
+
   // Пока прогресс едет из облака Telegram, показываем спокойную заставку
   if (!hydrated) {
     return (
@@ -352,7 +358,7 @@ export default function App() {
         {tab === "practice" && <PracticeHub progress={progress} review={review} update={update} />}
         {tab === "stats" && (
           <Stats progress={progress} doneCount={doneCountN} setGoal={(g) => update((p) => ({ ...p, goal: g }))}
-            voice={voice} setVoice={changeVoice} />
+            voice={voice} setVoice={changeVoice} resetProgress={resetProgress} />
         )}
 
         <nav className="nav">
@@ -1505,8 +1511,9 @@ function ActivityCalendar({ days }) {
   );
 }
 
-function Stats({ progress, doneCount, setGoal, voice, setVoice }) {
+function Stats({ progress, doneCount, setGoal, voice, setVoice, resetProgress }) {
   const { lang, t } = useLang();
+  const [confirmReset, setConfirmReset] = useState(false);
   const total = lessons.length;
   const pct = Math.round((doneCount / total) * 100);
   const streak = displayStreak(progress.streak);
@@ -1608,6 +1615,22 @@ function Stats({ progress, doneCount, setGoal, voice, setVoice }) {
       </div>
 
       <AddToHomeButton />
+
+      <div style={{ marginTop: 22, textAlign: "center" }}>
+        {!confirmReset ? (
+          <button className="btn ghost" style={{ color: "var(--coral)" }} onClick={() => setConfirmReset(true)}>
+            {t.reset_label}
+          </button>
+        ) : (
+          <>
+            <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 8 }}>{t.reset_confirm}</p>
+            <div className="flash-controls">
+              <button className="btn ghost" onClick={() => setConfirmReset(false)}>{t.reset_cancel}</button>
+              <button className="btn bad" onClick={() => { resetProgress(); setConfirmReset(false); }}>{t.reset_yes}</button>
+            </div>
+          </>
+        )}
+      </div>
     </>
   );
 }
